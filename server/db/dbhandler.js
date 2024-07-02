@@ -1,20 +1,19 @@
 const { MongoClient } = require("mongodb");
+const DatabaseConnection = require("./DatabaseConnection.js");
 const DEFAULT_DB_NAME = "coinflow";
-const DEFAULT_MONGODB_URI = `mongodb://127.0.0.1:27017/${DEFAULT_DB_NAME}`;
+const DEFAULT_MONGODB_URI = `mongodb://0.0.0.0:27017/${DEFAULT_DB_NAME}`;
 
-let cachedDatabase = false;
+let cachedConnection = DatabaseConnection.nullConnection();
 
 async function openConnection(uri, dbname) {
-  if (cachedDatabase) {
+  if (cachedConnection.isOpen()) {
     console.log("Using existing cached connection");
-    return cachedDatabase;
+    return cachedConnection;
   } else {
-    console.log(`Connecting to database ${dbname} on URI '${uri}'...`);
+    console.log(`Connecting to database '${dbname}' on URI '${uri}'...`);
     try {
-      const client = await MongoClient.connect(uri);
-      const db = await client.db(dbname);
-      cachedDatabase = db;
-      return db;
+      cachedConnection = await DatabaseConnection.connect(uri, dbname);
+      return cachedConnection;
     } catch (error) {
       console.log("Error establishing database connection!");
       console.log(error);
@@ -23,9 +22,9 @@ async function openConnection(uri, dbname) {
   }
 }
 
-async function closeConnection(client) {
+function closeConnection(connection = cachedConnection) {
   try {
-    await client.close();
+    connection.close();
     console.log("Closed connection with client");
   } catch (error) {
     console.log(error);
