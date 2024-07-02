@@ -3,7 +3,7 @@ const path = require("path");
 const api = require("./api/api.js");
 const dbh = require("./db/dbhandler.js");
 const { initDb } = require("./db/init.js");
-const cookieParser = require("cookie-parser");
+const cookieParserMiddleware = require("cookie-parser");
 require("dotenv").config();
 
 const app = express();
@@ -36,7 +36,7 @@ async function startup() {
     });
   });
 
-  app.use(cookieParser());
+  app.use(cookieParserMiddleware());
 
   app.use(handleMalformedParamMiddleware);
 
