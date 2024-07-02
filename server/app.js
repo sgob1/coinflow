@@ -1,7 +1,7 @@
 const express = require("express");
 const path = require("path");
 const api = require("./api/api.js");
-const dbh = require("./db/dbhandler.js");
+const DatabaseConnection = require("./db/DatabaseConnection.js");
 const { initDb } = require("./db/init.js");
 const cookieParserMiddleware = require("cookie-parser");
 require("dotenv").config();
@@ -10,10 +10,7 @@ const app = express();
 const EXPRESS_PORT = process.env.EXPRESS_PORT || 3000;
 
 async function startup() {
-  const connection = await dbh.openConnection(
-    dbh.DEFAULT_MONGODB_URI,
-    dbh.DEFAULT_DB_NAME
-  );
+  const connection = await DatabaseConnection.open();
 
   // https://stackoverflow.com/questions/71779732/closing-mongoclient-connection-on-exit-when-using-mongodb-native-driver
   [
@@ -31,7 +28,7 @@ async function startup() {
     "SIGTERM",
   ].forEach(function (signal) {
     process.on(signal, function () {
-      dbh.closeConnection();
+      connection.close();
       process.exit(1);
     });
   });
