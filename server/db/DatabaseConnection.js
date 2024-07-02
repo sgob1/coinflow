@@ -36,7 +36,7 @@ class DatabaseConnection {
   }
 
   close() {
-    if (this.#client) this.#client.close();
+    if (this.#client && this.#open) this.#client.close();
     this.#open = false;
   }
 }
