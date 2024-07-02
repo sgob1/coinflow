@@ -1,7 +1,7 @@
 const express = require("express");
 const path = require("path");
 const api = require("./api/api.js");
-const dbh = require("./db/dbhandler.js");
+const dbh = require("./db/dbhandler.js").default;
 const { initDb } = require("./db/init.js");
 const cookieParser = require("cookie-parser");
 require("dotenv").config();

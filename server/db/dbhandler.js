@@ -1,5 +1,5 @@
-const { MongoClient } = require("mongodb");
-const DatabaseConnection = require("./DatabaseConnection.js");
+import { MongoClient } from "mongodb";
+import DatabaseConnection from "./DatabaseConnection.js";
 const DEFAULT_DB_NAME = "coinflow";
 const DEFAULT_MONGODB_URI = `mongodb://0.0.0.0:27017/${DEFAULT_DB_NAME}`;
 
@@ -31,7 +31,7 @@ function closeConnection(connection = cachedConnection) {
   }
 }
 
-module.exports = {
+export default {
   DEFAULT_DB_NAME,
   DEFAULT_MONGODB_URI,
   openConnection,
