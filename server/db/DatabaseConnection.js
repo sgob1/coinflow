@@ -1,4 +1,4 @@
-import { MongoClient } from "mongodb";
+const { MongoClient } = require("mongodb");
 
 class DatabaseConnection {
   #client;
@@ -41,4 +41,4 @@ class DatabaseConnection {
   }
 }
 
-export default DatabaseConnection;
+module.exports = DatabaseConnection;
