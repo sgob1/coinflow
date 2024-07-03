@@ -57,4 +57,6 @@ class DatabaseConnection {
   }
 }
 
-module.exports = DatabaseConnection;
+module.exports = {
+  DatabaseConnection,
+};
