@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const auth = require("./auth.js")
+const auth = require("../../auth.js");
 const db = require("../../db/dbhandler.js");
 const USERS_COLLECTION = require("../../defaults.js").USERS_COLLECTION;
 const errors = require("../../errors.js");
@@ -15,11 +15,7 @@ router.post("/signup", async (req, res) => {
       res.status(409).json({ msg: `User '${user.username}' already existing` });
     } else {
       console.log(`User ${user} is requesting subscription`);
-      const lastUser = await db.query(
-        (c) => c.findOne({}, { sort: { id: -1 } }),
-        USERS_COLLECTION
-      );
-      let id = lastUser?.id !== undefined ? lastUser.id + 1 : 0;
+      let id = computeId(db);
       const newUser = { id, username, password, name, surname };
       await db.query((c) => c.insertOne(newUser), USERS_COLLECTION);
       res.json({ msg: "User successfully registered" });
@@ -49,5 +45,13 @@ router.post("/signin", async (req, res) => {
     errors.internalServerError(error, res);
   }
 });
+
+const computeId = async function (db) {
+  const lastUser = await db.query(
+    (c) => c.findOne({}, { sort: { id: -1 } }),
+    USERS_COLLECTION
+  );
+  return lastUser?.id !== undefined ? lastUser.id + 1 : 0;
+};
 
 module.exports = router;

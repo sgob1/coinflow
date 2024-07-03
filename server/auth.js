@@ -1,8 +1,8 @@
-const errors = require("../../errors.js");
+const errors = require("./errors.js");
 const jwt = require("jsonwebtoken");
 const JWT_AUTH_SECRET = "This is a secret";
 const EXPIRE_TIME = 86400;
-const args = require("../../args.js");
+const args = require("./args.js");
 
 const opt = args.parse();
 
@@ -19,7 +19,7 @@ let checkAuth = function (req, res) {
   }
 };
 
-let validAuth = function (req, res) {
+let isValid = function (req, res) {
   if (opt["noauth"])
     return true;
 
@@ -34,6 +34,6 @@ let sign = function (data) {
 
 module.exports = {
   checkAuth,
-  validAuth,
+  isValid,
   sign,
 };
