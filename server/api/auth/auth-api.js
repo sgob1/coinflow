@@ -1,8 +1,7 @@
 const router = require("express").Router();
-const jwt = require("jsonwebtoken");
+const auth = require("./auth.js")
 const db = require("../../db/dbhandler.js");
 const USERS_COLLECTION = require("../../defaults.js").USERS_COLLECTION;
-const JWT_AUTH_SECRET = "This is a secret";
 const errors = require("../../errors.js");
 
 router.post("/signup", async (req, res) => {
@@ -40,7 +39,7 @@ router.post("/signin", async (req, res) => {
     console.log(`User ${user.username} is attempting authentication`);
     if (user && user.password === password && user.username === username) {
       const data = { id: user.id };
-      const token = jwt.sign(data, JWT_AUTH_SECRET, { expiresIn: 86400 });
+      const token = auth.sign(data);
       res.cookie("token", token, { httpOnly: true });
       res.json({ msg: "User has been successfully authenticated" });
     } else {
