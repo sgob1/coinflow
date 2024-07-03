@@ -54,43 +54,46 @@ router.get("/:year", async (req, res) => {
   }
 });
 
-router.get("/:year/:month", function (req, res) {
-  // TODO
-  res.send(
-    `Spese dell’utente loggato relative al mese ${req.params.month} dell’anno ${req.params.year}`
-  );
+router.get("/:year/:month", async (req, res) => {
+  if (!auth.isValid(req, res)) return;
+
+  try {
+    const results = await findTransactions({
+      "date.year": req.params.year,
+      "date.month": req.params.month,
+    });
+    sendResults(results, res);
+  } catch (error) {
+    errors.internalServerError(error, res);
+  }
 });
 
 router.post("/:year/:month", async (req, res) => {
   const verifiedAuthData = auth.checkAuth(req, res);
   if (verifiedAuthData === "undefined") return;
 
-  // FIXME: check input validity in server or delete this message
-  const description = req.body.description;
-  const category = req.body.category;
-  const totalCost = req.body.totalCost;
-  const users =
-    req.body.users === "undefined" ||
-    req.body.users === "" ||
-    req.body.users === "null"
-      ? {}
-      : req.body.users;
   const date = {
     year: req.params.year,
     month: req.params.month,
     day: req.body.day,
   };
-  const author = verifiedAuthData.username;
-  const transactionId = await computeTransactionId(db, date);
 
+  if (!validDate(date.year, date.month, date.day)) {
+    res.status(400).json({
+      msg: `Invalid date ${date.year}-${date.month}-${date.day}`,
+    });
+    return;
+  }
+
+  // FIXME: check input validity in server or delete this message
   const transaction = {
-    transactionId,
-    author,
-    date,
-    description,
-    category,
-    totalCost,
-    users,
+    transactionId: await computeTransactionId(db, date),
+    author: verifiedAuthData.username,
+    date: date,
+    description: req.body.description,
+    category: req.body.category,
+    totalCost: req.body.totalCost,
+    users: req.body.users === undefined ? {} : req.body.users,
   };
 
   try {
@@ -152,6 +155,10 @@ const sendResults = function (results, res) {
   } else {
     res.status(404).json({ msg: "Not found" });
   }
+};
+
+const validDate = function (year, month, day) {
+  return !isNaN(new Date(`${year}-${month}-${day}`));
 };
 
 module.exports = router;
