@@ -1,7 +1,7 @@
 const express = require("express");
 const path = require("path");
 const api = require("./api/api.js");
-const DatabaseConnection = require("./db/DatabaseConnection.js");
+const db = require("./db/dbhandler.js");
 const { initDb } = require("./db/init.js");
 const cookieParserMiddleware = require("cookie-parser");
 const args = require("./args.js");
@@ -11,15 +11,13 @@ const app = express();
 
 async function startup() {
   console.log(opt);
-  const connection = await DatabaseConnection.open();
 
-  setupKillSignalsListener(() => connection.close());
+  setupKillSignalsListener(() => db.closeConnection());
 
+  app.use(requestLoggerMiddleware);
   app.use(cookieParserMiddleware());
-
-  app.use(handleMalformedParamMiddleware);
-
   app.use(redirectToIndexMiddleware);
+  app.use(express.json());
 
   app.use("/api", api);
 
@@ -32,8 +30,8 @@ async function startup() {
 async function main() {
   await startup();
 }
-
-let handleMalformedParamMiddleware = function (err, req, res, next) {
+// FIXME: fix or delete
+let handleMalformedParamMiddleware = function (err, req) {
   if (err instanceof URIError) {
     err.message = `Failed to decode param: ${req.url}`;
     err.status = err.statusCode = 400;
@@ -48,7 +46,7 @@ let redirectToIndexMiddleware = function (req, res, next) {
   }
 };
 
-let setupKillSignalsListener = function(onQuit) {
+let setupKillSignalsListener = function (onQuit) {
   // https://stackoverflow.com/questions/71779732/closing-mongoclient-connection-on-exit-when-using-mongodb-native-driver
   [
     "SIGHUP",
@@ -69,6 +67,15 @@ let setupKillSignalsListener = function(onQuit) {
       process.exit(1);
     });
   });
-}
+};
+
+let requestLoggerMiddleware = function (req, res, next) {
+  console.log(
+    `Receiving ${req.method} request '${req.baseUrl}${req.url}' from ${
+      req.ip === "::1" ? "localhost" : "address " + req.ip
+    }`
+  );
+  next();
+};
 
 main();
