@@ -1,30 +1,31 @@
 const parseArgs = require("node:util").parseArgs;
+const defaults = require("./defaults.js");
 
 const ARGS_MAP = {
   options: {
     "express-port": {
       type: "string",
       short: "P",
-      default: "3000",
+      default: defaults.EXPRESS_PORT,
     },
     "mongodb-addr": {
       type: "string",
       short: "a",
-      default: "127.0.0.1",
+      default: defaults.MONGODB_ADDR,
     },
     "mongodb-port": {
       type: "string",
       short: "p",
-      default: "27017",
+      default: defaults.MONGODB_PORT,
     },
     dbname: {
       type: "string",
       short: "n",
-      default: "coinflow",
+      default: defaults.MONGODB_NAME,
     },
     "noauth": {
       type: "boolean",
-      default: false,
+      default: defaults.NOAUTH,
     }
   },
 };
@@ -37,7 +38,7 @@ const parse = function () {
   }
   // Returns clone so that any modification to parse() return object will not be
   // visible on further calls to parse()
-  // This is fundamental to avoid accidental modifications of parsed arguments
+  // This is to prevent accidental modifications of parsed arguments
   return structuredClone(cachedArgs.values);
 };
 
