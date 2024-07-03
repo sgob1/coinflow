@@ -4,34 +4,16 @@ const api = require("./api/api.js");
 const DatabaseConnection = require("./db/DatabaseConnection.js");
 const { initDb } = require("./db/init.js");
 const cookieParserMiddleware = require("cookie-parser");
-require("dotenv").config();
+const args = require("./args.js");
 
+const opt = args.parse();
 const app = express();
-const EXPRESS_PORT = process.env.EXPRESS_PORT || 3000;
 
 async function startup() {
+  console.log(opt);
   const connection = await DatabaseConnection.open();
 
-  // https://stackoverflow.com/questions/71779732/closing-mongoclient-connection-on-exit-when-using-mongodb-native-driver
-  [
-    "SIGHUP",
-    "SIGINT",
-    "SIGQUIT",
-    "SIGILL",
-    "SIGTRAP",
-    "SIGABRT",
-    "SIGBUS",
-    "SIGFPE",
-    "SIGUSR1",
-    "SIGSEGV",
-    "SIGUSR2",
-    "SIGTERM",
-  ].forEach(function (signal) {
-    process.on(signal, function () {
-      connection.close();
-      process.exit(1);
-    });
-  });
+  setupKillSignalsListener(() => connection.close());
 
   app.use(cookieParserMiddleware());
 
@@ -41,8 +23,9 @@ async function startup() {
 
   app.use("/api", api);
 
-  app.listen(EXPRESS_PORT, () => {
-    console.log(`Listening on port ${EXPRESS_PORT}`);
+  const expressPort = opt["express-port"];
+  app.listen(expressPort, () => {
+    console.log(`Listening on port ${expressPort}`);
   });
 }
 
@@ -64,5 +47,28 @@ let redirectToIndexMiddleware = function (req, res, next) {
     res.sendFile(path.join(__dirname, "..", "client/dist", "index.html"));
   }
 };
+
+let setupKillSignalsListener = function(onQuit) {
+  // https://stackoverflow.com/questions/71779732/closing-mongoclient-connection-on-exit-when-using-mongodb-native-driver
+  [
+    "SIGHUP",
+    "SIGINT",
+    "SIGQUIT",
+    "SIGILL",
+    "SIGTRAP",
+    "SIGABRT",
+    "SIGBUS",
+    "SIGFPE",
+    "SIGUSR1",
+    "SIGSEGV",
+    "SIGUSR2",
+    "SIGTERM",
+  ].forEach(function (signal) {
+    process.on(signal, function () {
+      onQuit();
+      process.exit(1);
+    });
+  });
+}
 
 main();

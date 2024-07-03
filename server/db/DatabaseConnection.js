@@ -1,6 +1,8 @@
 const { MongoClient } = require("mongodb");
 const dbutils = require("./dbutils.js");
+const args = require("../args.js");
 
+let opt = args.parse();
 let cachedConnection = undefined;
 
 class DatabaseConnection {
@@ -15,9 +17,9 @@ class DatabaseConnection {
   }
 
   static async open(
-    addr = process.env.DEFAULT_MONGODB_ADDR,
-    port = process.env.DEFAULT_MONGODB_PORT,
-    dbname = process.env.DEFAULT_DB_NAME
+    addr = opt["mongodb-addr"],
+    port = opt["mongodb-port"],
+    dbname = opt["dbname"]
   ) {
     if (cachedConnection && cachedConnection.isOpen()) {
       console.log("Using existing cached connection");
