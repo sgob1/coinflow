@@ -3,7 +3,10 @@ const MONGODB_ADDR = "127.0.0.1";
 const MONGODB_PORT = "27017";
 const MONGODB_NAME = "coinflow";
 const NOAUTH = false;
-const USERS_COLLECTION = "users";
+const COLLECTIONS = {
+  users: "users",
+  transactions: "trans",
+};
 
 module.exports = {
   EXPRESS_PORT,
@@ -11,5 +14,5 @@ module.exports = {
   MONGODB_PORT,
   MONGODB_NAME,
   NOAUTH,
-  USERS_COLLECTION,
+  COLLECTIONS,
 };
