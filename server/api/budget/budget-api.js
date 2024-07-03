@@ -4,9 +4,16 @@ const db = require("../../db/dbhandler.js");
 const collections = require("../../defaults.js").COLLECTIONS;
 const errors = require("../../errors.js");
 
-router.get("/", function (req, res) {
-  // TODO
-  res.send("Spese dell’utente loggato");
+router.get("/", async (req, res) => {
+  const verifiedData = auth.checkAuth(req, res);
+  if (typeof verifiedData === "undefined") return;
+
+  try {
+    const results = await findTransactions({ author: verifiedData.username });
+    sendResults(results, res);
+  } catch (error) {
+    errors.internalServerError(error, res);
+  }
 });
 
 router.get("/search", function (req, res) {
@@ -137,11 +144,11 @@ const computeTransactionId = async function (db, date) {
     : 0;
 };
 
-const findOneTransaction = async function (query, res) {
+const findOneTransaction = async function (query) {
   return await db.query((c) => c.findOne(query), collections.transactions);
 };
 
-const findTransactions = async function (query, res) {
+const findTransactions = async function (query) {
   const findCursor = await db.query(
     (c) => c.find(query),
     collections.transactions
