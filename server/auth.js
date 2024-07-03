@@ -7,6 +7,12 @@ const args = require("./args.js");
 const opt = args.parse();
 
 let checkAuth = function (req, res) {
+  // In case of disabled auth, pass authentication params in request body
+  // to get a valid authentication check and impersonate a specific user
+  if (opt["noauth"]) {
+    return req.body;
+  }
+
   if (typeof req.cookies.jwt === "undefined") {
     errors.unauthorizedAccess(req, res);
     return;
