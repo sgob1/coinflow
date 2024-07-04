@@ -7,8 +7,8 @@ const args = require("./args.js");
 const opt = args.parse();
 
 let checkAuth = function (req, res) {
-  // In case of disabled auth, pass authentication params in request body
-  // to get a valid authentication check and impersonate a specific user
+  // In case of disabled auth,to get a valid authentication check and
+  // impersonate a specific user, pass authentication params in request body
   if (opt["noauth"]) {
     return req.body;
   }
@@ -26,8 +26,7 @@ let checkAuth = function (req, res) {
 };
 
 let isValid = function (req, res) {
-  if (opt["noauth"])
-    return true;
+  if (opt["noauth"]) return true;
 
   const verifiedData = checkAuth(req, res);
   if (typeof verifiedData === "undefined") return false;

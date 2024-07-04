@@ -1,43 +1,46 @@
 const router = require("express").Router();
 const auth = require("../../auth.js");
-const db = require("../../db/dbhandler.js");
-const collections = require("../../defaults.js").COLLECTIONS;
+const transactions = require("../../db/transactions.js");
+const users = require("../../db/users.js");
 const errors = require("../../errors.js");
 
+// Logged user transactions
 router.get("/", async (req, res) => {
   const verifiedData = auth.checkAuth(req, res);
   if (typeof verifiedData === "undefined") return;
 
   try {
-    const results = await findTransactions({ author: verifiedData.username });
+    const results = await transactions.find({ author: verifiedData.username });
     sendResults(results, res);
   } catch (error) {
     errors.internalServerError(error, res);
   }
 });
 
-router.get("/search", function (req, res) {
-  // TODO
-});
+// TODO
+router.get("/search", function (req, res) {});
 
+// Logged user info
 router.get("/whoami", async (req, res) => {
   const verifiedData = auth.checkAuth(req, res);
   if (typeof verifiedData === "undefined") return;
 
-  const user = await db.query(
-    (c) => c.findOne({ username: verifiedData.username }),
-    collections.users
-  );
+  const user = await users.findOne({ username: verifiedData.username });
 
-  if (user) res.status(200).json(user);
-  else errors.internalServerError(_, user);
+  if (user) {
+    res.status(200).json(user);
+  } else {
+    error = `ERROR: Logged user '${verifiedData.username}' requested 'whoami' but no corresponding user info has been found in database.`; 
+    errors.internalServerError(error, res);
+  }
 });
 
+// Transaction :year/:month/:id details
 router.get("/:year/:month/:id", async (req, res) => {
   if (!auth.isValid(req, res)) return;
 
   try {
-    const transaction = await findOneTransaction({
+    const transaction = await transactions.findOne({
       "date.year": req.params.year,
       "date.month": req.params.month,
       transactionId: Number(req.params.id),
@@ -48,12 +51,15 @@ router.get("/:year/:month/:id", async (req, res) => {
   }
 });
 
+// Logged user transactions in :year
 router.get("/:year", async (req, res) => {
-  if (!auth.isValid(req, res)) return;
+  const verifiedAuthData = auth.checkAuth(req, res);
+  if (typeof verifiedAuthData === "undefined") return;
 
   try {
-    const results = await findTransactions({
+    const results = await transactions.find({
       "date.year": req.params.year,
+      author: verifiedAuthData.username,
     });
     sendResults(results, res);
   } catch (error) {
@@ -61,13 +67,16 @@ router.get("/:year", async (req, res) => {
   }
 });
 
+// Logged user transactions in :year and :month
 router.get("/:year/:month", async (req, res) => {
-  if (!auth.isValid(req, res)) return;
+  const verifiedAuthData = auth.checkAuth(req, res);
+  if (typeof verifiedAuthData === "undefined") return;
 
   try {
-    const results = await findTransactions({
+    const results = await transactions.find({
       "date.year": req.params.year,
       "date.month": req.params.month,
+      author: verifiedAuthData.username,
     });
     sendResults(results, res);
   } catch (error) {
@@ -75,6 +84,7 @@ router.get("/:year/:month", async (req, res) => {
   }
 });
 
+// Creates a new transaction in :year and :month
 router.post("/:year/:month", async (req, res) => {
   const verifiedAuthData = auth.checkAuth(req, res);
   if (verifiedAuthData === "undefined") return;
@@ -94,7 +104,7 @@ router.post("/:year/:month", async (req, res) => {
 
   // FIXME: check input validity in server or delete this message
   const transaction = {
-    transactionId: await computeTransactionId(db, date),
+    transactionId: await computeTransactionId(date),
     author: verifiedAuthData.username,
     date: date,
     description: req.body.description,
@@ -104,16 +114,14 @@ router.post("/:year/:month", async (req, res) => {
   };
 
   try {
-    const result = await db.query(
-      (c) => c.insertOne(transaction),
-      collections.transactions
-    );
+    const result = await transactions.insertOne(transaction);
     res.status(200).json(result);
   } catch (error) {
     errors.internalServerError(error, res);
   }
 });
 
+// Edits transaction in :year/:month/:id
 router.put("/:year/:month/:id", function (req, res) {
   // TODO
   res.send(
@@ -121,6 +129,7 @@ router.put("/:year/:month/:id", function (req, res) {
   );
 });
 
+// Deletes transaction in :year/:month/:id
 router.delete("/:year/:month/:id", function (req, res) {
   // TODO
   res.send(
@@ -130,30 +139,11 @@ router.delete("/:year/:month/:id", function (req, res) {
 
 // Transaction ID is assigned incrementally, beginning from 0 at each month of
 // the year
-const computeTransactionId = async function (db, date) {
-  const lastTransaction = await db.query(
-    (c) =>
-      c.findOne(
-        { "date.year": date.year, "date.month": date.month },
-        { sort: { transactionId: -1 } }
-      ),
-    collections.transactions
-  );
+const computeTransactionId = async function (date) {
+  const lastTransaction = await transactions.lastTransaction(date);
   return lastTransaction?.transactionId !== undefined
     ? lastTransaction.transactionId + 1
     : 0;
-};
-
-const findOneTransaction = async function (query) {
-  return await db.query((c) => c.findOne(query), collections.transactions);
-};
-
-const findTransactions = async function (query) {
-  const findCursor = await db.query(
-    (c) => c.find(query),
-    collections.transactions
-  );
-  return await findCursor.toArray();
 };
 
 const sendResults = function (results, res) {

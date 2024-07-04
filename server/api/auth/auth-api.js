@@ -1,23 +1,19 @@
 const router = require("express").Router();
 const auth = require("../../auth.js");
-const db = require("../../db/dbhandler.js");
-const usersCollection = require("../../defaults.js").COLLECTIONS.users;
+const users = require("../../db/users.js");
 const errors = require("../../errors.js");
 
 router.post("/signup", async (req, res) => {
   try {
     const { username, password, name, surname } = req.body;
-    const user = await db.query(
-      (c) => c.findOne({ username }),
-      usersCollection
-    );
+    const user = await users.findOne({ username });
     if (user) {
       res.status(409).json({ msg: `User '${user.username}' already existing` });
     } else {
       console.log(`User ${user} is requesting subscription`);
-      let id = await computeUserId(db);
+      let id = await computeUserId();
       const newUser = { id, username, password, name, surname };
-      await db.query((c) => c.insertOne(newUser), usersCollection);
+      await users.insertOne(newUser);
       res.json({ msg: "User successfully registered" });
     }
   } catch (error) {
@@ -28,10 +24,7 @@ router.post("/signup", async (req, res) => {
 router.post("/signin", async (req, res) => {
   try {
     const { username, password } = req.body;
-    const user = await db.query(
-      (c) => c.findOne({ username }),
-      usersCollection
-    );
+    const user = await users.findOne({ username });
     console.log(`User ${user.username} is attempting authentication`);
     if (user && user.password === password && user.username === username) {
       const data = { id: user.id };
@@ -46,11 +39,8 @@ router.post("/signin", async (req, res) => {
   }
 });
 
-const computeUserId = async function (db) {
-  const lastUser = await db.query(
-    (c) => c.findOne({}, { sort: { id: -1 } }),
-    usersCollection
-  );
+const computeUserId = async function () {
+  const lastUser = await users.lastUser();
   return lastUser?.id !== undefined ? lastUser.id + 1 : 0;
 };
 
