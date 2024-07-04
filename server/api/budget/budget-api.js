@@ -30,7 +30,7 @@ router.get("/whoami", async (req, res) => {
   if (user) {
     res.status(200).json(user);
   } else {
-    error = `ERROR: Logged user '${verifiedData.username}' requested 'whoami' but no corresponding user info has been found in database.`; 
+    let error = `ERROR: Logged user '${verifiedData.username}' requested 'whoami' but no corresponding user info has been found in database.`;
     errors.internalServerError(error, res);
   }
 });
@@ -39,11 +39,29 @@ router.get("/whoami", async (req, res) => {
 router.get("/:year/:month/:id", async (req, res) => {
   if (!auth.isValid(req, res)) return;
 
+  const reqYear = Number(req.params.year);
+  if (!validYear(reqYear)) {
+    res.status(400).json({ msg: `Invalid year ${req.params.year}` });
+    return;
+  }
+
+  const reqMonth = Number(req.params.month);
+  if (!validMonth(reqMonth)) {
+    res.status(400).json({ msg: `Invalid month ${req.params.month}` });
+    return;
+  }
+
+  const reqId = Number(req.params.id);
+  if (!validId(reqId)) {
+    res.status(400).json({ msg: `Invalid id ${req.params.id}` });
+    return;
+  }
+
   try {
     const transaction = await transactions.findOne({
-      "date.year": req.params.year,
-      "date.month": req.params.month,
-      transactionId: Number(req.params.id),
+      "date.year": reqYear,
+      "date.month": reqMonth,
+      transactionId: reqId,
     });
     sendResults(transaction, res);
   } catch (error) {
@@ -56,9 +74,15 @@ router.get("/:year", async (req, res) => {
   const verifiedAuthData = auth.checkAuth(req, res);
   if (typeof verifiedAuthData === "undefined") return;
 
+  const reqYear = Number(req.params.year);
+  if (!validYear(reqYear)) {
+    res.status(400).json({ msg: `Invalid year ${req.params.year}` });
+    return;
+  }
+
   try {
     const results = await transactions.find({
-      "date.year": req.params.year,
+      "date.year": reqYear,
       author: verifiedAuthData.username,
     });
     sendResults(results, res);
@@ -72,10 +96,22 @@ router.get("/:year/:month", async (req, res) => {
   const verifiedAuthData = auth.checkAuth(req, res);
   if (typeof verifiedAuthData === "undefined") return;
 
+  const reqYear = Number(req.params.year);
+  if (!validYear(reqYear)) {
+    res.status(400).json({ msg: `Invalid year ${req.params.year}` });
+    return;
+  }
+
+  const reqMonth = Number(req.params.month);
+  if (!validMonth(reqMonth)) {
+    res.status(400).json({ msg: `Invalid month ${req.params.month}` });
+    return;
+  }
+
   try {
     const results = await transactions.find({
-      "date.year": req.params.year,
-      "date.month": req.params.month,
+      "date.year": reqYear,
+      "date.month": reqMonth,
       author: verifiedAuthData.username,
     });
     sendResults(results, res);
@@ -89,16 +125,41 @@ router.post("/:year/:month", async (req, res) => {
   const verifiedAuthData = auth.checkAuth(req, res);
   if (verifiedAuthData === "undefined") return;
 
-  const date = {
-    year: req.params.year,
-    month: req.params.month,
-    day: req.body.day,
-  };
+  let date;
+  try {
+    date = parseDateAsNumbers(req.body.date);
+  } catch (err) {
+    console.log(err);
+    console.log("ERROR: Illegal date computation, invalid date fields");
+    res.status(400).json({ msg: err });
+    return;
+  }
 
-  if (!validDate(date.year, date.month, date.day)) {
-    res.status(400).json({
-      msg: `Invalid date ${date.year}-${date.month}-${date.day}`,
-    });
+  const reqYear = Number(req.params.year);
+  if (!validYear(reqYear)) {
+    res.status(400).json({ msg: `Invalid year ${req.params.year}` });
+    return;
+  }
+
+  const reqMonth = Number(req.params.month);
+  if (!validMonth(reqMonth)) {
+    res.status(400).json({ msg: `Invalid month ${req.params.month}` });
+    return;
+  }
+
+  try {
+    checkDateConsistency(date, reqYear, reqMonth);
+  } catch (err) {
+    console.log(err);
+    console.log("ERROR: Illegal date computation, invalid date fields");
+    res.status(400).json({ msg: err });
+    return;
+  }
+
+  if (!validDate(date)) {
+    res
+      .status(400)
+      .json({ msg: `Invalid date ${date.year}-${date.month}-${date.day}` });
     return;
   }
 
@@ -109,7 +170,7 @@ router.post("/:year/:month", async (req, res) => {
     date: date,
     description: req.body.description,
     category: req.body.category,
-    totalCost: req.body.totalCost,
+    totalCost: Number(req.body.totalCost),
     users: req.body.users === undefined ? {} : req.body.users,
   };
 
@@ -122,11 +183,110 @@ router.post("/:year/:month", async (req, res) => {
 });
 
 // Edits transaction in :year/:month/:id
-router.put("/:year/:month/:id", function (req, res) {
-  // TODO
-  res.send(
-    `Modifica della spesa ${req.params.id} nel mese ${req.params.month} dell’anno ${req.params.year}`
-  );
+router.put("/:year/:month/:id", async (req, res) => {
+  const verifiedAuthData = auth.checkAuth(req, res);
+  if (verifiedAuthData === "undefined") return;
+
+  let replacementDate;
+  try {
+    replacementDate = parseDateAsNumbers(req.body.date);
+  } catch (err) {
+    console.log(err);
+    console.log("ERROR: Illegal date computation, invalid date fields");
+    res.status(400).json({ msg: err });
+    return;
+  }
+
+  const reqYear = Number(req.params.year);
+  if (!validYear(reqYear)) {
+    res.status(400).json({ msg: `Invalid year ${req.params.year}` });
+    return;
+  }
+
+  const reqMonth = Number(req.params.month);
+  if (!validMonth(reqMonth)) {
+    res.status(400).json({ msg: `Invalid month ${req.params.month}` });
+    return;
+  }
+
+  const reqId = Number(req.params.id);
+  if (!validId(reqId)) {
+    res.status(400).json({ msg: `Invalid id ${req.params.id}` });
+    return;
+  }
+
+  if (!validDate(date)) {
+    let message = `Invalid date ${date.year}-${date.month}-${date.day}`;
+    res.status(400).json({ msg: message });
+    return;
+  }
+
+  let existingTransaction;
+  try {
+    existingTransaction = await transactions.findOne({
+      "date.year": reqYear,
+      "date.month": reqMonth,
+      transactionId: reqId,
+    });
+    if (!existingTransaction) {
+      res.status(404).json({ msg: "Transaction not found" });
+      return;
+    }
+  } catch (error) {
+    errors.internalServerError(error, res);
+  }
+
+  if (existingTransaction.author !== verifiedAuthData.username) {
+    errors.unauthorizedAccess(req, res);
+    return;
+  }
+
+  let replacementTransaction = {
+    author: verifiedAuthData.username,
+    date:
+      replacementDate === undefined
+        ? existingTransaction.replacementDate
+        : replacementDate,
+    description:
+      req.body.description === undefined
+        ? existingTransaction.description
+        : req.body.description,
+    category:
+      req.body.category === undefined
+        ? existingTransaction.category
+        : req.body.category,
+    totalCost:
+      req.body.totalCost === undefined
+        ? existingTransaction.totalCost
+        : Number(req.body.totalCost),
+    users:
+      req.body.users === undefined ? existingTransaction.users : req.body.users,
+  };
+
+  if (
+    replacementDate.year !== existingTransaction.date.year ||
+    replacementDate.month !== existingTransaction.date.month
+  ) {
+    replacementTransaction.transactionId = await computeTransactionId(
+      replacementTransaction.date
+    );
+  } else {
+    replacementTransaction.transactionId = existingTransaction.transactionId;
+  }
+
+  // Internally, the transaction gets atomically replaced by the new one with
+  // the provided modifications. This is done so that in any case transactions
+  // are conceptually immutable and in-place updates will result, in practice,
+  // in a new transaction with a new unique _id field in the database
+  try {
+    const replacementResult = await transactions.replaceOne(
+      existingTransaction,
+      replacementTransaction
+    );
+    res.status(200).json(replacementResult);
+  } catch (error) {
+    errors.internalServerError(error, res);
+  }
 });
 
 // Deletes transaction in :year/:month/:id
@@ -154,8 +314,33 @@ const sendResults = function (results, res) {
   }
 };
 
+const validYear = function (year) {
+  return year >= 0;
+};
+
+const validMonth = function (month) {
+  return 1 <= month && month <= 12;
+};
+
 const validDate = function (year, month, day) {
   return !isNaN(new Date(`${year}-${month}-${day}`));
+};
+
+const validId = function(id) {
+  return typeof id === "number" && id >= 0;
+}
+
+const checkDateConsistency = function (date, year, month) {
+  if (year !== date.year) throw "Malformed request: inconsistent year";
+  if (month !== date.month) throw "Malformed request: inconsistent month";
+};
+
+const parseDateAsNumbers = function (date) {
+  return {
+    year: Number(date.year),
+    month: Number(date.month),
+    day: Number(date.day),
+  };
 };
 
 module.exports = router;

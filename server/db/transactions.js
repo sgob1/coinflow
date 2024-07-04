@@ -25,9 +25,20 @@ const lastTransaction = async function (date) {
   );
 };
 
+const deleteOne = async function (transaction) {
+  return await db.query((c) => c.deleteOne({ _id: transaction._id }), trans);
+};
+
+const replaceOne = async function (toReplace, replacement) {
+  const filter = { _id: toReplace._id };
+  return await db.query((c) => c.replaceOne(filter, replacement), trans);
+};
+
 module.exports = {
   findOne,
   find,
   insertOne,
   lastTransaction,
+  deleteOne,
+  replaceOne,
 };
