@@ -186,7 +186,7 @@ router.post("/:year/:month", async (req, res) => {
   }
 
   try {
-    await checkUserQuotas(req.body.users, totalCost);
+    await checkUserQuotas(req.body.quotas, totalCost);
   } catch (error) {
     res.status(400).json({ msg: error });
     return;
@@ -200,7 +200,7 @@ router.post("/:year/:month", async (req, res) => {
     description: req.body.description,
     category: req.body.category,
     totalCost: Number(req.body.totalCost),
-    users: req.body.users === undefined ? {} : req.body.users,
+    quotas: req.body.quotas === undefined ? {} : req.body.quotas,
   };
 
   try {
@@ -258,7 +258,7 @@ router.put("/:year/:month/:id", async (req, res) => {
   }
 
   try {
-    await checkUserQuotas(req.body.users, totalCost);
+    await checkUserQuotas(req.body.quotas, totalCost);
   } catch (error) {
     res.status(400).json({ msg: error });
     return;
@@ -303,8 +303,8 @@ router.put("/:year/:month/:id", async (req, res) => {
       req.body.totalCost === undefined
         ? existingTransaction.totalCost
         : Number(req.body.totalCost),
-    users:
-      req.body.users === undefined ? existingTransaction.users : req.body.users,
+    quotas:
+      req.body.quotas === undefined ? existingTransaction.quotas : req.body.quotas,
   };
 
   if (
@@ -434,14 +434,14 @@ const parseTotalCost = function (totalCost) {
   return new BigDecimal.default(totalCost);
 };
 
-const checkUserQuotas = async function (userPairs, totalCost) {
+const checkUserQuotas = async function (userQuotas, totalCost) {
   const quotas = [];
-  for (let username in userPairs) {
+  for (let username in userQuotas) {
     const user = await users.findOne({ username: username });
     if (!user) throw `Cannot find username ${username}`;
-    const userQuota = Number(userPairs[username]);
+    const userQuota = Number(userQuotas[username]);
     if (isNaN(userQuota))
-      throw `Malformed quota ${userPairs[username]} for username ${username}`;
+      throw `Malformed quota ${userQuotas[username]} for username ${username}`;
     // workaround: for some reason calling the constructor directly does not
     // work, even when religiously following the documentation at the following
     // URL: https://github.com/royNiladri/js-big-decimal
