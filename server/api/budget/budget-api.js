@@ -3,6 +3,7 @@ const auth = require("../../auth.js");
 const transactions = require("../../db/transactions.js");
 const users = require("../../db/users.js");
 const errors = require("../../errors.js");
+const DELTA_TOLERANCE = 1.0e-3;
 
 // Logged user transactions
 router.get("/", async (req, res) => {
@@ -10,15 +11,28 @@ router.get("/", async (req, res) => {
   if (typeof verifiedData === "undefined") return;
 
   try {
-    const results = await transactions.find({ author: verifiedData.username });
+    const results = await transactions.findOfUser(verifiedData.username);
     sendResults(results, res);
   } catch (error) {
     errors.internalServerError(error, res);
   }
 });
 
-// TODO
-router.get("/search", function (req, res) {});
+// Logged user transactions search
+router.get("/search", async (req, res) => {
+  const verifiedData = auth.checkAuth(req, res);
+  if (typeof verifiedData === "undefined") return;
+
+  try {
+    const results = await transactions.searchOfUserByDescription(
+      verifiedData.username,
+      req.query.q
+    );
+    sendResults(results, res);
+  } catch (error) {
+    errors.internalServerError(error, res);
+  }
+});
 
 // Logged user info
 router.get("/whoami", async (req, res) => {
@@ -83,10 +97,10 @@ router.get("/:year", async (req, res) => {
   }
 
   try {
-    const results = await transactions.find({
-      "date.year": reqYear,
-      author: verifiedAuthData.username,
-    });
+    const results = await transactions.findOfUser(
+      verifiedAuthData.username,
+      reqYear
+    );
     sendResults(results, res);
   } catch (error) {
     errors.internalServerError(error, res);
@@ -111,11 +125,11 @@ router.get("/:year/:month", async (req, res) => {
   }
 
   try {
-    const results = await transactions.find({
-      "date.year": reqYear,
-      "date.month": reqMonth,
-      author: verifiedAuthData.username,
-    });
+    const results = await transactions.findOfUser(
+      verifiedAuthData.username,
+      reqYear,
+      reqMonth
+    );
     sendResults(results, res);
   } catch (error) {
     errors.internalServerError(error, res);
@@ -139,8 +153,9 @@ router.post("/:year/:month", async (req, res) => {
     return;
   }
 
+  let date;
   try {
-    checkDateConsistency(date, reqYear, reqMonth);
+    date = parseDateAsNumbers(req.body.date);
   } catch (err) {
     console.log(err);
     console.log("ERROR: Illegal date computation, invalid date fields");
@@ -148,9 +163,8 @@ router.post("/:year/:month", async (req, res) => {
     return;
   }
 
-  let date;
   try {
-    date = parseDateAsNumbers(req.body.date);
+    checkDateConsistency(date, reqYear, reqMonth);
   } catch (err) {
     console.log(err);
     console.log("ERROR: Illegal date computation, invalid date fields");
@@ -382,6 +396,22 @@ const parseDateAsNumbers = function (date) {
     month: Number(date.month),
     day: Number(date.day),
   };
+};
+
+const checkUserPairs = async function (userPairs) {
+  const fractions = [];
+  for (let userPair in userPairs) {
+    const user = await usersDb.findOne({ username: userPair.username });
+    if (!user) throw `Cannot find username ${userPair.username}`;
+    const userFraction = Number(userPair.fraction);
+    if (isNaN(userFraction))
+      throw `Malformed fraction ${userPair.fraction} for username ${userPair.username}`;
+    fractions.push(userPair.fraction);
+  }
+  const total = fractions.reduce((part, next) => part + next, 0);
+
+  if (total < 1 - DELTA_TOLERANCE || total > 1 + DELTA_TOLERANCE)
+    throw `Wrong sum: total is ${total}`;
 };
 
 module.exports = router;
