@@ -434,7 +434,7 @@ const parseTotalCost = function (totalCost) {
   return new BigDecimal.default(totalCost);
 };
 
-const checkUserQuotas = async function (userQuotas, totalCost) {
+const checkUserQuotas = async function (userQuotas, bigDecimalTotalCost) {
   const quotas = [];
   for (let username in userQuotas) {
     const user = await users.findOne({ username: username });
@@ -453,10 +453,10 @@ const checkUserQuotas = async function (userQuotas, totalCost) {
     new BigDecimal.default("0")
   );
 
-  if (totalQuotas.compareTo(totalCost) !== 0)
+  if (totalQuotas.compareTo(bigDecimalTotalCost) !== 0)
     throw `Wrong sum of quotas: total is ${totalQuotas
       .round(2)
-      .getValue()} (should be ${totalCost.getValue()})`;
+      .getValue()} (should be ${bigDecimalTotalCost.getValue()})`;
 };
 
 
