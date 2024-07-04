@@ -3,7 +3,7 @@ const auth = require("../../auth.js");
 const transactions = require("../../db/transactions.js");
 const users = require("../../db/users.js");
 const errors = require("../../errors.js");
-const DELTA_TOLERANCE = 1.0e-3;
+let BigDecimal = require("js-big-decimal");
 
 // Logged user transactions
 router.get("/", async (req, res) => {
@@ -177,6 +177,21 @@ router.post("/:year/:month", async (req, res) => {
     return;
   }
 
+  let totalCost;
+  try {
+    totalCost = parseTotalCost(req.body.totalCost);
+  } catch (error) {
+    res.status(400).json({ msg: error });
+    return;
+  }
+
+  try {
+    await checkUserQuotas(req.body.users, totalCost);
+  } catch (error) {
+    res.status(400).json({ msg: error });
+    return;
+  }
+
   // FIXME: check input validity in server or delete this message
   const transaction = {
     transactionId: await computeTransactionId(date),
@@ -231,6 +246,21 @@ router.put("/:year/:month/:id", async (req, res) => {
 
   if (!validDate(replacementDate)) {
     res.status(400).json({ msg: "Invalid date in request body" });
+    return;
+  }
+
+  let totalCost;
+  try {
+    totalCost = parseTotalCost(req.body.totalCost);
+  } catch (error) {
+    res.status(400).json({ msg: error });
+    return;
+  }
+
+  try {
+    await checkUserQuotas(req.body.users, totalCost);
+  } catch (error) {
+    res.status(400).json({ msg: error });
     return;
   }
 
@@ -364,15 +394,15 @@ const sendResults = function (results, res) {
 };
 
 const validYear = function (year) {
-  return year >= 0;
+  return year && year >= 0;
 };
 
 const validMonth = function (month) {
-  return 1 <= month && month <= 12;
+  return month && 1 <= month && month <= 12;
 };
 
 const validDate = function (date) {
-  return !isNaN(
+  return date && !isNaN(
     new Date(
       `${date.year}-${date.month.toString().padStart(2, "0")}-${date.day
         .toString()
@@ -382,7 +412,7 @@ const validDate = function (date) {
 };
 
 const validId = function (id) {
-  return typeof id === "number" && id >= 0;
+  return id && typeof id === "number" && id >= 0;
 };
 
 const checkDateConsistency = function (date, year, month) {
@@ -398,20 +428,36 @@ const parseDateAsNumbers = function (date) {
   };
 };
 
-const checkUserPairs = async function (userPairs) {
-  const fractions = [];
-  for (let userPair in userPairs) {
-    const user = await usersDb.findOne({ username: userPair.username });
-    if (!user) throw `Cannot find username ${userPair.username}`;
-    const userFraction = Number(userPair.fraction);
-    if (isNaN(userFraction))
-      throw `Malformed fraction ${userPair.fraction} for username ${userPair.username}`;
-    fractions.push(userPair.fraction);
-  }
-  const total = fractions.reduce((part, next) => part + next, 0);
-
-  if (total < 1 - DELTA_TOLERANCE || total > 1 + DELTA_TOLERANCE)
-    throw `Wrong sum: total is ${total}`;
+const parseTotalCost = function (totalCost) {
+  const numberTotalCost = Number(totalCost);
+  if (isNaN(numberTotalCost)) throw `Malformed total cost '${totalCost}'`;
+  return new BigDecimal.default(totalCost);
 };
+
+const checkUserQuotas = async function (userPairs, totalCost) {
+  const quotas = [];
+  for (let username in userPairs) {
+    const user = await users.findOne({ username: username });
+    if (!user) throw `Cannot find username ${username}`;
+    const userQuota = Number(userPairs[username]);
+    if (isNaN(userQuota))
+      throw `Malformed quota ${userPairs[username]} for username ${username}`;
+    // workaround: for some reason calling the constructor directly does not
+    // work, even when religiously following the documentation at the following
+    // URL: https://github.com/royNiladri/js-big-decimal
+    const bigDecimalQuota = new BigDecimal.default(userQuota);
+    quotas.push(bigDecimalQuota);
+  }
+  const totalQuotas = quotas.reduce(
+    (part, next) => part.add(next),
+    new BigDecimal.default("0")
+  );
+
+  if (totalQuotas.compareTo(totalCost) !== 0)
+    throw `Wrong sum of quotas: total is ${totalQuotas
+      .round(2)
+      .getValue()} (should be ${totalCost.getValue()})`;
+};
+
 
 module.exports = router;
