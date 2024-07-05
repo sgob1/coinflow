@@ -6,5 +6,9 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.8.0",
     "path": "^0.12.7"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node app.js --dbname coinflow --express-port 3000 --noauth --reset-db"
   }
 }
