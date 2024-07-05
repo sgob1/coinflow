@@ -31,9 +31,9 @@ fi
 echo -e "${GREEN}/api/budget passed${NC}"
 
 echo -e "${BLUE}whoami...${NC}"
-result=$(curl_send "GET" "" "/budget/whoami")
+result=$(curl_send "GET" '{"username": "luke"}' "/budget/whoami")
 if [ "$result" != '[]' ]; then
 	echo -e "${RED}TEST FAILED${NC}"
 	exit 1;
 fi
-echo -e "${GREEN}/api/budget passed${NC}"
+echo -e "${GREEN}/api/budget/whoami passed${NC}"
