@@ -25,20 +25,11 @@ let checkAuth = function (req, res) {
   }
 };
 
-let isValid = function (req, res) {
-  if (opt["noauth"]) return true;
-
-  const verifiedData = checkAuth(req, res);
-  if (typeof verifiedData === "undefined") return false;
-  else return true;
-};
-
 let sign = function (data) {
   return jwt.sign(data, JWT_AUTH_SECRET, { expiresIn: EXPIRE_TIME });
 };
 
 module.exports = {
   checkAuth,
-  isValid,
   sign,
 };

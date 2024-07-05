@@ -3,7 +3,8 @@ const router = require("express").Router();
 const users = require("../../db/users.js");
 
 router.get("/search", async (req, res) => {
-  if (!auth.isValid(req, res)) return;
+  const verifiedData = auth.checkAuth(req, res);
+  if (typeof verifiedData === "undefined") return;
 
   const user = await users.findOne({ username: req.query.q.toLowerCase() });
 
