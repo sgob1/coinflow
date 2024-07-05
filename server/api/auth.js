@@ -1,7 +1,7 @@
 const router = require("express").Router();
-const auth = require("../../auth.js");
-const users = require("../../db/users.js");
-const errors = require("../../errors.js");
+const auth = require("../auth.js");
+const users = require("../db/users.js");
+const errors = require("../errors.js");
 
 router.post("/signup", async (req, res) => {
   try {

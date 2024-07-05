@@ -1,8 +1,9 @@
 const router = require("express").Router();
-const auth = require("../../auth.js");
-const transactions = require("../../db/transactions.js");
-const users = require("../../db/users.js");
-const errors = require("../../errors.js");
+const auth = require("../auth.js");
+const transactions = require("../db/transactions.js");
+const users = require("../db/users.js");
+const errors = require("../errors.js");
+const apiutils = require("./apiutils.js")
 let BigDecimal = require("js-big-decimal");
 
 // Logged user transactions
@@ -60,19 +61,19 @@ router.get("/:year/:month/:id", async (req, res) => {
   if (typeof verifiedAuthData === "undefined") return;
 
   const reqYear = Number(req.params.year);
-  if (!validYear(reqYear)) {
+  if (!apiutils.validYear(reqYear)) {
     res.status(400).json({ msg: `Invalid year ${req.params.year}` });
     return;
   }
 
   const reqMonth = Number(req.params.month);
-  if (!validMonth(reqMonth)) {
+  if (!apiutils.validMonth(reqMonth)) {
     res.status(400).json({ msg: `Invalid month ${req.params.month}` });
     return;
   }
 
   const reqId = Number(req.params.id);
-  if (!validId(reqId)) {
+  if (!apiutils.validId(reqId)) {
     res.status(400).json({ msg: `Invalid id ${req.params.id}` });
     return;
   }
@@ -96,7 +97,7 @@ router.get("/:year", async (req, res) => {
   if (typeof verifiedAuthData === "undefined") return;
 
   const reqYear = Number(req.params.year);
-  if (!validYear(reqYear)) {
+  if (!apiutils.validYear(reqYear)) {
     res.status(400).json({ msg: `Invalid year ${req.params.year}` });
     return;
   }
@@ -118,13 +119,13 @@ router.get("/:year/:month", async (req, res) => {
   if (typeof verifiedAuthData === "undefined") return;
 
   const reqYear = Number(req.params.year);
-  if (!validYear(reqYear)) {
+  if (!apiutils.validYear(reqYear)) {
     res.status(400).json({ msg: `Invalid year ${req.params.year}` });
     return;
   }
 
   const reqMonth = Number(req.params.month);
-  if (!validMonth(reqMonth)) {
+  if (!apiutils.validMonth(reqMonth)) {
     res.status(400).json({ msg: `Invalid month ${req.params.month}` });
     return;
   }
@@ -147,13 +148,13 @@ router.post("/:year/:month", async (req, res) => {
   if (verifiedAuthData === "undefined") return;
 
   const reqYear = Number(req.params.year);
-  if (!validYear(reqYear)) {
+  if (!apiutils.validYear(reqYear)) {
     res.status(400).json({ msg: `Invalid year ${req.params.year}` });
     return;
   }
 
   const reqMonth = Number(req.params.month);
-  if (!validMonth(reqMonth)) {
+  if (!apiutils.validMonth(reqMonth)) {
     res.status(400).json({ msg: `Invalid month ${req.params.month}` });
     return;
   }
@@ -163,7 +164,7 @@ router.post("/:year/:month", async (req, res) => {
     year = Number(req.params.year);
     month = Number(req.params.month);
     day = Number(req.body.day);
-    if (!validDate(year, month, day)) {
+    if (!apiutils.validDate(year, month, day)) {
       res.status(400).json({ msg: "Invalid date" });
       return;
     }
@@ -176,7 +177,7 @@ router.post("/:year/:month", async (req, res) => {
 
   let totalCost;
   try {
-    totalCost = parseTotalCost(req.body.totalCost);
+    totalCost = apiutils.parseTotalCost(req.body.totalCost);
   } catch (error) {
     res.status(400).json({ msg: error });
     return;
@@ -217,19 +218,19 @@ router.put("/:year/:month/:id", async (req, res) => {
   if (verifiedAuthData === "undefined") return;
 
   const reqYear = Number(req.params.year);
-  if (!validYear(reqYear)) {
+  if (!apiutils.validYear(reqYear)) {
     res.status(400).json({ msg: `Invalid year ${req.params.year}` });
     return;
   }
 
   const reqMonth = Number(req.params.month);
-  if (!validMonth(reqMonth)) {
+  if (!apiutils.validMonth(reqMonth)) {
     res.status(400).json({ msg: `Invalid month ${req.params.month}` });
     return;
   }
 
   const reqId = Number(req.params.id);
-  if (!validId(reqId)) {
+  if (!apiutils.validId(reqId)) {
     res.status(400).json({ msg: `Invalid id ${req.params.id}` });
     return;
   }
@@ -255,7 +256,7 @@ router.put("/:year/:month/:id", async (req, res) => {
     year = req.body.year ? Number(req.body.year) : existingTransaction.year;
     month = req.body.month ? Number(req.body.month) : existingTransaction.month;
     day = req.body.day ? Number(req.body.day) : existingTransaction.day;
-    if (!validDate(year, month, day)) {
+    if (!apiutils.validDate(year, month, day)) {
       res.status(400).json({ msg: "Invalid date in request body" });
       return;
     }
@@ -269,7 +270,7 @@ router.put("/:year/:month/:id", async (req, res) => {
   let totalCost;
   try {
     totalCost = req.body.totalCost
-      ? parseTotalCost(req.body.totalCost)
+      ? apiutils.parseTotalCost(req.body.totalCost)
       : existingTransaction.totalCost;
   } catch (error) {
     res.status(400).json({ msg: error });
@@ -346,19 +347,19 @@ router.delete("/:year/:month/:id", async (req, res) => {
   if (verifiedAuthData === "undefined") return;
 
   const reqYear = Number(req.params.year);
-  if (!validYear(reqYear)) {
+  if (!apiutils.validYear(reqYear)) {
     res.status(400).json({ msg: `Invalid year ${req.params.year}` });
     return;
   }
 
   const reqMonth = Number(req.params.month);
-  if (!validMonth(reqMonth)) {
+  if (!apiutils.validMonth(reqMonth)) {
     res.status(400).json({ msg: `Invalid month ${req.params.month}` });
     return;
   }
 
   const reqId = Number(req.params.id);
-  if (!validId(reqId)) {
+  if (!apiutils.validId(reqId)) {
     res.status(400).json({ msg: `Invalid id ${req.params.id}` });
     return;
   }
@@ -398,39 +399,6 @@ const sendResults = function (results, res) {
   } else {
     res.status(404).json({ msg: "Not found" });
   }
-};
-
-const validYear = function (year) {
-  return year && year >= 0;
-};
-
-const validMonth = function (month) {
-  return month && 1 <= month && month <= 12;
-};
-
-const validDate = function (year, month, day) {
-  return (
-    year &&
-    month &&
-    day &&
-    !isNaN(
-      new Date(
-        `${year}-${month.toString().padStart(2, "0")}-${day
-          .toString()
-          .padStart(2, "0")}`
-      )
-    )
-  );
-};
-
-const validId = function (id) {
-  return id && typeof id === "number" && id >= 0;
-};
-
-const parseTotalCost = function (totalCost) {
-  const numberTotalCost = Number(totalCost);
-  if (isNaN(numberTotalCost)) throw `Malformed total cost '${totalCost}'`;
-  return new BigDecimal.default(totalCost).round(2);
 };
 
 const checkUserQuotas = async function (userQuotas, bigDecimalTotalCost) {

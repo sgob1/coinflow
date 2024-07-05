@@ -1,6 +1,6 @@
-const auth = require("../../auth.js");
+const auth = require("../auth.js");
 const router = require("express").Router();
-const users = require("../../db/users.js");
+const users = require("../db/users.js");
 
 router.get("/search", async (req, res) => {
   const verifiedData = auth.checkAuth(req, res);

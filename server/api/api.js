@@ -1,9 +1,9 @@
 const express = require("express");
 const apiRouter = express.Router();
-const authRouter = require("./auth/auth-api.js");
-const balanceRouter = require("./balance/balance-api.js");
-const budgetRouter = require("./budget/budget-api.js");
-const usersRouter = require("./users/users-api.js");
+const authRouter = require("./auth.js");
+const balanceRouter = require("./balance.js");
+const budgetRouter = require("./budget.js");
+const usersRouter = require("./users.js");
 
 apiRouter.use("/auth", authRouter);
 apiRouter.use("/balance", balanceRouter);
