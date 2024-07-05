@@ -1,19 +1,19 @@
 services:
  app:
    restart: unless-stopped
-   container_name: app
+   container_name: coinflow
    network_mode: "host"
    build: .
    ports:
      - '3000:3000'
  mongo:
-   container_name: mongo
+   container_name: mongodb
    restart: unless-stopped
-   image: mongo
+   image: mongo:latest
    volumes:
-     - mongo_data:/var/coinflow/db
+     - mongodb_data:/var/db
    ports:
      - '27017:27017' 
 volumes:
-  mongo_data:
+  mongodb_data:
     external: false
