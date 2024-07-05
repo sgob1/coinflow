@@ -3,8 +3,7 @@ const auth = require("../auth.js");
 const transactions = require("../db/transactions.js");
 const users = require("../db/users.js");
 const errors = require("../errors.js");
-const apiutils = require("./apiutils.js")
-let BigDecimal = require("js-big-decimal");
+const apiutils = require("./apiutils.js");
 
 // Logged user transactions
 router.get("/", async (req, res) => {
@@ -407,19 +406,13 @@ const checkUserQuotas = async function (userQuotas, bigDecimalTotalCost) {
     for (let username in userQuotas) {
       const user = await users.findOne({ username: username });
       if (!user) throw `Cannot find username ${username}`;
-      const userQuota = Number(userQuotas[username]);
-      if (isNaN(userQuota))
-        throw `Malformed quota ${userQuotas[username]} for username ${username}`;
-      // workaround: for some reason calling the constructor directly does not
-      // work, even when religiously following the documentation at the following
-      // URL: https://github.com/royNiladri/js-big-decimal
-      const bigDecimalQuota = new BigDecimal.default(userQuota);
+      const bigDecimalQuota = apiutils.bigDecimal(userQuotas[username]);
       quotas.push(bigDecimalQuota);
     }
     if (quotas.length > 0) {
       let totalQuotas = quotas.reduce(
         (totalQuota, nextQuota) => totalQuota.add(nextQuota.round(2)),
-        new BigDecimal.default("0")
+        apiutils.bigDecimal()
       );
       totalQuotas = totalQuotas.round(2);
 

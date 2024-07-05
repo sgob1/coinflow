@@ -35,7 +35,7 @@ const replaceOne = async function (toReplace, replacement) {
   return await db.query((c) => c.replaceOne(filter, replacement), trans);
 };
 
-const findOfUser = async function (username, year, month) {
+const findOfUser = async function (username, year, month, day) {
   // Composes a base query which will find all transactions owned by the user
   // and in which the user appears. To prevent duplicates, the second OR'ed
   // query excludes the first with respect to the author. Optional year and
@@ -44,7 +44,7 @@ const findOfUser = async function (username, year, month) {
     $or: [
       { author: username },
       {
-        ["users" + "." + username]: { $exists: true },
+        ["quotas" + "." + username]: { $exists: true },
         author: { $ne: username },
       },
     ],
@@ -58,6 +58,11 @@ const findOfUser = async function (username, year, month) {
   if (month) {
     baseQuery.$or[0]["month"] = month;
     baseQuery.$or[1]["month"] = month;
+  }
+
+  if (day) {
+    baseQuery.$or[0]["day"] = day;
+    baseQuery.$or[1]["day"] = day;
   }
 
   const findCursor = await db.query(
@@ -89,7 +94,7 @@ const searchOfUserByDescription = async function (username, query) {
     $or: [
       { author: username, description: { $regex: query, $options: smartCase } },
       {
-        ["users" + "." + username]: { $exists: true },
+        ["quotas" + "." + username]: { $exists: true },
         description: { $regex: query },
         author: { $ne: username },
       },

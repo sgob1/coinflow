@@ -49,7 +49,7 @@ const initDb = async function () {
     description: "Birthday present for John",
     category: "shopping",
     totalCost: 89.99,
-    users: { mary: 45.0, james: 44.99 },
+    quotas: { mary: 45.0, james: 44.99 },
   };
   const netflix = {
     transactionId: 0,
@@ -60,7 +60,18 @@ const initDb = async function () {
     description: "Netflix subscription",
     category: "internet",
     totalCost: 27.99,
-    users: { john: 9.33, mary: 9.33, james: 9.33 },
+    quotas: { john: 9.33, mary: 9.33, james: 9.33 },
+  };
+  const ytmusic = {
+    transactionId: 1,
+    author: "john",
+    year: 2024,
+    month: 6,
+    day: 27,
+    description: "YouTube Music subscription",
+    category: "internet",
+    totalCost: 11.99,
+    quotas: { john: 3.99, mary: 4, james: 4.0 },
   };
   const maryDrink = {
     transactionId: 2,
@@ -85,10 +96,11 @@ const initDb = async function () {
   await transactions.insertOne(johnShopping);
   await transactions.insertOne(maryJamesBirthdayPresent);
   await transactions.insertOne(netflix);
+  await transactions.insertOne(ytmusic);
   await transactions.insertOne(maryDrink);
   await transactions.insertOne(johnGasoline);
 
-  const refund = {
+  const jamesRefundMary = {
     transactionId: 4,
     author: "mary",
     year: 2024,
@@ -97,9 +109,21 @@ const initDb = async function () {
     description: "Refund for past bill",
     category: "bills",
     totalCost: 0.0,
-    users: { mary: -41.5, james: 41.5 },
+    quotas: { mary: -41.5, james: 41.5 },
   };
-  await transactions.insertOne(refund);
+  const johnRefundMary = {
+    transactionId: 4,
+    author: "mary",
+    year: 2024,
+    month: 7,
+    day: 2,
+    description: "Refund for past bill",
+    category: "bills",
+    totalCost: 0.0,
+    quotas: { mary: -33.1, john: 33.1 },
+  };
+  await transactions.insertOne(jamesRefundMary);
+  await transactions.insertOne(johnRefundMary);
 };
 
 module.exports = initDb;

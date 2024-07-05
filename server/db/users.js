@@ -17,9 +17,15 @@ const removeAll = async function () {
   return await db.query((c) => c.deleteMany({}), users);
 };
 
+const list = async function () {
+  const userListCursor = await db.query((c) => c.find({}), users);
+  return userListCursor.toArray();
+};
+
 module.exports = {
   findOne,
   insertOne,
   lastUser,
   removeAll,
+  list,
 };
