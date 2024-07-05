@@ -185,7 +185,6 @@ router.post("/:year/:month", async (req, res) => {
   try {
     if (req.body.quotas) await checkUserQuotas(req.body.quotas, totalCost);
   } catch (error) {
-    console.log("here");
     res.status(400).json({ msg: error });
     return;
   }

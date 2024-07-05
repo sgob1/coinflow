@@ -29,7 +29,7 @@ router.post("/signin", async (req, res) => {
     if (user && user.password === password && user.username === username) {
       const data = { id: user.id };
       const token = auth.sign(data);
-      res.cookie("token", token, { httpOnly: true });
+      res.cookie("jwt", token, { httpOnly: true });
       res.json({ msg: "User has been successfully authenticated" });
     } else {
       res.status(401).json({ msg: "Wrong username or password" });
