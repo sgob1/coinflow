@@ -24,7 +24,7 @@ router.post("/signup", async (req, res) => {
 router.post("/signin", async (req, res) => {
   try {
     const { username, password } = req.body;
-    const user = await users.findOne({ username });
+    const user = await users.findUserWithSensitiveData({ username });
     console.log(`User ${user.username} is attempting authentication`);
     if (user && user.password === password && user.username === username) {
       const data = { id: user.id };
