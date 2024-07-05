@@ -9,6 +9,7 @@
   },
   "scripts": {
     "start": "node app.js",
-    "dev": "node app.js --dbname coinflow --express-port 3000 --noauth --reset-db"
+    "dev": "node app.js --dbname coinflow --mongodb-port 27017 --express-port 3000 --noauth",
+    "dev-reset": "node app.js --dbname coinflow --mongodb-port 27017 --express-port 3000 --noauth --reset-db"
   }
 }

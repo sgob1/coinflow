@@ -1,0 +1,19 @@
+services:
+ app:
+   restart: unless-stopped
+   container_name: app
+   network_mode: "host"
+   build: .
+   ports:
+     - '3000:3000'
+ mongo:
+   container_name: mongo
+   restart: unless-stopped
+   image: mongo
+   volumes:
+     - mongo_data:/var/coinflow/db
+   ports:
+     - '27017:27017' 
+volumes:
+  mongo_data:
+    external: false

@@ -44,7 +44,7 @@ router.get("/whoami", async (req, res) => {
   const verifiedData = auth.checkAuth(req, res);
   if (typeof verifiedData === "undefined") return;
 
-  const user = await users.findOne({ username: verifiedData.username });
+  const user = await users.findUserWithSensitiveData({ username: verifiedData.username });
 
   if (user) {
     res.status(200).json(user);
