@@ -27,7 +27,7 @@ router.post("/signin", async (req, res) => {
     const user = await users.findUserWithSensitiveData({ username });
     console.log(`User ${user.username} is attempting authentication`);
     if (user && user.password === password && user.username === username) {
-      const data = { id: user.id };
+      const data = { id: user.id, username: user.username };
       const token = auth.sign(data);
       res.cookie("jwt", token, { httpOnly: true });
       res.json({ msg: "User has been successfully authenticated" });

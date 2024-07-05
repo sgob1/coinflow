@@ -10,6 +10,8 @@ router.get("/", async (req, res) => {
   const verifiedData = auth.checkAuth(req, res);
   if (typeof verifiedData === "undefined") return;
 
+  console.log(verifiedData)
+
   try {
     const results = await transactions.findOfUser(verifiedData.username);
     sendResults(results, res);
@@ -43,6 +45,8 @@ router.get("/search", async (req, res) => {
 router.get("/whoami", async (req, res) => {
   const verifiedData = auth.checkAuth(req, res);
   if (typeof verifiedData === "undefined") return;
+
+  console.log(verifiedData)
 
   const user = await users.findUserWithSensitiveData({ username: verifiedData.username });
 
