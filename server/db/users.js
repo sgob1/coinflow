@@ -13,8 +13,13 @@ const lastUser = async function () {
   return await db.query((c) => c.findOne({}, { sort: { id: -1 } }), users);
 };
 
+const removeAll = async function () {
+  return await db.query((c) => c.deleteMany({}), users);
+};
+
 module.exports = {
   findOne,
   insertOne,
   lastUser,
+  removeAll,
 };

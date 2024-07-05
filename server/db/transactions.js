@@ -15,11 +15,11 @@ const insertOne = async function (transaction) {
   return await db.query((c) => c.insertOne(transaction), trans);
 };
 
-const lastTransaction = async function (date) {
+const lastTransaction = async function (year, month) {
   return await db.query(
     (c) =>
       c.findOne(
-        { "date.year": date.year, "date.month": date.month },
+        { year: year, month: month },
         { sort: { transactionId: -1 } }
       ),
     trans
@@ -51,22 +51,22 @@ const findOfUser = async function (username, year, month) {
   };
 
   if (year) {
-    baseQuery.$or[0]["date.year"] = year;
-    baseQuery.$or[1]["date.year"] = year;
+    baseQuery.$or[0]["year"] = year;
+    baseQuery.$or[1]["year"] = year;
   }
 
   if (month) {
-    baseQuery.$or[0]["date.month"] = month;
-    baseQuery.$or[1]["date.month"] = month;
+    baseQuery.$or[0]["month"] = month;
+    baseQuery.$or[1]["month"] = month;
   }
 
   const findCursor = await db.query(
     (c) =>
       c.find(baseQuery, {
         sort: {
-          "date.year": -1,
-          "date.month": -1,
-          "date.day": -1,
+          year: -1,
+          month: -1,
+          day: -1,
           transactionId: -1,
         },
       }),
@@ -100,15 +100,19 @@ const searchOfUserByDescription = async function (username, query) {
     (c) =>
       c.find(baseQuery, {
         sort: {
-          "date.year": -1,
-          "date.month": -1,
-          "date.day": -1,
+          year: -1,
+          month: -1,
+          day: -1,
           transactionId: -1,
         },
       }),
     trans
   );
   return await findCursor.toArray();
+};
+
+const removeAll = async function () {
+  return await db.query((c) => c.deleteMany({}), trans);
 };
 
 module.exports = {
@@ -120,4 +124,5 @@ module.exports = {
   replaceOne,
   findOfUser,
   searchOfUserByDescription,
+  removeAll,
 };

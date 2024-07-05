@@ -23,10 +23,14 @@ const ARGS_MAP = {
       short: "n",
       default: defaults.MONGODB_NAME,
     },
-    "noauth": {
+    noauth: {
       type: "boolean",
       default: defaults.NOAUTH,
-    }
+    },
+    "reset-db": {
+      type: "boolean",
+      default: defaults.RESET_DB,
+    },
   },
 };
 

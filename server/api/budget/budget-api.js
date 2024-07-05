@@ -23,6 +23,11 @@ router.get("/search", async (req, res) => {
   const verifiedData = auth.checkAuth(req, res);
   if (typeof verifiedData === "undefined") return;
 
+  if (!req.query.q) {
+    res.status(200).json({});
+    return;
+  }
+
   try {
     const results = await transactions.searchOfUserByDescription(
       verifiedData.username,
@@ -74,8 +79,8 @@ router.get("/:year/:month/:id", async (req, res) => {
 
   try {
     const transaction = await transactions.findOne({
-      "date.year": reqYear,
-      "date.month": reqMonth,
+      year: reqYear,
+      month: reqMonth,
       transactionId: reqId,
       author: verifiedAuthData.username,
     });
@@ -153,27 +158,19 @@ router.post("/:year/:month", async (req, res) => {
     return;
   }
 
-  let date;
+  let year, month, day;
   try {
-    date = parseDateAsNumbers(req.body.date);
+    year = Number(req.params.year);
+    month = Number(req.params.month);
+    day = Number(req.body.day);
+    if (!validDate(year, month, day)) {
+      res.status(400).json({ msg: "Invalid date" });
+      return;
+    }
   } catch (err) {
     console.log(err);
     console.log("ERROR: Illegal date computation, invalid date fields");
     res.status(400).json({ msg: err });
-    return;
-  }
-
-  try {
-    checkDateConsistency(date, reqYear, reqMonth);
-  } catch (err) {
-    console.log(err);
-    console.log("ERROR: Illegal date computation, invalid date fields");
-    res.status(400).json({ msg: err });
-    return;
-  }
-
-  if (!validDate(date)) {
-    res.status(400).json({ msg: "Invalid date in request body" });
     return;
   }
 
@@ -186,20 +183,23 @@ router.post("/:year/:month", async (req, res) => {
   }
 
   try {
-    await checkUserQuotas(req.body.quotas, totalCost);
+    if (req.body.quotas) await checkUserQuotas(req.body.quotas, totalCost);
   } catch (error) {
+    console.log("here");
     res.status(400).json({ msg: error });
     return;
   }
 
   // FIXME: check input validity in server or delete this message
   const transaction = {
-    transactionId: await computeTransactionId(date),
+    transactionId: await computeTransactionId(year, month),
     author: verifiedAuthData.username,
-    date: date,
+    year: year,
+    month: month,
+    day: day,
     description: req.body.description,
     category: req.body.category,
-    totalCost: Number(req.body.totalCost),
+    totalCost: totalCost.getValue(),
     quotas: req.body.quotas === undefined ? {} : req.body.quotas,
   };
 
@@ -234,41 +234,11 @@ router.put("/:year/:month/:id", async (req, res) => {
     return;
   }
 
-  let replacementDate;
-  try {
-    replacementDate = parseDateAsNumbers(req.body.date);
-  } catch (err) {
-    console.log(err);
-    console.log("ERROR: Illegal date computation, invalid date fields");
-    res.status(400).json({ msg: err });
-    return;
-  }
-
-  if (!validDate(replacementDate)) {
-    res.status(400).json({ msg: "Invalid date in request body" });
-    return;
-  }
-
-  let totalCost;
-  try {
-    totalCost = parseTotalCost(req.body.totalCost);
-  } catch (error) {
-    res.status(400).json({ msg: error });
-    return;
-  }
-
-  try {
-    await checkUserQuotas(req.body.quotas, totalCost);
-  } catch (error) {
-    res.status(400).json({ msg: error });
-    return;
-  }
-
   let existingTransaction;
   try {
     existingTransaction = await transactions.findOne({
-      "date.year": reqYear,
-      "date.month": reqMonth,
+      year: reqYear,
+      month: reqMonth,
       transactionId: reqId,
       author: verifiedAuthData.username,
     });
@@ -280,6 +250,39 @@ router.put("/:year/:month/:id", async (req, res) => {
     errors.internalServerError(error, res);
   }
 
+  let year, month, day;
+  try {
+    year = req.body.year ? Number(req.body.year) : existingTransaction.year;
+    month = req.body.month ? Number(req.body.month) : existingTransaction.month;
+    day = req.body.day ? Number(req.body.day) : existingTransaction.day;
+    if (!validDate(year, month, day)) {
+      res.status(400).json({ msg: "Invalid date in request body" });
+      return;
+    }
+  } catch (err) {
+    console.log(err);
+    console.log("ERROR: Illegal date computation, invalid date fields");
+    res.status(400).json({ msg: err });
+    return;
+  }
+
+  let totalCost;
+  try {
+    totalCost = req.body.totalCost
+      ? parseTotalCost(req.body.totalCost)
+      : existingTransaction.totalCost;
+  } catch (error) {
+    res.status(400).json({ msg: error });
+    return;
+  }
+
+  try {
+    if (req.body.quotas) await checkUserQuotas(req.body.quotas, totalCost);
+  } catch (error) {
+    res.status(400).json({ msg: error });
+    return;
+  }
+
   if (existingTransaction.author !== verifiedAuthData.username) {
     errors.unauthorizedAccess(req, res);
     return;
@@ -287,10 +290,9 @@ router.put("/:year/:month/:id", async (req, res) => {
 
   let replacementTransaction = {
     author: verifiedAuthData.username,
-    date:
-      replacementDate === undefined
-        ? existingTransaction.replacementDate
-        : replacementDate,
+    year: year === undefined ? existingTransaction.year : year,
+    month: month === undefined ? existingTransaction.month : month,
+    day: day === undefined ? existingTransaction.day : day,
     description:
       req.body.description === undefined
         ? existingTransaction.description
@@ -304,15 +306,18 @@ router.put("/:year/:month/:id", async (req, res) => {
         ? existingTransaction.totalCost
         : Number(req.body.totalCost),
     quotas:
-      req.body.quotas === undefined ? existingTransaction.quotas : req.body.quotas,
+      req.body.quotas === undefined
+        ? existingTransaction.quotas
+        : req.body.quotas,
   };
 
   if (
-    replacementDate.year !== existingTransaction.date.year ||
-    replacementDate.month !== existingTransaction.date.month
+    replacementTransaction.year !== existingTransaction.year ||
+    replacementTransaction.month !== existingTransaction.month
   ) {
     replacementTransaction.transactionId = await computeTransactionId(
-      replacementTransaction.date
+      replacementTransaction.year,
+      replacementTransaction.month
     );
   } else {
     replacementTransaction.transactionId = existingTransaction.transactionId;
@@ -321,7 +326,9 @@ router.put("/:year/:month/:id", async (req, res) => {
   // Internally, the transaction gets atomically replaced by the new one with
   // the provided modifications. This is done so that in any case transactions
   // are conceptually immutable and in-place updates will result, in practice,
-  // in a new transaction with a new unique _id field in the database
+  // in a new transaction with a new unique _id field in the database. Actual
+  // transactionId field may be recycled, if the year, month and id of the two
+  // transactions match.
   try {
     const replacementResult = await transactions.replaceOne(
       existingTransaction,
@@ -358,8 +365,8 @@ router.delete("/:year/:month/:id", async (req, res) => {
 
   try {
     const toDelete = await transactions.findOne({
-      "date.year": reqYear,
-      "date.month": reqMonth,
+      year: reqYear,
+      month: reqMonth,
       transactionId: reqId,
       author: verifiedAuthData.username,
     });
@@ -378,8 +385,8 @@ router.delete("/:year/:month/:id", async (req, res) => {
 
 // Transaction ID is assigned incrementally, beginning from 0 at each month of
 // the year
-const computeTransactionId = async function (date) {
-  const lastTransaction = await transactions.lastTransaction(date);
+const computeTransactionId = async function (year, month) {
+  const lastTransaction = await transactions.lastTransaction(year, month);
   return lastTransaction?.transactionId !== undefined
     ? lastTransaction.transactionId + 1
     : 0;
@@ -401,12 +408,17 @@ const validMonth = function (month) {
   return month && 1 <= month && month <= 12;
 };
 
-const validDate = function (date) {
-  return date && !isNaN(
-    new Date(
-      `${date.year}-${date.month.toString().padStart(2, "0")}-${date.day
-        .toString()
-        .padStart(2, "0")}`
+const validDate = function (year, month, day) {
+  return (
+    year &&
+    month &&
+    day &&
+    !isNaN(
+      new Date(
+        `${year}-${month.toString().padStart(2, "0")}-${day
+          .toString()
+          .padStart(2, "0")}`
+      )
     )
   );
 };
@@ -415,49 +427,42 @@ const validId = function (id) {
   return id && typeof id === "number" && id >= 0;
 };
 
-const checkDateConsistency = function (date, year, month) {
-  if (year !== date.year) throw "Malformed request: inconsistent year";
-  if (month !== date.month) throw "Malformed request: inconsistent month";
-};
-
-const parseDateAsNumbers = function (date) {
-  return {
-    year: Number(date.year),
-    month: Number(date.month),
-    day: Number(date.day),
-  };
-};
-
 const parseTotalCost = function (totalCost) {
   const numberTotalCost = Number(totalCost);
   if (isNaN(numberTotalCost)) throw `Malformed total cost '${totalCost}'`;
-  return new BigDecimal.default(totalCost);
+  return new BigDecimal.default(totalCost).round(2);
 };
 
 const checkUserQuotas = async function (userQuotas, bigDecimalTotalCost) {
   const quotas = [];
-  for (let username in userQuotas) {
-    const user = await users.findOne({ username: username });
-    if (!user) throw `Cannot find username ${username}`;
-    const userQuota = Number(userQuotas[username]);
-    if (isNaN(userQuota))
-      throw `Malformed quota ${userQuotas[username]} for username ${username}`;
-    // workaround: for some reason calling the constructor directly does not
-    // work, even when religiously following the documentation at the following
-    // URL: https://github.com/royNiladri/js-big-decimal
-    const bigDecimalQuota = new BigDecimal.default(userQuota);
-    quotas.push(bigDecimalQuota);
+  try {
+    for (let username in userQuotas) {
+      const user = await users.findOne({ username: username });
+      if (!user) throw `Cannot find username ${username}`;
+      const userQuota = Number(userQuotas[username]);
+      if (isNaN(userQuota))
+        throw `Malformed quota ${userQuotas[username]} for username ${username}`;
+      // workaround: for some reason calling the constructor directly does not
+      // work, even when religiously following the documentation at the following
+      // URL: https://github.com/royNiladri/js-big-decimal
+      const bigDecimalQuota = new BigDecimal.default(userQuota);
+      quotas.push(bigDecimalQuota);
+    }
+    if (quotas.length > 0) {
+      let totalQuotas = quotas.reduce(
+        (totalQuota, nextQuota) => totalQuota.add(nextQuota.round(2)),
+        new BigDecimal.default("0")
+      );
+      totalQuotas = totalQuotas.round(2);
+
+      if (totalQuotas.compareTo(bigDecimalTotalCost) !== 0)
+        throw `Wrong sum of quotas: total is ${totalQuotas
+          .round(2)
+          .getValue()} (should be ${bigDecimalTotalCost.getValue()})`;
+    }
+  } catch (error) {
+    throw "Malformed quotas in request JSON body, should be 'username: quota'";
   }
-  const totalQuotas = quotas.reduce(
-    (part, next) => part.add(next),
-    new BigDecimal.default("0")
-  );
-
-  if (totalQuotas.compareTo(bigDecimalTotalCost) !== 0)
-    throw `Wrong sum of quotas: total is ${totalQuotas
-      .round(2)
-      .getValue()} (should be ${bigDecimalTotalCost.getValue()})`;
 };
-
 
 module.exports = router;
