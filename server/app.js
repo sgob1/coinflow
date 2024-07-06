@@ -2,7 +2,7 @@ const express = require("express");
 const path = require("path");
 const api = require("./api/api.js");
 const db = require("./db/dbhandler.js");
-const initDb = require("./db/init.js");
+const resetDb = require("./db/init.js");
 const cookieParserMiddleware = require("cookie-parser");
 const args = require("./args.js");
 
@@ -12,8 +12,10 @@ const app = express();
 async function startup() {
   setupKillSignalsListener(() => db.closeConnection());
 
-  if (opt["reset-db"])
-    await initDb();
+  if (opt["reset-db"]) {
+    await resetDb();
+    process.exit(0);
+  }
 
   app.use(requestLoggerMiddleware);
   app.use(cookieParserMiddleware());
