@@ -65,7 +65,7 @@ router.get("/:id", async (req, res) => {
 
 // Computes balance for user. Positive values are money the user has to spend
 // towards another user or by himself. The total is computed with all flows
-const computeBalanceFor = function (user, transactions) {
+const computeBalanceForLegacy = function (user, transactions) {
   const scale = 2;
   let balance = {};
   balance[user] = apiutils.bigDecimal();
@@ -104,6 +104,56 @@ const computeBalanceFor = function (user, transactions) {
   return balance;
 };
 
+// Computes balance for user. Positive values are money the user has to spend
+// towards another user or by himself. The total is computed with all flows
+const computeBalanceFor = function (user, transactions) {
+  const scale = 2;
+  let balance = {};
+  balance[user] = apiutils.bigDecimal();
+
+  for (let transaction of transactions) {
+    if (!transaction.quotas)
+      throw `Missing quotas for transaction with id ${transaction.transactionId}, cannot compute balance`;
+    if (transaction.author === user) {
+      let transactionSubtotal = apiutils.bigDecimal();
+      for (let quota in transaction.quotas) {
+        if (!balance[quota]) balance[quota] = apiutils.bigDecimal();
+        if (quota !== user) {
+          balance[quota] = balance[quota]
+            .subtract(
+              apiutils.bigDecimal(transaction.quotas[quota]).round(scale)
+            )
+            .round(scale);
+          transactionSubtotal = transactionSubtotal
+            .add(apiutils.bigDecimal(transaction.quotas[quota]))
+            .round(scale);
+        } else {
+          transactionSubtotal = transactionSubtotal
+            .add(apiutils.bigDecimal(transaction.quotas[user]))
+            .round(scale);
+        }
+      }
+      balance[user] = balance[user]
+        .add(transactionSubtotal.round(scale))
+        .round(scale);
+    } else {
+      if (transaction.quotas[user]) {
+        if (!balance[transaction.author])
+          balance[transaction.author] = apiutils.bigDecimal();
+        balance[transaction.author] = balance[transaction.author]
+          .add(apiutils.bigDecimal(transaction.quotas[user]).round(scale))
+          .round(scale);
+      }
+    }
+  }
+
+  total = apiutils.bigDecimal();
+  for (let i in balance) total = total.add(balance[i]).round(scale);
+  balance.total = total;
+  for (let i in balance) balance[i] = balance[i].getValue();
+
+  return balance;
+};
 
 const checkOptionalDateFromBody = function (body) {
   let year, month, day;

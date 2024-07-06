@@ -174,22 +174,13 @@ router.post("/:year/:month", async (req, res) => {
     return;
   }
 
-  let totalCost;
   try {
-    totalCost = apiutils.parseTotalCost(req.body.totalCost);
+    await checkUserQuotas(req.body.quotas, verifiedAuthData.username);
   } catch (error) {
     res.status(400).json({ msg: error });
     return;
   }
 
-  try {
-    if (req.body.quotas) await checkUserQuotas(req.body.quotas, totalCost);
-  } catch (error) {
-    res.status(400).json({ msg: error });
-    return;
-  }
-
-  // FIXME: check input validity in server or delete this message
   const transaction = {
     transactionId: await computeTransactionId(year, month),
     author: verifiedAuthData.username,
@@ -198,8 +189,7 @@ router.post("/:year/:month", async (req, res) => {
     day: day,
     description: req.body.description,
     category: req.body.category,
-    totalCost: totalCost.getValue(),
-    quotas: req.body.quotas === undefined ? {} : req.body.quotas,
+    quotas: req.body.quotas,
   };
 
   try {
@@ -245,6 +235,14 @@ router.put("/:year/:month/:id", async (req, res) => {
       res.status(404).json({ msg: "Transaction not found" });
       return;
     }
+    if (existingTransaction.author !== verifiedAuthData.username) {
+      res
+        .status(404)
+        .json({
+          msg: "Cannot update transaction, logged user is not the author",
+        });
+      return;
+    }
   } catch (error) {
     errors.internalServerError(error, res);
   }
@@ -265,18 +263,8 @@ router.put("/:year/:month/:id", async (req, res) => {
     return;
   }
 
-  let totalCost;
   try {
-    totalCost = req.body.totalCost
-      ? apiutils.parseTotalCost(req.body.totalCost)
-      : existingTransaction.totalCost;
-  } catch (error) {
-    res.status(400).json({ msg: error });
-    return;
-  }
-
-  try {
-    if (req.body.quotas) await checkUserQuotas(req.body.quotas, totalCost);
+    await checkUserQuotas(req.body.quotas, verifiedAuthData.username);
   } catch (error) {
     res.status(400).json({ msg: error });
     return;
@@ -300,10 +288,6 @@ router.put("/:year/:month/:id", async (req, res) => {
       req.body.category === undefined
         ? existingTransaction.category
         : req.body.category,
-    totalCost:
-      req.body.totalCost === undefined
-        ? existingTransaction.totalCost
-        : Number(req.body.totalCost),
     quotas:
       req.body.quotas === undefined
         ? existingTransaction.quotas
@@ -399,26 +383,16 @@ const sendResults = function (results, res) {
   }
 };
 
-const checkUserQuotas = async function (userQuotas, bigDecimalTotalCost) {
-  const quotas = [];
+const checkUserQuotas = async function (userQuotas, owner) {
+  if (!userQuotas) throw "Missing quotas for submitted transaction";
+  if (!userQuotas[owner]) throw `Missing owner '${owner}' from quotas`;
   try {
     for (let username in userQuotas) {
       const user = await users.findOne({ username: username });
       if (!user) throw `Cannot find username ${username}`;
-      const bigDecimalQuota = apiutils.bigDecimal(userQuotas[username]);
-      quotas.push(bigDecimalQuota);
-    }
-    if (quotas.length > 0) {
-      let totalQuotas = quotas.reduce(
-        (totalQuota, nextQuota) => totalQuota.add(nextQuota.round(2)),
-        apiutils.bigDecimal()
-      );
-      totalQuotas = totalQuotas.round(2);
-
-      if (totalQuotas.compareTo(bigDecimalTotalCost) !== 0)
-        throw `Wrong sum of quotas: total is ${totalQuotas
-          .round(2)
-          .getValue()} (should be ${bigDecimalTotalCost.getValue()})`;
+      const num = Number(userQuotas[username]);
+      if (isNaN(num))
+        throw `Malformed ${userQuotas[username]}, cannot parse to a valid number`;
     }
   } catch (error) {
     throw "Malformed quotas in request JSON body, should be 'username: quota'";

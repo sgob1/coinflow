@@ -38,7 +38,7 @@ const resetDb = async function () {
     day: 5,
     description: "Birthday shopping",
     category: "shopping",
-    totalCost: 120.0,
+    quotas: { john: 120.0 },
   };
   const maryJamesBirthdayPresent = {
     transactionId: 1,
@@ -48,7 +48,6 @@ const resetDb = async function () {
     day: 3,
     description: "Birthday present for John",
     category: "shopping",
-    totalCost: 89.99,
     quotas: { mary: 45.0, james: 44.99 },
   };
   const netflix = {
@@ -59,7 +58,6 @@ const resetDb = async function () {
     day: 25,
     description: "Netflix subscription",
     category: "internet",
-    totalCost: 27.99,
     quotas: { john: 9.33, mary: 9.33, james: 9.33 },
   };
   const ytmusic = {
@@ -70,7 +68,6 @@ const resetDb = async function () {
     day: 27,
     description: "YouTube Music subscription",
     category: "internet",
-    totalCost: 11.99,
     quotas: { john: 3.99, mary: 4, james: 4.0 },
   };
   const maryDrink = {
@@ -81,7 +78,7 @@ const resetDb = async function () {
     day: 4,
     description: "Drink with friends",
     category: "relax",
-    totalCost: 9.0,
+    quotas: { mary: 9.0 },
   };
   const johnGasoline = {
     transactionId: 3,
@@ -91,7 +88,7 @@ const resetDb = async function () {
     day: 2,
     description: "Gasoline",
     category: "car",
-    totalCost: 60.0,
+    quotas: { john: 60.0 },
   };
   await transactions.insertOne(johnShopping);
   await transactions.insertOne(maryJamesBirthdayPresent);
@@ -108,7 +105,6 @@ const resetDb = async function () {
     day: 2,
     description: "Refund for past bill",
     category: "bills",
-    totalCost: 0.0,
     quotas: { mary: -41.5, james: 41.5 },
   };
   const johnRefundMary = {
@@ -119,7 +115,6 @@ const resetDb = async function () {
     day: 2,
     description: "Refund for past bill",
     category: "bills",
-    totalCost: 0.0,
     quotas: { mary: -33.1, john: 33.1 },
   };
   await transactions.insertOne(jamesRefundMary);

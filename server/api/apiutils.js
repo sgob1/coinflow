@@ -27,12 +27,6 @@ const validId = function (id) {
   return id && typeof id === "number" && id >= 0;
 };
 
-const parseTotalCost = function (totalCost) {
-  const numberTotalCost = Number(totalCost);
-  if (isNaN(numberTotalCost)) throw `Malformed total cost '${totalCost}'`;
-  return new BigDecimal.default(totalCost).round(2);
-};
-
 // workaround: for some reason calling the constructor directly does not
 // work, even when religiously following the documentation at the following
 // URL: https://github.com/royNiladri/js-big-decimal
@@ -50,7 +44,6 @@ module.exports = {
   validId,
   validMonth,
   validYear,
-  parseTotalCost,
   bigDecimal,
   bigDecimal,
 };
