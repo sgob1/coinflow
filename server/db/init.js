@@ -1,7 +1,7 @@
 const users = require("./users.js");
 const transactions = require("./transactions.js");
 
-const initDb = async function () {
+const resetDb = async function () {
   users.removeAll();
   transactions.removeAll();
 
@@ -126,4 +126,4 @@ const initDb = async function () {
   await transactions.insertOne(johnRefundMary);
 };
 
-module.exports = initDb;
+module.exports = resetDb;
