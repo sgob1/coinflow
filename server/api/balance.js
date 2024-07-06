@@ -2,6 +2,7 @@ const router = require("express").Router();
 const auth = require("../auth.js");
 const users = require("../db/users.js");
 const transactions = require("../db/transactions.js");
+const values = require("../values.js");
 const apiutils = require("./apiutils.js");
 
 // Balance for logged user
@@ -63,52 +64,54 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-
 // Computes balance for user. Positive values are money the user has to spend
 // towards another user or by himself. The total is computed with all flows
 const computeBalanceFor = function (user, transactions) {
   const scale = 2;
   let balance = {};
-  balance[user] = apiutils.bigDecimal();
+  balance[user] = values.bigDecimal();
 
   for (let transaction of transactions) {
     if (!transaction.quotas)
       throw `Missing quotas for transaction with id ${transaction.transactionId}, cannot compute balance`;
     if (transaction.author === user) {
-      let transactionSubtotal = apiutils.bigDecimal();
+      let transactionSubtotal = values.bigDecimal();
       for (let quota in transaction.quotas) {
-        if (!balance[quota]) balance[quota] = apiutils.bigDecimal();
+        if (!balance[quota]) balance[quota] = values.bigDecimal();
         if (quota !== user) {
-          balance[quota] = balance[quota]
-            .subtract(
-              apiutils.bigDecimal(transaction.quotas[quota]).round(scale)
-            )
-            .round(scale);
-          transactionSubtotal = transactionSubtotal
-            .add(apiutils.bigDecimal(transaction.quotas[quota]))
-            .round(scale);
+          balance[quota] = values.subAmount(
+            balance[quota],
+            values.bigDecimal(transaction.quotas[quota])
+          );
+          transactionSubtotal = values.addAmount(
+            transactionSubtotal,
+            values.bigDecimal(transaction.quotas[quota])
+          );
         } else {
-          transactionSubtotal = transactionSubtotal
-            .add(apiutils.bigDecimal(transaction.quotas[user]))
-            .round(scale);
+          transactionSubtotal = values.addAmount(
+            transactionSubtotal,
+            values.bigDecimal(transaction.quotas[user])
+          );
         }
       }
-      balance[user] = balance[user]
-        .add(transactionSubtotal.round(scale))
-        .round(scale);
+      balance[user] = values.addAmount(
+        balance[user],
+        transactionSubtotal.round(scale)
+      );
     } else {
       if (transaction.quotas[user]) {
         if (!balance[transaction.author])
-          balance[transaction.author] = apiutils.bigDecimal();
-        balance[transaction.author] = balance[transaction.author]
-          .add(apiutils.bigDecimal(transaction.quotas[user]).round(scale))
-          .round(scale);
+          balance[transaction.author] = values.bigDecimal();
+        balance[transaction.author] = values.addAmount(
+          balance[transaction.author],
+          values.bigDecimal(transaction.quotas[user]).round(scale)
+        );
       }
     }
   }
 
-  total = apiutils.bigDecimal();
-  for (let i in balance) total = total.add(balance[i]).round(scale);
+  total = values.bigDecimal();
+  for (let i in balance) total = values.addAmount(total, balance[i]);
   balance.total = total;
   for (let i in balance) balance[i] = balance[i].getValue();
 
