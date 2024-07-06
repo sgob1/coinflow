@@ -64,8 +64,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // Computes balance for user. Positive values are money the user has to spend
-// towards another user (or spend in general, if the user is the same). The
-// total is computed with all flows
+// towards another user or by himself. The total is computed with all flows
 const computeBalanceFor = function (user, transactions) {
   const scale = 2;
   let balance = {};
