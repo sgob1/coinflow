@@ -107,7 +107,7 @@ const searchOfUserByDescription = async function (username, query) {
       { author: username, description: { $regex: query, $options: smartCase } },
       {
         ["quotas" + "." + username]: { $exists: true },
-        description: { $regex: query },
+        description: { $regex: query, $options: smartCase },
         author: { $ne: username },
       },
     ],
