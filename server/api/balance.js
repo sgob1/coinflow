@@ -63,46 +63,6 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// Computes balance for user. Positive values are money the user has to spend
-// towards another user or by himself. The total is computed with all flows
-const computeBalanceForLegacy = function (user, transactions) {
-  const scale = 2;
-  let balance = {};
-  balance[user] = apiutils.bigDecimal();
-  for (let transaction of transactions) {
-    if (transaction.author === user) {
-      balance[user] = balance[user]
-        .add(apiutils.bigDecimal(transaction.totalCost).round(scale))
-        .round(scale);
-      if (transaction.quotas) {
-        for (let quota in transaction.quotas) {
-          if (!balance[quota]) balance[quota] = apiutils.bigDecimal();
-          if (quota !== user)
-            balance[quota] = balance[quota]
-              .subtract(
-                apiutils.bigDecimal(transaction.quotas[quota]).round(scale)
-              )
-              .round(scale);
-        }
-      }
-    } else {
-      if (transaction.quotas && transaction.quotas[user]) {
-        if (!balance[transaction.author])
-          balance[transaction.author] = apiutils.bigDecimal();
-        balance[transaction.author] = balance[transaction.author]
-          .add(apiutils.bigDecimal(transaction.quotas[user]).round(scale))
-          .round(scale);
-      }
-    }
-  }
-
-  total = apiutils.bigDecimal();
-  for (let i in balance) total = total.add(balance[i]).round(scale);
-  balance.total = total;
-  for (let i in balance) balance[i] = balance[i].getValue();
-
-  return balance;
-};
 
 // Computes balance for user. Positive values are money the user has to spend
 // towards another user or by himself. The total is computed with all flows
