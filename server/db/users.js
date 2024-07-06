@@ -1,18 +1,22 @@
 const db = require("./dbhandler.js");
 const users = require("../defaults.js").COLLECTIONS.users;
 const dbutils = require("./dbutils.js");
-const allowedFields = { username: 1, name: 1, surname: 1, id: 1 };
+const projection = {
+  _id: 0,
+  password: 0,
+};
 
 const findOne = async function (query) {
-  const user = await db.query((c) => c.findOne(query), users);
-  if (user && user.password)
-    delete user.password;
+  const user = await db.query(
+    (c) => c.findOne(query, { projection: projection }),
+    users
+  );
   return user;
 };
 
 const find = async function (query) {
   const findCursor = await db.query(
-    (c) => c.find(query)?.project(allowedFields),
+    (c) => c.find(query)?.project(projection),
     users
   );
   return await findCursor.toArray();
@@ -23,7 +27,10 @@ const insertOne = async function (user) {
 };
 
 const lastUser = async function () {
-  return await db.query((c) => c.findOne({}, { sort: { id: -1 } }), users);
+  return await db.query(
+    (c) => c.findOne({}, { projection: projection }, { sort: { id: -1 } }),
+    users
+  );
 };
 
 const removeAll = async function () {
@@ -32,7 +39,7 @@ const removeAll = async function () {
 
 const list = async function () {
   const userListCursor = await db.query(
-    (c) => c.find({})?.project(allowedFields),
+    (c) => c.find({})?.project(projection),
     users
   );
   return userListCursor.toArray();
@@ -58,14 +65,20 @@ const search = async function (query) {
             username: -1,
           },
         })
-        ?.project(allowedFields),
+        ?.project(projection),
     users
   );
   return await findCursor.toArray();
 };
 
-const findUserWithSensitiveData = async function (query) {
-  const user = await db.query((c) => c.findOne(query), users);
+const findPassword = async function (query) {
+  const user = await db.query(
+    (c) =>
+      c.findOne(query, {
+        projection: { name: 0, surname: 0, _id: 0 },
+      }),
+    users
+  );
   return user;
 };
 
@@ -77,5 +90,5 @@ module.exports = {
   removeAll,
   list,
   search,
-  findUserWithSensitiveData,
+  findPassword,
 };
