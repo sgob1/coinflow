@@ -1,13 +1,22 @@
 const db = require("./dbhandler.js");
 const trans = require("../defaults.js").COLLECTIONS.transactions;
 const dbutils = require("./dbutils.js");
+const projection = {
+  _id: 0,
+};
 
 const findOne = async function (query) {
-  return await db.query((c) => c.findOne(query), trans);
+  return await db.query(
+    (c) => c.findOne(query, { projection: projection }),
+    trans
+  );
 };
 
 const find = async function (query) {
-  const findCursor = await db.query((c) => c.find(query), trans);
+  const findCursor = await db.query(
+    (c) => c.find(query).project(projection),
+    trans
+  );
   return await findCursor.toArray();
 };
 
@@ -20,6 +29,7 @@ const lastTransaction = async function (year, month) {
     (c) =>
       c.findOne(
         { year: year, month: month },
+        { projection: projection },
         { sort: { transactionId: -1 } }
       ),
     trans
@@ -67,14 +77,16 @@ const findOfUser = async function (username, year, month, day) {
 
   const findCursor = await db.query(
     (c) =>
-      c.find(baseQuery, {
-        sort: {
-          year: -1,
-          month: -1,
-          day: -1,
-          transactionId: -1,
-        },
-      }),
+      c
+        .find(baseQuery, {
+          sort: {
+            year: -1,
+            month: -1,
+            day: -1,
+            transactionId: -1,
+          },
+        })
+        .project(projection),
     trans
   );
   return await findCursor.toArray();
@@ -103,14 +115,16 @@ const searchOfUserByDescription = async function (username, query) {
 
   const findCursor = await db.query(
     (c) =>
-      c.find(baseQuery, {
-        sort: {
-          year: -1,
-          month: -1,
-          day: -1,
-          transactionId: -1,
-        },
-      }),
+      c
+        .find(baseQuery, {
+          sort: {
+            year: -1,
+            month: -1,
+            day: -1,
+            transactionId: -1,
+          },
+        })
+        .project(projection),
     trans
   );
   return await findCursor.toArray();
