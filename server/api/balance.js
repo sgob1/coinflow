@@ -2,7 +2,7 @@ const router = require("express").Router();
 const auth = require("../auth.js");
 const users = require("../db/users.js");
 const transactions = require("../db/transactions.js");
-const values = require("../values.js");
+const MoneyValue = require("../MoneyValue.js");
 const apiutils = require("./apiutils.js");
 
 // Balance for logged user
@@ -17,7 +17,7 @@ router.get("/", async (req, res) => {
       verifiedData.username,
       year,
       month,
-      day
+      day,
     );
 
     const balance = computeBalanceFor(verifiedData.username, results);
@@ -50,7 +50,7 @@ router.get("/:id", async (req, res) => {
       verifiedData.username,
       year,
       month,
-      day
+      day,
     );
 
     const balance = computeBalanceFor(loggedUser.username, results);
@@ -67,55 +67,40 @@ router.get("/:id", async (req, res) => {
 // Computes balance for user. Positive values are money the user has to spend
 // towards another user or by himself. The total is computed with all flows
 const computeBalanceFor = function (user, transactions) {
-  const scale = 2;
   let balance = {};
-  balance[user] = values.bigDecimal();
+  balance[user] = new MoneyValue();
 
   for (let transaction of transactions) {
     if (!transaction.quotas)
       throw `Missing quotas for transaction with id ${transaction.transactionId}, cannot compute balance`;
     if (transaction.author === user) {
-      let transactionSubtotal = values.bigDecimal();
+      let transactionSubtotal = new MoneyValue();
       for (let quota in transaction.quotas) {
-        if (!balance[quota]) balance[quota] = values.bigDecimal();
+        if (!balance[quota]) balance[quota] = new MoneyValue();
         if (quota !== user) {
-          balance[quota] = values.subAmount(
-            balance[quota],
-            values.bigDecimal(transaction.quotas[quota])
-          );
-          transactionSubtotal = values.addAmount(
-            transactionSubtotal,
-            values.bigDecimal(transaction.quotas[quota])
-          );
+          balance[quota].sub(transaction.quotas[quota]);
+          transactionSubtotal.add(transaction.quotas[quota]);
         } else {
-          transactionSubtotal = values.addAmount(
-            transactionSubtotal,
-            values.bigDecimal(transaction.quotas[user])
-          );
+          transactionSubtotal.add(transaction.quotas[user]);
         }
       }
-      balance[user] = values.addAmount(
-        balance[user],
-        transactionSubtotal.round(scale)
-      );
+      balance[user].add(transactionSubtotal);
     } else {
       if (transaction.quotas[user]) {
         if (!balance[transaction.author])
-          balance[transaction.author] = values.bigDecimal();
-        balance[transaction.author] = values.addAmount(
-          balance[transaction.author],
-          values.bigDecimal(transaction.quotas[user]).round(scale)
-        );
+          balance[transaction.author] = new MoneyValue();
+        balance[transaction.author].add(transaction.quotas[user]);
       }
     }
   }
 
-  total = values.bigDecimal();
-  for (let i in balance) total = values.addAmount(total, balance[i]);
+  total = new MoneyValue();
+  for (let i in balance) total.add(balance[i]);
   balance.total = total;
-  for (let i in balance) balance[i] = balance[i].getValue();
+  let numBalance = {};
+  for (let i in balance) numBalance[i] = balance[i].getValue();
 
-  return balance;
+  return numBalance;
 };
 
 const checkOptionalDateFromBody = function (body) {
