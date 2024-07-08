@@ -1,5 +1,4 @@
 const express = require("express");
-const path = require("path");
 const api = require("./api/api.js");
 const db = require("./db/dbhandler.js");
 const resetDb = require("./db/init.js");
@@ -19,9 +18,9 @@ async function startup() {
 
   app.use(requestLoggerMiddleware);
   app.use(cookieParserMiddleware());
-  app.use(redirectToIndexMiddleware);
   app.use(express.json());
 
+  app.use(express.static(`${__dirname}/dist`));
   app.use("/api", api);
 
   const expressPort = opt["express-port"];
@@ -38,14 +37,6 @@ let handleMalformedParamMiddleware = function (err, req) {
   if (err instanceof URIError) {
     err.message = `Failed to decode param: ${req.url}`;
     err.status = err.statusCode = 400;
-  }
-};
-
-let redirectToIndexMiddleware = function (req, res, next) {
-  if (req.path.startsWith("/api")) {
-    next();
-  } else {
-    res.sendFile(path.join(__dirname, "..", "client/dist", "index.html"));
   }
 };
 
