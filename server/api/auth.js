@@ -2,10 +2,15 @@ const router = require("express").Router();
 const auth = require("../auth.js");
 const users = require("../db/users.js");
 const errors = require("../errors.js");
+const usernameRegex = new RegExp("^([a-z0-9]{3,})$");
 
 router.post("/signup", async (req, res) => {
   try {
     const { username, password, name, surname } = req.body;
+    if (!usernameRegex.test(username)) {
+      res.status(409).json({ msg: `Wrong format for username '${username}'` });
+      return;
+    }
     const user = await users.findOne({ username });
     if (user) {
       res.status(409).json({ msg: `User '${user.username}' already existing` });
