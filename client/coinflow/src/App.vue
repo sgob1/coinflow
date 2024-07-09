@@ -46,9 +46,6 @@ export default {
 <template>
   <div id="app">
     <NavBarComponent />
-    <!-- <div id="nav"> -->
-    <!--   <router-link v-if="authenticated" to="/" v-on:click="logout()" replace>Logout</router-link> -->
-    <!-- </div> -->
     <div id="nav-host" v-if="dataReady">
       <RouterView @authenticated="onAuthentication" />
     </div>

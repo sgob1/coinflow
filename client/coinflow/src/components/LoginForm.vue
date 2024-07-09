@@ -16,8 +16,6 @@ async function signin() {
 </script>
 
 <template>
-  <p>{{ username }}</p>
-  <p>{{ password }}</p>
   <form @submit.prevent="signin">
     <input v-model="username" placeholder="username" />
     <input v-model="password" placeholder="password" type="password" />
