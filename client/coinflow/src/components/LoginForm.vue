@@ -1,7 +1,4 @@
 <script setup>
-import { ref } from 'vue'
-
-const result = ref([])
 const username = defineModel('username')
 const password = defineModel('password')
 
@@ -16,7 +13,6 @@ async function signin() {
   const data = await res.json()
   console.log(data)
 }
-
 </script>
 
 <template>
@@ -27,5 +23,4 @@ async function signin() {
     <input v-model="password" placeholder="password" type="password" />
     <input type="submit" value="log in" />
   </form>
-  <p>{{ result }}</p>
 </template>

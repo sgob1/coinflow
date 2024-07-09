@@ -1,73 +1,48 @@
-<script setup>
-import { RouterLink, RouterView } from 'vue-router'
-</script>
-
 <template>
-  <header>
-    <h1>Coinflow!</h1>
-  </header>
-  <RouterView />
+  <div id="app">
+    <!-- <div id="nav"> -->
+    <!--   <router-link v-if="authenticated" to="/" v-on:click="logout()" replace>Logout</router-link> -->
+    <!-- </div> -->
+    <RouterView @authenticated="setAuthenticated" />
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+<script>
+export default {
+  name: 'App',
+  data() {
+    return {
+      authenticated: false
+    }
+  },
+  mounted() {
+    if (!this.authenticated) {
+      this.$router.replace({ name: 'login' })
+    }
+  },
+  methods: {
+    setAuthenticated(status) {
+      this.authenticated = status
+    },
+    logout() {
+      this.authenticated = false
+    }
   }
+}
+</script>
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+<style>
+body {
+  background-color: #f0f0f0;
+}
+h1 {
+  padding: 0;
+  margin-top: 0;
+}
+#app {
+  display: flex;
+  justify-content: center;
+  width: auto;
+  margin: auto;
 }
 </style>
