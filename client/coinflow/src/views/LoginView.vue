@@ -46,8 +46,11 @@ export default {
         body: JSON.stringify({ username: this.input.username, password: this.input.password })
       })
       if (response.ok) {
+        this.$store.commit('setAuthentication', {
+          isAuthenticated: true,
+          username: this.input.username
+        })
         this.$emit('authenticated', true)
-        this.$router.replace({ name: 'main' })
       }
       const data = await response.json()
       this.output.message = data.msg

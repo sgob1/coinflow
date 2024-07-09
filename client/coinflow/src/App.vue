@@ -1,35 +1,59 @@
-<template>
-  <div id="app">
-    <!-- <div id="nav"> -->
-    <!--   <router-link v-if="authenticated" to="/" v-on:click="logout()" replace>Logout</router-link> -->
-    <!-- </div> -->
-    <RouterView @authenticated="setAuthenticated" />
-  </div>
-</template>
-
 <script>
+import NavBarComponent from './components/NavBarComponent.vue'
+
 export default {
   name: 'App',
+  components: {
+    NavBarComponent
+  },
   data() {
     return {
-      authenticated: false
+      dataReady: false,
+      isAuthenticated: false,
+      username: ''
     }
   },
-  mounted() {
-    if (!this.authenticated) {
-      this.$router.replace({ name: 'login' })
+  async created() {
+    const result = await this.$store.dispatch('fetchAuth')
+    if (result.ok) {
+      this.isAuthenticated = this.$store.state.isAuthenticated
+      this.username = this.$store.state.username
     }
+
+    let firstDestination = 'login'
+    if (this.isAuthenticated) {
+      firstDestination = 'main'
+    }
+    this.$router.replace({ name: firstDestination })
+    this.dataReady = true
   },
+  mounted() {},
   methods: {
-    setAuthenticated(status) {
-      this.authenticated = status
+    onAuthentication() {
+      this.isAuthenticated = this.$store.state.isAuthenticated
+      this.username = this.$store.state.username
+      this.$router.replace({ name: 'main' })
     },
     logout() {
-      this.authenticated = false
+      this.$store.commit('logout')
+      this.isAuthenticated = this.$store.state.isAuthenticated
+      this.username = this.$store.state.username
     }
   }
 }
 </script>
+
+<template>
+  <div id="app">
+    <NavBarComponent />
+    <!-- <div id="nav"> -->
+    <!--   <router-link v-if="authenticated" to="/" v-on:click="logout()" replace>Logout</router-link> -->
+    <!-- </div> -->
+    <div id="nav-host" v-if="dataReady">
+      <RouterView @authenticated="onAuthentication" />
+    </div>
+  </div>
+</template>
 
 <style>
 body {
@@ -39,7 +63,7 @@ h1 {
   padding: 0;
   margin-top: 0;
 }
-#app {
+#nav-host {
   display: flex;
   justify-content: center;
   width: auto;
