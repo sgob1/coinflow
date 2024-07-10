@@ -30,7 +30,7 @@ export default {
         <div v-if="isAuthenticated">
           <form id="nav-searchform" @submit.prevent="performSearch">
             <input v-model="searchQuery" placeholder="Search..." class="nav-searchbar" />
-            <input type="submit" class="nav-button" placeholder="Search" />
+            <input type="submit" class="nav-button" value="Search" />
           </form>
         </div>
       </div>
@@ -55,10 +55,6 @@ export default {
   justify-content: space-between;
   padding: 0px;
   border-bottom: 1px solid #ffffff;
-}
-
-.container {
-  margin-top: 40px;
 }
 
 .nav-button {

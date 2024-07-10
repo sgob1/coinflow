@@ -24,7 +24,7 @@
 
 <script>
 export default {
-  name: 'Login',
+  name: 'LoginView',
   data() {
     return {
       input: {
