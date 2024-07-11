@@ -34,7 +34,6 @@ router.post("/signin", async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await users.findPassword({ username });
-    console.log(user);
     console.log(`Login attempt from ${req.ip.toString()}`);
     if (user && user.username === username) {
       const match = await bcrypt.compare(password, user.passwordHash);
