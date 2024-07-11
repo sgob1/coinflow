@@ -46,7 +46,7 @@ export default {
 
 <template>
   <div id="main-table" class="transactions-table">
-    <li v-for="transaction in transactions">
+    <li v-for="transaction in transactions" :key="transaction.transactionId">
       <TransactionItem :transaction="transaction" />
     </li>
   </div>
