@@ -2,6 +2,7 @@
 const username = defineModel('username')
 const password = defineModel('password')
 
+// FIXME: delete or integrate somehow
 async function signin() {
   const res = await fetch('/api/auth/signin', {
     method: 'POST',

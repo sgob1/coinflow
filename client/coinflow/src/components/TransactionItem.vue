@@ -26,7 +26,9 @@ export default {
           break
         }
         default:
-          sentence = `Shared with ${this.transaction.quotas.length} people`
+          if (this.transaction.quotas)
+            sentence = `Shared with ${Object.keys(this.transaction.quotas).length - 1} people`
+          else sentence = `Not shared`
       }
       return sentence
     },
