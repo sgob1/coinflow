@@ -1,17 +1,20 @@
 <template>
   <div id="main-view" class="container">
     <h1>Main View</h1>
+    <BalanceComponent />
     <TransactionsTable />
   </div>
 </template>
 
 <script>
 import TransactionsTable from '@/components/TransactionsTable.vue'
+import BalanceComponent from '@/components/BalanceComponent.vue'
 
 export default {
   name: 'MainView',
   components: {
-    TransactionsTable
+    TransactionsTable,
+    BalanceComponent
   },
   data() {
     return {}

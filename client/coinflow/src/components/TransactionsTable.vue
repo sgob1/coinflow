@@ -36,10 +36,19 @@ export default {
         console.log(`Invalid response: ${response}`)
       }
       return response
+    },
+    async wholeBudget() {
+      const response = await fetch(`/api/budget/`)
+      if (response.ok) {
+        this.transactions = await response.json()
+      } else {
+        console.log(`Invalid response: ${response}`)
+      }
+      return response
     }
   },
   async mounted() {
-    await this.thisMonthBudget()
+    await this.wholeBudget()
   }
 }
 </script>

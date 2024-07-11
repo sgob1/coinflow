@@ -11,8 +11,12 @@ router.get("/", async (req, res) => {
   if (typeof verifiedData === "undefined") return;
 
   try {
+    // FIXME: GET method cannot send body, remove and deprecate the following
     const { year, month, day } = checkOptionalDateFromBody(req.body);
 
+    // At this point, year, month and day can be undefined. In such a
+    // case, the balance will be computed among all the existing 
+    // transactions, possibly spanning multiple years
     let results = await transactions.findOfUser(
       verifiedData.username,
       year,
