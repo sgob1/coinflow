@@ -1,6 +1,6 @@
 <template>
   <div class="login-container">
-    <div id="login">
+    <div id="login" class="login-box">
       <h1>Login</h1>
       <input
         type="text"
@@ -8,6 +8,7 @@
         v-model="input.username"
         placeholder="Username"
         id="login-username"
+        class="login-element"
       />
       <input
         type="password"
@@ -15,8 +16,9 @@
         v-model="input.password"
         placeholder="Password"
         id="login-password"
+        class="login-element"
       />
-      <button type="button" v-on:click="login()">Login</button>
+      <button type="button" @click="login()" id="login-button" class="login-element">Login</button>
       <p>{{ output.message }}</p>
     </div>
   </div>
@@ -61,19 +63,34 @@ export default {
 </script>
 
 <style scoped>
+.login-box {
+  display: flex;
+  flex-direction: column;
+}
+
 .login-container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   width: auto;
   border: 1px solid #cccccc;
+  border-radius: 20px;
   background-color: #ffffff;
   margin: auto;
   margin-top: auto;
   padding: 20px;
 }
 
-#login-username,
-#login-password {
-  width: 200px;
+.login-element {
+  width: 300px;
+  margin: 10px auto;
+  padding: 5px;
+  font-size: 1.2em;
+  border: 1px solid #777777;
+  border-radius: 15px;
+}
+
+#login-button {
+  background-color: #4b69fc;
+  color: #ffffff;
 }
 </style>
