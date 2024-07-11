@@ -3,7 +3,7 @@ const users = require("../defaults.js").COLLECTIONS.users;
 const dbutils = require("./dbutils.js");
 const projection = {
   _id: 0,
-  password: 0,
+  passwordHash: 0,
 };
 
 const findOne = async function (query) {

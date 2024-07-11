@@ -3,6 +3,8 @@ const auth = require("../auth.js");
 const users = require("../db/users.js");
 const errors = require("../errors.js");
 const usernameRegex = new RegExp("^([a-z0-9]{3,})$");
+const bcrypt = require("bcrypt");
+const SALT_ROUNDS = 10;
 
 router.post("/signup", async (req, res) => {
   try {
@@ -17,8 +19,10 @@ router.post("/signup", async (req, res) => {
     } else {
       console.log(`User ${user} is requesting subscription`);
       let id = await computeUserId();
-      const newUser = { id, username, password, name, surname };
-      await users.insertOne(newUser);
+      await bcrypt.hash(password, SALT_ROUNDS).then((passwordHash) => {
+        const newUser = { id, username, passwordHash, name, surname };
+        users.insertOne(newUser);
+      });
       res.json({ msg: "User successfully registered" });
     }
   } catch (error) {
@@ -30,14 +34,18 @@ router.post("/signin", async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await users.findPassword({ username });
+    console.log(user);
     console.log(`Login attempt from ${req.ip.toString()}`);
-    if (user && user.password === password && user.username === username) {
-      const data = { id: user.id, username: user.username };
-      const token = auth.sign(data);
-      res.cookie("jwt", token, { httpOnly: true });
-      res.json({ msg: "User has been successfully authenticated" });
-    } else {
-      res.status(401).json({ msg: "Wrong username or password" });
+    if (user && user.username === username) {
+      const match = await bcrypt.compare(password, user.passwordHash);
+      if (match) {
+        const data = { id: user.id, username: user.username };
+        const token = auth.sign(data);
+        res.cookie("jwt", token, { httpOnly: true });
+        res.json({ msg: "User has been successfully authenticated" });
+      } else {
+        res.status(401).json({ msg: "Wrong username or password" });
+      }
     }
   } catch (error) {
     errors.internalServerError(error, res);

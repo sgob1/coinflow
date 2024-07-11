@@ -1,28 +1,33 @@
 const users = require("./users.js");
 const transactions = require("./transactions.js");
+const bcrypt = require("bcrypt");
+const SALT_ROUNDS = 10;
 
 const resetDb = async function () {
   users.removeAll();
   transactions.removeAll();
+  const johnHash = bcrypt.hashSync("notapass", SALT_ROUNDS);
+  const maryHash = bcrypt.hashSync("flowerrose", SALT_ROUNDS);
+  const jamesHash = bcrypt.hashSync("123456", SALT_ROUNDS);
 
   const john = {
     id: 0,
     username: "john",
-    password: "notapass",
+    passwordHash: johnHash,
     name: "John",
     surname: "Malkovich",
   };
   const mary = {
     id: 1,
     username: "mary",
-    password: "flowerrose",
+    passwordHash: maryHash,
     name: "Mary",
     surname: "Ann Foster",
   };
   const james = {
     id: 2,
     username: "james",
-    password: "123456",
+    passwordHash: jamesHash,
     name: "James",
     surname: "Gunn",
   };
