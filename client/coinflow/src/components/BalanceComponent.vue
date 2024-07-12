@@ -1,42 +1,15 @@
 <script>
-import BalanceBarChart from './BalanceBarChart.vue'
+import DoughnutChart from '@/components/DoughnutCategoryChartComponent.vue'
 import Spectrum from '@/utils/colors/Spectrum.js'
-
-const prettifier = {
-  myTotal(amount) {
-    if (amount < 0) {
-      return `Your balance is ${-amount}`
-    } else {
-      return `Your balance is ${-amount}`
-    }
-  },
-  myExpenses(amount) {
-    if (amount < 0) {
-      return `You managed to receive ${-amount}`
-    } else {
-      return `Your expenses were ${amount}`
-    }
-  },
-  prettySentence(amount, username, name, surname) {
-    if (amount < 0) {
-      return `${this.prettyNameString(username, name, surname)} owes you ${-amount}`
-    } else if (amount > 0) {
-      return `You owe ${this.prettyNameString(username, name, surname)} ${amount}`
-    } else {
-      return `You are even with ${this.prettyNameString(username, name, surname)}`
-    }
-  },
-  prettyNameString(username, name, surname) {
-    return `${name} ${surname} (${username})`
-  }
-}
+import fetcher from '@/utils/fetch/fetcher.js'
+import prettifier from '@/utils/prettifier.js'
 
 export default {
   components: {
-    BalanceBarChart
+    DoughnutChart
   },
   data() {
-    return { balance: {}, cachedUsers: {}, balanceChartData: {}, dataReady: false }
+    return { balance: {}, cachedUsers: {}, categoryChartData: {}, budget: {}, dataReady: false }
   },
   computed: {
     generatePrettyBalance() {
@@ -59,6 +32,17 @@ export default {
         }
       }
       return prettyBalance
+    },
+    balanceByCategory() {
+      let categoriesBalance = {}
+      for (let transaction of this.budget) {
+        if (transaction.quotas[this.$store.state.username] > 0.0) {
+          if (!categoriesBalance[transaction.category])
+            categoriesBalance[transaction.category] = 0.0
+          categoriesBalance[transaction.category] += transaction.quotas[this.$store.state.username]
+        }
+      }
+      return categoriesBalance
     }
   },
   methods: {
@@ -77,65 +61,44 @@ export default {
     },
     async findUserByUsername(username) {
       if (this.cachedUsers[username]) return this.cachedUsers[username]
-
-      const results = await fetch(`/api/users/search?q=${username}`)
-      if (results.ok) {
-        const users = await results.json()
-        for (let item in users) {
-          if (users[item].username === username) return users[item]
-        }
-      } else {
-        console.log(`Cannot GET users due to ${results}`)
-      }
+      const user = fetcher.usersSearch(username)
+      this.cachedUsers[username] = user
+      return user
     },
     async getBalance() {
-      const result = await fetch('/api/balance')
-      if (result.ok) {
-        this.balance = await result.json()
-      } else {
-        console.log(`Cannot GET balance due to ${result}`)
-      }
+      this.balance = await fetcher.balance()
     },
-    async getBalanceAgainst(id) {
-      const result = await fetch(`/api/balance/${id}`)
-      if (result.ok) {
-        this.balance = await result.json()
-      } else {
-        console.log(`Cannot GET balance due to ${result}`)
-      }
+    async getBudget() {
+      this.budget = await fetcher.budget()
     },
     composeChartData() {
       let labels = []
       let data = []
       let numOfEntries = 0
-      for (let item in this.balance) {
-        if (!item.startsWith('_')) {
-          labels.push(item)
-          data.push(this.balance[item])
-          numOfEntries = numOfEntries + 1
-        }
+      for (let item in this.balanceByCategory) {
+        labels.push(item)
+        data.push(this.balanceByCategory[item])
+        numOfEntries = numOfEntries + 1
       }
 
-      const spectrum = Spectrum.generate(numOfEntries)
-      let transparentSpectrum = spectrum.withAlpha(0.4)
+      const spectrum = Spectrum.generateVivid(numOfEntries).withAlpha(0.6)
 
       const datasets = [
         {
-          label: 'amount',
-          borderWidth: 1,
+          borderWidth: 2,
           data: data,
-          backgroundColor: transparentSpectrum.toRGBAStringArray(),
-          borderColor: spectrum.toRGBAStringArray()
+          backgroundColor: spectrum.toRGBAStringArray()
         }
       ]
 
-      this.balanceChartData = {
+      this.categoryChartData = {
         labels: labels,
         datasets: datasets
       }
     },
     async initBalance() {
       await this.getBalance()
+      await this.getBudget()
       await this.cacheUsersInBalance()
       this.composeChartData()
     }
@@ -151,7 +114,10 @@ export default {
   <div class="balance" id="balance">
     <div v-if="dataReady">
       <li v-for="item in generatePrettyBalance" :key="item">{{ item }}</li>
-      <BalanceBarChart :chartData="balanceChartData" />
+      <div class="container">
+        <h2>Expenses by category</h2>
+        <DoughnutChart :chartData="categoryChartData" />
+      </div>
     </div>
   </div>
 </template>

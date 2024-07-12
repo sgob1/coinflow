@@ -97,9 +97,9 @@ class Color {
     this.#alpha = alpha
   }
 
-  static random(saturation, value, alpha = 1.0) {
-    if (!saturation) saturation = Math.random() * 0.2 + 0.6
-    if (!value) value = Math.random() * 0.2 + 0.55
+  static random(saturationCenter = 0.6, valueCenter = 0.55, spread = 0.2, alpha = 1.0) {
+    let saturation = Math.random() * spread + saturationCenter
+    let value = Math.random() * spread + valueCenter
 
     const hue = Math.random()
 
