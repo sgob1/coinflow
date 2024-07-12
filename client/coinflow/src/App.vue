@@ -84,7 +84,7 @@ body {
 #nav-host {
   display: flex;
   justify-content: center;
-  width: auto;
+  width: 100%;
   margin: auto;
 }
 </style>

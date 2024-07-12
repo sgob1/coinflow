@@ -1,12 +1,7 @@
-<template>
-  <div class="balance" id="balance">
-    <div v-if="dataReady">
-      <li v-for="item in generatePrettyBalance" :key="item">{{ item }}</li>
-    </div>
-  </div>
-</template>
-
 <script>
+import BalanceBarChart from './BalanceBarChart.vue'
+import Spectrum from '@/utils/colors/Spectrum.js'
+
 const prettifier = {
   myTotal(amount) {
     if (amount < 0) {
@@ -37,8 +32,11 @@ const prettifier = {
 }
 
 export default {
+  components: {
+    BalanceBarChart
+  },
   data() {
-    return { balance: {}, cachedUsers: {}, dataReady: false }
+    return { balance: {}, cachedUsers: {}, balanceChartData: {}, dataReady: false }
   },
   computed: {
     generatePrettyBalance() {
@@ -105,12 +103,55 @@ export default {
       } else {
         console.log(`Cannot GET balance due to ${result}`)
       }
+    },
+    composeChartData() {
+      let labels = []
+      let data = []
+      let numOfEntries = 0
+      for (let item in this.balance) {
+        if (!item.startsWith('_')) {
+          labels.push(item)
+          data.push(this.balance[item])
+          numOfEntries = numOfEntries + 1
+        }
+      }
+
+      const spectrum = Spectrum.generate(numOfEntries)
+      let transparentSpectrum = spectrum.withAlpha(0.4)
+
+      const datasets = [
+        {
+          label: 'amount',
+          borderWidth: 1,
+          data: data,
+          backgroundColor: transparentSpectrum.toRGBAStringArray(),
+          borderColor: spectrum.toRGBAStringArray()
+        }
+      ]
+
+      this.balanceChartData = {
+        labels: labels,
+        datasets: datasets
+      }
+    },
+    async initBalance() {
+      await this.getBalance()
+      await this.cacheUsersInBalance()
+      this.composeChartData()
     }
   },
   async mounted() {
-    await this.getBalance()
-    await this.cacheUsersInBalance()
+    await this.initBalance()
     this.dataReady = true
   }
 }
 </script>
+
+<template>
+  <div class="balance" id="balance">
+    <div v-if="dataReady">
+      <li v-for="item in generatePrettyBalance" :key="item">{{ item }}</li>
+      <BalanceBarChart :chartData="balanceChartData" />
+    </div>
+  </div>
+</template>

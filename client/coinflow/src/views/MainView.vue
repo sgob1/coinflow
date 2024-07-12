@@ -37,6 +37,6 @@ export default {
   padding: 20px;
   margin: auto;
   margin-top: 80px;
-  width: 800px;
+  max-width: 90%;
 }
 </style>
