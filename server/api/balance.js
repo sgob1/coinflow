@@ -15,13 +15,13 @@ router.get("/", async (req, res) => {
     const { year, month, day } = checkOptionalDateFromBody(req.body);
 
     // At this point, year, month and day can be undefined. In such a
-    // case, the balance will be computed among all the existing 
+    // case, the balance will be computed among all the existing
     // transactions, possibly spanning multiple years
     let results = await transactions.findOfUser(
       verifiedData.username,
       year,
       month,
-      day,
+      day
     );
 
     const balance = computeBalanceFor(verifiedData.username, results);
@@ -54,7 +54,7 @@ router.get("/:id", async (req, res) => {
       verifiedData.username,
       year,
       month,
-      day,
+      day
     );
 
     const balance = computeBalanceFor(loggedUser.username, results);
@@ -100,7 +100,7 @@ const computeBalanceFor = function (user, transactions) {
 
   total = new MoneyValue();
   for (let i in balance) total.add(balance[i]);
-  balance.total = total;
+  balance["_total"] = total;
   let numBalance = {};
   for (let i in balance) numBalance[i] = balance[i].getValue();
 
