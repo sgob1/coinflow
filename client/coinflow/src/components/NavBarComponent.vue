@@ -19,28 +19,26 @@ export default {
 </script>
 
 <template>
-  <div id="navbar" class="container">
-    <nav class="navbar">
-      <div class="nav-left">
-        <div v-if="isAuthenticated">
-          <router-link to="/" class="nav-button">Dashboard</router-link>
-        </div>
+  <nav class="navbar">
+    <div class="nav-left">
+      <div v-if="isAuthenticated">
+        <router-link to="/" class="nav-button">Dashboard</router-link>
       </div>
-      <div class="nav-center">
-        <div v-if="isAuthenticated">
-          <form id="nav-searchform" @submit.prevent="performSearch">
-            <input v-model="searchQuery" placeholder="Search..." class="nav-searchbar" />
-            <input type="submit" class="nav-button" value="Search" />
-          </form>
-        </div>
+    </div>
+    <div class="nav-center">
+      <div v-if="isAuthenticated">
+        <form id="nav-searchform" @submit.prevent="performSearch">
+          <input v-model="searchQuery" placeholder="Search..." class="nav-searchbar" />
+          <input type="submit" class="nav-button" value="Search" />
+        </form>
       </div>
-      <div class="nav-right">
-        <div v-if="isAuthenticated">
-          <router-link to="/" class="nav-button">Options</router-link>
-        </div>
+    </div>
+    <div class="nav-right">
+      <div v-if="isAuthenticated">
+        <router-link to="/" class="nav-button">Options</router-link>
       </div>
-    </nav>
-  </div>
+    </div>
+  </nav>
 </template>
 
 <style scoped>

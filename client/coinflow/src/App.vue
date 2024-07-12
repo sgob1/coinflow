@@ -55,10 +55,29 @@ export default {
 <style>
 body {
   background-color: #f0f0f0;
+  font-size: 1.2em;
 }
 
 .container {
-  margin-top: 40px;
+  margin: 20px;
+  padding: 10px;
+  border: 1px solid #777777;
+  border-radius: 20px;
+}
+
+.button {
+  margin: 20px;
+  padding: 10px;
+  border-radius: 20px;
+  background-color: #f0f0f0;
+}
+
+.button-green {
+  color: 1px solid #65ec87;
+}
+
+.button-red {
+  color: 1px solid #ec6565;
 }
 
 #nav-host {
