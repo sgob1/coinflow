@@ -10,9 +10,9 @@
 const prettifier = {
   myTotal(amount) {
     if (amount < 0) {
-      return `Your total is ${amount} (receiving money)`
+      return `Your balance is ${-amount}`
     } else {
-      return `Your total is ${amount}`
+      return `Your balance is ${-amount}`
     }
   },
   myExpenses(amount) {

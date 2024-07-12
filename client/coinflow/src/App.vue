@@ -59,10 +59,11 @@ body {
 }
 
 .container {
-  margin: 20px;
+  margin: 10px 0px;
   padding: 10px;
   border: 1px solid #777777;
   border-radius: 20px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.4);
 }
 
 .button {
