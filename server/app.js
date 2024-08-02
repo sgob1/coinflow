@@ -32,13 +32,6 @@ async function startup() {
 async function main() {
   await startup();
 }
-// FIXME: fix or delete
-let handleMalformedParamMiddleware = function (err, req) {
-  if (err instanceof URIError) {
-    err.message = `Failed to decode param: ${req.url}`;
-    err.status = err.statusCode = 400;
-  }
-};
 
 let setupKillSignalsListener = function (onQuit) {
   // https://stackoverflow.com/questions/71779732/closing-mongoclient-connection-on-exit-when-using-mongodb-native-driver
