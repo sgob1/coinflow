@@ -40,6 +40,7 @@ export default {
 </script>
 
 <template>
+  <!-- FIXME: remove this -->
   <!-- Use like this -->
   <!-- <TransactionItem :transaction="testTransaction" /> -->
   <tr>
