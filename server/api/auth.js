@@ -45,6 +45,8 @@ router.post("/signin", async (req, res) => {
       } else {
         res.status(401).json({ msg: "Wrong username or password" });
       }
+    } else {
+      res.status(401).json({ msg: "Wrong username or password" });
     }
   } catch (error) {
     errors.internalServerError(error, res);
