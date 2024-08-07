@@ -1,10 +1,11 @@
 <script>
-import NavBarComponent from './components/NavBarComponent.vue'
+// FIXME: deprecated
+// import NavBarComponent from './components/NavBarComponent.vue'
 
 export default {
   name: 'App',
   components: {
-    NavBarComponent
+    // NavBarComponent
   },
   data() {
     return {
@@ -45,7 +46,7 @@ export default {
 
 <template>
   <div id="app">
-    <NavBarComponent />
+    <!-- <NavBarComponent /> -->
     <div id="nav-host" v-if="dataReady">
       <RouterView @authenticated="onAuthentication" />
     </div>
