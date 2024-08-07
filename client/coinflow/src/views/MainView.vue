@@ -1,6 +1,6 @@
 <template>
   <div id="main-view">
-    <BalanceComponent />
+    <SummaryComponent />
 
     <TransactionsTable />
   </div>
@@ -8,13 +8,13 @@
 
 <script>
 import TransactionsTable from '@/components/TransactionsTable.vue'
-import BalanceComponent from '@/components/BalanceComponent.vue'
+import SummaryComponent from '@/components/SummaryComponent.vue'
 
 export default {
   name: 'MainView',
   components: {
     TransactionsTable,
-    BalanceComponent
+    SummaryComponent
   },
   data() {
     return {}

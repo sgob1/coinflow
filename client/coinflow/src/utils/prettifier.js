@@ -1,24 +1,20 @@
-const myTotal = function (amount) {
+const myTotal = function (amount, currency) {
+  return `Your balance is ${-amount}${currency}`
+}
+
+const myExpenses = function (amount, currency) {
   if (amount < 0) {
-    return `Your balance is ${-amount}`
+    return `You managed to receive ${-amount}${currency}`
   } else {
-    return `Your balance is ${-amount}`
+    return `Your expenses were ${amount}${currency}`
   }
 }
 
-const myExpenses = function (amount) {
+const prettySentence = function (amount, currency, username, name, surname) {
   if (amount < 0) {
-    return `You managed to receive ${-amount}`
-  } else {
-    return `Your expenses were ${amount}`
-  }
-}
-
-const prettySentence = function (amount, username, name, surname) {
-  if (amount < 0) {
-    return `${prettyNameString(username, name, surname)} owes you ${-amount}`
+    return `${prettyNameString(username, name, surname)} owes you ${-amount}${currency}`
   } else if (amount > 0) {
-    return `You owe ${prettyNameString(username, name, surname)} ${amount}`
+    return `You owe ${prettyNameString(username, name, surname)} ${amount}${currency}`
   } else {
     return `You are even with ${prettyNameString(username, name, surname)}`
   }
