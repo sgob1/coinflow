@@ -1,10 +1,7 @@
 <template>
-  <div id="main-view" class="container">
-    <h1>Dashboard</h1>
-    <h2>Current balance</h2>
+  <div id="main-view">
     <BalanceComponent />
 
-    <h2>History</h2>
     <TransactionsTable />
   </div>
 </template>
@@ -29,9 +26,8 @@ export default {
 #main-view {
   background-color: #ffffff;
   border: 1px solid #cccccc;
-  padding: 20px;
-  margin: auto;
-  margin-top: 80px;
-  max-width: 90%;
+  padding: 8px;
+  margin: 0px;
+  max-width: 100%;
 }
 </style>

@@ -1,11 +1,10 @@
 <script>
-// FIXME: deprecated
-// import NavBarComponent from './components/NavBarComponent.vue'
+import HeaderBarComponent from './components/HeaderBarComponent.vue'
 
 export default {
   name: 'App',
   components: {
-    // NavBarComponent
+    HeaderBarComponent
   },
   data() {
     return {
@@ -46,7 +45,7 @@ export default {
 
 <template>
   <div id="app">
-    <!-- <NavBarComponent /> -->
+    <HeaderBarComponent />
     <div id="nav-host" v-if="dataReady">
       <RouterView @authenticated="onAuthentication" />
     </div>
@@ -57,14 +56,6 @@ export default {
 body {
   background-color: #f0f0f0;
   font-size: 1.2em;
-}
-
-.container {
-  margin: 10px 0px;
-  padding: 10px;
-  border: 1px solid #777777;
-  border-radius: 20px;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.4);
 }
 
 .button {
@@ -83,7 +74,6 @@ body {
 }
 
 #nav-host {
-  display: flex;
   justify-content: center;
   width: 100%;
   margin: auto;

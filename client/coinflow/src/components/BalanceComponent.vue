@@ -114,10 +114,10 @@ export default {
   <div class="balance" id="balance">
     <div v-if="dataReady">
       <li v-for="item in generatePrettyBalance" :key="item">{{ item }}</li>
-      <div class="container">
-        <h2>Expenses by category</h2>
-        <!-- <DoughnutChart :chartData="categoryChartData" /> -->
-      </div>
+      <!-- <div class="container"> -->
+      <!-- <h2>Expenses by category</h2> -->
+      <!-- <DoughnutChart :chartData="categoryChartData" /> -->
+      <!-- </div> -->
     </div>
   </div>
 </template>
