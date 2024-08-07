@@ -6,23 +6,18 @@
 
     <h2>History</h2>
     <TransactionsTable />
-
-    <h2>Other section</h2>
-    <LoremComponent />
   </div>
 </template>
 
 <script>
 import TransactionsTable from '@/components/TransactionsTable.vue'
 import BalanceComponent from '@/components/BalanceComponent.vue'
-import LoremComponent from '@/components/LoremComponent.vue'
 
 export default {
   name: 'MainView',
   components: {
     TransactionsTable,
-    BalanceComponent,
-    LoremComponent
+    BalanceComponent
   },
   data() {
     return {}
