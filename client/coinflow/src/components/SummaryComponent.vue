@@ -1,16 +1,28 @@
 <template>
   <div class="summary" id="summary">
-    <p>Your balance is {{ totalAmount }}€</p>
+    <p>{{ totalAmountPretty }}</p>
   </div>
 </template>
 
 <script>
+import prettifier from '@/utils/prettifier.js'
+
 export default {
   props: {
-    totalAmount: String
+    totalAmount: String,
+    user: String
   },
   data() {
     return {}
+  },
+  computed: {
+    totalAmountPretty() {
+      if (this.user === '_total') {
+        return prettifier.myTotal(Number(this.totalAmount), '€')
+      } else {
+        return prettifier.userSentence(this.totalAmount, '€', this.user)
+      }
+    }
   }
 }
 </script>
