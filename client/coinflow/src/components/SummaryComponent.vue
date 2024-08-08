@@ -1,37 +1,19 @@
-<script>
-// import DoughnutChart from '@/components/DoughnutCategoryChartComponent.vue'
-import Spectrum from '@/utils/colors/Spectrum.js'
-import fetcher from '@/utils/fetch/fetcher.js'
+<template>
+  <div class="summary" id="summary">
+    <p>Your balance is {{ totalAmount }}€</p>
+  </div>
+</template>
 
+<script>
 export default {
-  components: {
-    // DoughnutChart
+  props: {
+    totalAmount: String
   },
   data() {
-    return { totalBalance: {}, dataReady: false }
-  },
-  computed: {},
-  methods: {
-    async getBalance() {
-      this.balance = await fetcher.balance()
-    },
-    async initBalance() {
-      await this.getBalance()
-    }
-  },
-  async mounted() {
-    await this.initBalance()
-    this.totalAmount = this.balance['_total']
-    this.dataReady = true
+    return {}
   }
 }
 </script>
-
-<template>
-  <div class="summary" id="summary">
-    <div v-if="dataReady">Your monthly balance is {{ totalAmount }}€</div>
-  </div>
-</template>
 
 <style scoped>
 .summary {

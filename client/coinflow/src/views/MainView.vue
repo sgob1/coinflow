@@ -1,20 +1,16 @@
 <template>
   <div id="main-view">
-    <SummaryComponent />
-
     <TransactionsTable />
   </div>
 </template>
 
 <script>
 import TransactionsTable from '@/components/TransactionsTable.vue'
-import SummaryComponent from '@/components/SummaryComponent.vue'
 
 export default {
   name: 'MainView',
   components: {
-    TransactionsTable,
-    SummaryComponent
+    TransactionsTable
   },
   data() {
     return {}
