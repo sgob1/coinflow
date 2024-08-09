@@ -31,7 +31,7 @@
 
 <script>
 import SummaryComponent from '@/components/SummaryComponent.vue'
-import TransactionItem from './TransactionItem.vue'
+import TransactionItem from '@/components/TransactionItem.vue'
 import fetcher from '@/utils/fetch/fetcher.js'
 
 import VueBottomSheet from '@webzlodimir/vue-bottom-sheet'
