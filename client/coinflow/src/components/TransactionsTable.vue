@@ -24,9 +24,7 @@
       </li>
     </div>
     <vue-bottom-sheet ref="bottomSheet">
-      <h1>Lorem Ipsum</h1>
-      <h2>What is Lorem Ipsum?</h2>
-      <p><strong>Lorem Ipsum</strong> is simply dummy text</p>
+      <TransactionEditorComponent />
     </vue-bottom-sheet>
   </div>
 </template>
@@ -39,11 +37,14 @@ import fetcher from '@/utils/fetch/fetcher.js'
 import VueBottomSheet from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
 
+import TransactionEditorComponent from '@/components/TransactionEditorComponent.vue'
+
 export default {
   components: {
     SummaryComponent,
     TransactionItem,
-    VueBottomSheet
+    VueBottomSheet,
+    TransactionEditorComponent
   },
   data() {
     return {
