@@ -3,7 +3,6 @@
     <SummaryComponent
       :total-amount="balance[this.selectedUsername]"
       :user="this.selectedUsername"
-      @click="this.open()"
     />
     <div id="table-menu" class="transactions-table-menu">
       <input placeholder="Year" v-model="year" @input="onOptionsChange" />
@@ -23,6 +22,7 @@
         <TransactionItem :transaction="transaction" />
       </li>
     </div>
+    <FloatingActionButtonComponent id="floating-action-button" @click="this.open()" />
     <vue-bottom-sheet ref="bottomSheet">
       <TransactionEditorComponent />
     </vue-bottom-sheet>
@@ -38,13 +38,15 @@ import VueBottomSheet from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
 
 import TransactionEditorComponent from '@/components/TransactionEditorComponent.vue'
+import FloatingActionButtonComponent from '@/components/FloatingActionButtonComponent.vue'
 
 export default {
   components: {
     SummaryComponent,
     TransactionItem,
     VueBottomSheet,
-    TransactionEditorComponent
+    TransactionEditorComponent,
+    FloatingActionButtonComponent
   },
   data() {
     return {
