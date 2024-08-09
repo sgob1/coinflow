@@ -1,5 +1,5 @@
 <template>
-  <div class="transaction-item-container card">
+  <div class="transaction-item-container card" @click="console.log('REPLACE ME Clicked on card')">
     <div class="transaction-item-first-row">
       <div>{{ transaction.description }}</div>
       <div>{{ transaction.quotas[this.$store.state.username] }}€</div>
@@ -24,7 +24,6 @@ export default {
   computed: {
     computeSharedQuotasString() {
       let sentence = 'Not shared'
-      console.log(Object.keys(this.transaction.quotas).length)
       const numOfPeopleInQuota = Object.keys(this.transaction.quotas).length
       if (numOfPeopleInQuota > 2) {
         sentence = `Shared with ${Object.keys(this.transaction.quotas).length - 1} people`
