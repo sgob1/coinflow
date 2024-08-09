@@ -24,7 +24,13 @@
         </li>
       </div>
       <FloatingActionButtonComponent id="floating-action-button" @click="this.open()" />
-      <vue-bottom-sheet ref="bottomSheet">
+      <vue-bottom-sheet
+        ref="bottomSheet"
+        :max-width="1024"
+        :max-height="1000"
+        :transition-duration="0.4"
+        :overlay-color="'#00000048'"
+      >
         <TransactionEditorComponent />
       </vue-bottom-sheet>
     </div>
