@@ -19,11 +19,15 @@
         <li
           v-for="transaction in filteredTransactions(this.selectedUsername)"
           :key="transaction.transactionId"
+          @click="this.onTransactionClick(transaction)"
         >
           <TransactionItem :transaction="transaction" />
         </li>
       </div>
-      <FloatingActionButtonComponent id="floating-action-button" @click="this.open()" />
+      <FloatingActionButtonComponent
+        id="floating-action-button"
+        @click="onFloatingActionButtonClick"
+      />
       <vue-bottom-sheet
         ref="bottomSheet"
         :max-width="1024"
@@ -31,7 +35,7 @@
         :transition-duration="0.4"
         :overlay-color="'#00000048'"
       >
-        <TransactionEditorComponent />
+        <TransactionEditorComponent :transaction="targetTransaction" />
       </vue-bottom-sheet>
     </div>
   </div>
@@ -64,7 +68,8 @@ export default {
       transactions: [],
       balance: {},
       cachedUsers: {},
-      dataReady: false
+      dataReady: false,
+      targetTransaction: null
     }
   },
   computed: {
@@ -76,6 +81,14 @@ export default {
     }
   },
   methods: {
+    onTransactionClick(transaction) {
+      this.targetTransaction = transaction
+      this.open()
+    },
+    onFloatingActionButtonClick() {
+      this.targetTransaction = undefined
+      this.open()
+    },
     open() {
       this.$refs.bottomSheet.open()
     },
