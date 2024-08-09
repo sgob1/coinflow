@@ -3,6 +3,7 @@
     <SummaryComponent
       :total-amount="balance[this.selectedUsername]"
       :user="this.selectedUsername"
+      @click="this.open()"
     />
     <div id="table-menu" class="transactions-table-menu">
       <input placeholder="Year" v-model="year" @input="onOptionsChange" />
@@ -22,6 +23,11 @@
         <TransactionItem :transaction="transaction" />
       </li>
     </div>
+    <vue-bottom-sheet ref="bottomSheet">
+      <h1>Lorem Ipsum</h1>
+      <h2>What is Lorem Ipsum?</h2>
+      <p><strong>Lorem Ipsum</strong> is simply dummy text</p>
+    </vue-bottom-sheet>
   </div>
 </template>
 
@@ -30,10 +36,14 @@ import SummaryComponent from '@/components/SummaryComponent.vue'
 import TransactionItem from './TransactionItem.vue'
 import fetcher from '@/utils/fetch/fetcher.js'
 
+import VueBottomSheet from '@webzlodimir/vue-bottom-sheet'
+import '@webzlodimir/vue-bottom-sheet/dist/style.css'
+
 export default {
   components: {
     SummaryComponent,
-    TransactionItem
+    TransactionItem,
+    VueBottomSheet
   },
   data() {
     return {
@@ -55,6 +65,12 @@ export default {
     }
   },
   methods: {
+    open() {
+      this.$refs.bottomSheet.open()
+    },
+    close() {
+      this.$refs.bottomSheet.close()
+    },
     onOptionsChange() {
       this.dataReady = false
       this.getBudget()
