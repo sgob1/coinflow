@@ -21,11 +21,12 @@ export default {
 }
 
 #headerbar {
+  position: fixed;
+  width: 100%;
   background-color: #ffffff;
   border: 1px solid #cccccc;
   padding: 8px;
   margin: 0px;
-  max-width: 100%;
   display: flex;
   justify-content: space-between;
 }
