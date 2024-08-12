@@ -1,26 +1,52 @@
 <template>
   <div class="editor-wrapper">
-    {{ transaction }}
-    <p>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-      labore et dolore magnam aliquam quaerat voluptatem. Ut enim aeque doleamus animo, cum corpore
-      dolemus, fieri tamen permagna accessio potest, si aliquod aeternum et infinitum impendere
-      malum nobis opinemur. Quod idem licet transferre in voluptatem, ut postea variari voluptas
-      distinguique possit, augeri amplificarique non possit. At etiam Athenis, ut e patre audiebam
-      facete et.
-    </p>
+    <input
+      type="text"
+      v-model="currentTransaction.description"
+      value="currentTransaction.description"
+    />
+    <input type="text" v-model="currentTransaction.category" value="currentTransaction.category" />
+    <div class="date-editor-wrapper">
+      <input type="text" v-model="currentTransaction.year" value="currentTransaction.year" />
+      <input type="text" v-model="currentTransaction.month" value="currentTransaction.month" />
+      <input type="text" v-model="currentTransaction.day" value="currentTransaction.day" />
+    </div>
+    {{ currentTransaction }}
   </div>
 </template>
 
 <script>
 export default {
   data() {
-    return {}
+    return {
+      currentTransaction: {}
+    }
   },
   props: {
     transaction: Object
+  },
+  methods: {
+    reset() {
+      this.currentTransaction = {}
+    }
+  },
+  watch: {
+    transaction: function (newVal, curVal) {
+      Object.assign(this.currentTransaction, newVal)
+    }
   }
 }
 </script>
 
-<style></style>
+<style>
+.editor-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+}
+.date-editor-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+</style>

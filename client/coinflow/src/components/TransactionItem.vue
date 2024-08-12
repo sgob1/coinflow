@@ -1,5 +1,5 @@
 <template>
-  <div class="transaction-item-container card" @click="console.log('REPLACE ME Clicked on card')">
+  <div class="transaction-item-container card">
     <div class="transaction-item-first-row">
       <div>{{ transaction.description }}</div>
       <div>{{ transaction.quotas[this.$store.state.username] }}€</div>

@@ -35,7 +35,7 @@
         :transition-duration="0.4"
         :overlay-color="'#00000048'"
       >
-        <TransactionEditorComponent :transaction="targetTransaction" />
+        <TransactionEditorComponent :transaction="targetTransaction" ref="transactionEditor" />
       </vue-bottom-sheet>
     </div>
   </div>
@@ -69,7 +69,7 @@ export default {
       balance: {},
       cachedUsers: {},
       dataReady: false,
-      targetTransaction: null
+      targetTransaction: undefined
     }
   },
   computed: {
@@ -86,7 +86,8 @@ export default {
       this.open()
     },
     onFloatingActionButtonClick() {
-      this.targetTransaction = undefined
+      this.targetTransaction = {}
+      this.$refs.transactionEditor.reset()
       this.open()
     },
     open() {
