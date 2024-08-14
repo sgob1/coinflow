@@ -36,6 +36,7 @@ const usersSearch = async function (username) {
     for (let item in users) {
       if (users[item].username === username) return users[item]
     }
+    return users
   } else {
     console.log(`Cannot GET users due to ${results}`)
   }
