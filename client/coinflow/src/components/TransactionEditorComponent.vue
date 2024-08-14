@@ -15,17 +15,19 @@
       <input type="text" v-model="currentTransaction.day" value="currentTransaction.day" />
     </div>
     <h1>User Quotas</h1>
-    <div class="add-user-quota-wrapper">
+    <div class="add-user-quota-wrapper" v-if="remainingUsers.length > 0">
       <select v-model="selectedUsername">
-        <option v-for="user in cachedUsers" :key="user.username">
+        <option v-for="user in remainingUsers" :key="user.username">
           {{ user.username }}
         </option>
       </select>
-      <button type="button" name="add-user-quota-button">Add user</button>
+      <button type="button" name="add-user-quota-button" @click="onAddUserQuotaClick">
+        Add user
+      </button>
     </div>
     <div class="user-quotas-editor-wrapper">
       <div>Total cost: {{ totalCost }}</div>
-      <div v-for="(quota, key) in currentTransaction.quotas" :key="quota">
+      <div v-for="(quota, key) in currentTransaction.quotas" :key="key">
         {{ key }}:
         <input
           type="text"
@@ -57,6 +59,23 @@ export default {
     reset() {
       this.currentTransaction = {}
     },
+    onAddUserQuotaClick() {
+      if (this.selectedUsername === '') return
+
+      if (!this.currentTransaction.quotas) {
+        this.currentTransaction.quotas = {}
+      }
+
+      if (!this.currentTransaction.quotas[this.selectedUsername]) {
+        //this.currentTransaction.quotas[this.selectedUsername] = 0.0
+        let newQuotas = {}
+        Object.assign(newQuotas, this.currentTransaction.quotas)
+        newQuotas[this.selectedUsername] = 0.0
+        this.currentTransaction.quotas = newQuotas
+      }
+
+      this.selectedUsername = ''
+    },
     submit() {
       // TODO: parse transaction object and clean it if it contains spurious items
     }
@@ -70,16 +89,32 @@ export default {
         totalCost = totalCost + Number(this.currentTransaction.quotas[quota])
       }
       return totalCost
+    },
+    remainingUsers() {
+      let remainingUsers = this.cachedUsers.slice()
+
+      if (this.currentTransaction.quotas) {
+        for (let user in this.currentTransaction.quotas) {
+          let indexOfUser = -1
+
+          for (let i = 0; i < remainingUsers.length; i++) {
+            if (user === remainingUsers[i].username) indexOfUser = i
+          }
+
+          if (indexOfUser > -1) remainingUsers.splice(indexOfUser, 1)
+        }
+      }
+
+      return remainingUsers
     }
   },
   watch: {
-    transaction: function (newVal, curVal) {
+    transaction: function (newVal) {
       Object.assign(this.currentTransaction, newVal)
     }
   },
   async mounted() {
-    this.cachedUsers = await fetcher.usersSearch('')
-    console.log(this.cachedUsers)
+    this.cachedUsers = (await fetcher.usersSearch('')).slice()
     this.dataReady = true
   }
 }
