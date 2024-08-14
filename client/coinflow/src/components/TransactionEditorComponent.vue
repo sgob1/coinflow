@@ -15,13 +15,15 @@
       <input type="text" v-model="currentTransaction.day" value="currentTransaction.day" />
     </div>
     <h1>User Quotas</h1>
-    <div v-if="dataReady">Cached users: {{ cachedUsers }}</div>
-    <div class="user-quotas-editor-wrapper">
+    <div class="add-user-quota-wrapper">
       <select v-model="selectedUsername">
         <option v-for="user in cachedUsers" :key="user.username">
           {{ user.username }}
         </option>
       </select>
+      <button type="button" name="add-user-quota-button">Add user</button>
+    </div>
+    <div class="user-quotas-editor-wrapper">
       <div>Total cost: {{ totalCost }}</div>
       <div v-for="(quota, key) in currentTransaction.quotas" :key="quota">
         {{ key }}:
@@ -89,10 +91,11 @@ export default {
   flex-direction: column;
   min-height: 300px;
 }
-.date-editor-wrapper {
+.date-editor-wrapper,
+.add-user-quota-wrapper {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: left;
 }
 input {
   font-size: 1.1em;
