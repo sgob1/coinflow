@@ -79,7 +79,10 @@ export default {
   },
   methods: {
     isNewTransaction() {
-      return !this.currentTransaction || !this.currentTransaction.transactionId
+      return (
+        !this.currentTransaction ||
+        (!this.currentTransaction.transactionId && !(this.currentTransaction.transactionId === 0))
+      )
     },
     onAddUserQuotaClick() {
       if (this.selectedUsername === '') return
