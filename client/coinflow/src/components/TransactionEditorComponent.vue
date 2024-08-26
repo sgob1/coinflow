@@ -92,14 +92,16 @@ export default {
         !this.currentTransaction.year ||
         !this.currentTransaction.month ||
         !this.currentTransaction.day
-      )
+      ) {
         this.pickedDate = new Date()
-      else
+      } else {
         this.pickedDate = new Date(
           this.currentTransaction.year,
-          this.currentTransaction.month,
-          this.currentTransaction.day
+          this.currentTransaction.month - 1,
+          this.currentTransaction.day + 1
         )
+      }
+      this.date = this.pickedDate.toISOString().substring(0, 10)
     },
     onSubmitDate() {
       let supportDate = new Date(this.date)
@@ -120,7 +122,7 @@ export default {
   computed: {
     currentDate() {
       if (!this.pickedDate) {
-        return new Date()
+        return new Date().toISOString().substring(0, 10)
       }
       return this.pickedDate.toISOString().substring(0, 10)
     },
@@ -154,6 +156,7 @@ export default {
   watch: {
     transaction: function (newVal) {
       Object.assign(this.currentTransaction, newVal)
+      this.initDate()
     }
   },
   async mounted() {
