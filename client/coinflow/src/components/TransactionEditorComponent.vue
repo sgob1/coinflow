@@ -36,6 +36,7 @@
         />
       </div>
     </div>
+    <!-- TODO: remove this debug print -->
     {{ currentTransaction }}
   </div>
 </template>
