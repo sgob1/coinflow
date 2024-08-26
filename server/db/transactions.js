@@ -29,15 +29,16 @@ const insertOne = async function (transaction) {
 };
 
 const lastTransaction = async function (year, month) {
-  return await db.query(
+  const findCursor = await db.query(
     (c) =>
-      c.findOne(
-        { year: year, month: month },
-        { projection: projection },
-        { sort: { transactionId: -1 } },
-      ),
+      c
+        .find({ year: year, month: month })
+        .project(projection)
+        .sort({ transactionId: -1 }),
     trans,
   );
+  let array = await findCursor.toArray();
+  return array[0];
 };
 
 const deleteOne = async function (transaction) {
@@ -45,7 +46,10 @@ const deleteOne = async function (transaction) {
 };
 
 const replaceOne = async function (toReplace, replacement) {
-  return await db.query( (c) => c.replaceOne({ _id: toReplace._id }, replacement), trans,);
+  return await db.query(
+    (c) => c.replaceOne({ _id: toReplace._id }, replacement),
+    trans,
+  );
 };
 
 const findOfUser = async function (username, year, month, day) {

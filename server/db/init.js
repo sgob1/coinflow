@@ -113,11 +113,11 @@ const resetDb = async function () {
     quotas: { mary: -41.5, james: 41.5 },
   };
   const johnRefundMary = {
-    transactionId: 4,
+    transactionId: 5,
     author: "mary",
     year: 2024,
     month: 7,
-    day: 2,
+    day: 3,
     description: "Refund for past bill",
     category: "bills",
     quotas: { mary: -33.1, john: 33.1 },
