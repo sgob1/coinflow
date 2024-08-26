@@ -119,6 +119,7 @@ export default {
       this.closeEditor()
       this.dataReady = false
       this.getBudget()
+      this.getBalance()
       this.dataReady = true
     },
     onOptionsChange() {
