@@ -6,8 +6,24 @@
         :user="this.selectedUsername"
       />
       <div id="table-menu" class="transactions-table-menu">
-        <input placeholder="Year" v-model="year" @input="onOptionsChange" />
-        <input placeholder="Month" v-model="month" @input="onOptionsChange" />
+        <input
+          type="number"
+          min="1900"
+          max="2100"
+          placeholder="Year"
+          value="currentYear"
+          v-model="year"
+          @input="onOptionsChange"
+        />
+        <input
+          type="number"
+          min="1"
+          max="12"
+          placeholder="Month"
+          value="currentMonth"
+          v-model="month"
+          @input="onOptionsChange"
+        />
         <select v-model="selectedUsername">
           <option value="_total">Total balance</option>
           <option v-for="user in cachedUsers" :key="user.username">
@@ -105,8 +121,7 @@ export default {
       this.openEditor()
     },
     onFloatingActionButtonClick() {
-      this.targetTransaction = {}
-      this.$refs.transactionEditor.initTransaction()
+      this.targetTransaction = this.cloneTransaction({})
       this.openEditor()
     },
     openEditor() {

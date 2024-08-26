@@ -16,6 +16,7 @@
       type="text"
       v-model="currentTransaction.category"
       value="currentTransaction.category"
+      pattern="^[A-Za-z]+$"
       required
     />
     <h2>Date</h2>
@@ -103,9 +104,8 @@ export default {
     roundAmount(num) {
       return Math.round((num + Number.EPSILON) * 100) / 100
     },
-    initTransaction() {
+    resetTransaction() {
       this.currentTransaction = {}
-      this.initDate()
       this.currentTransaction.author = this.$store.state.username
       this.currentTransaction.quotas = {}
       this.currentTransaction.quotas[this.$store.state.username] = 0.0
@@ -211,7 +211,7 @@ export default {
       Object.assign(this.currentTransaction, newVal)
       this.initDate()
       if (this.isNewTransaction()) {
-        this.initTransaction()
+        this.resetTransaction()
         this.isNew = true
       } else {
         this.isNew = false
