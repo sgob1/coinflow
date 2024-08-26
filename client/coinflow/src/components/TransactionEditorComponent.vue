@@ -40,7 +40,7 @@
         {{ key }}:
         <input
           type="text"
-          pattern="^-?[1-9]+\.?[0-9]+?$"
+          pattern="^-?[0-9]*\.?[0-9]*$"
           v-model="currentTransaction.quotas[key]"
           value="currentTransaction.quotas[key]"
         />
@@ -187,7 +187,12 @@ export default {
       transaction.description = transaction.description.trim()
       transaction.category = transaction.category.trim()
       for (let quota in transaction.quotas) {
-        transaction.quotas[quota] = this.roundAmount(Number(transaction.quotas[quota]))
+        let quotaAmount = this.roundAmount(Number(transaction.quotas[quota]))
+        if (quotaAmount === 0.0) {
+          delete transaction.quotas[quota]
+        } else {
+          transaction.quotas[quota] = this.roundAmount(Number(transaction.quotas[quota]))
+        }
       }
     },
     async onSubmitTransaction() {
