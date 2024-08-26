@@ -69,7 +69,7 @@ const resetDb = async function () {
     transactionId: 1,
     author: "john",
     year: 2024,
-    month: 6,
+    month: 8,
     day: 27,
     description: "YouTube Music subscription",
     category: "internet",

@@ -103,7 +103,7 @@ export default {
       this.selectedUsername = ''
     },
     roundAmount(num) {
-      return Math.round((num + Number.EPSILON) * 100) / 100
+      return (Math.round((num + Number.EPSILON) * 100) / 100).toFixed(2)
     },
     resetTransaction() {
       this.currentTransaction = {}

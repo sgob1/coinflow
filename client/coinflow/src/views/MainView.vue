@@ -52,6 +52,7 @@
         :overlay-color="'#00000048'"
       >
         <TransactionEditorComponent
+          class="bottom-sheet-component"
           :transaction="targetTransaction"
           ref="transactionEditor"
           @transaction-submitted="onTransactionSubmitted"
@@ -98,7 +99,7 @@ export default {
     },
     currentMonth() {
       return new Date().getMonth()
-    }
+    },
   },
   methods: {
     cloneTransaction(transaction) {
@@ -244,5 +245,11 @@ export default {
 .table-menu {
   display: flex;
   flex-direction: row;
+}
+
+.bottom-sheet-component {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
 }
 </style>
