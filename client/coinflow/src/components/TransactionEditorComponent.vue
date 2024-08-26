@@ -32,6 +32,14 @@
           v-model="currentTransaction.quotas[key]"
           value="currentTransaction.quotas[key]"
         />
+        <button
+          type="button"
+          name="delete-user-quota-button"
+          @click="onDeleteUserQuotaClick(key)"
+          v-if="canDeleteQuota(key)"
+        >
+          Delete quota
+        </button>
       </div>
     </div>
     <!-- TODO: remove this debug print -->
@@ -98,6 +106,12 @@ export default {
       this.currentTransaction.year = supportDate.getFullYear()
       this.currentTransaction.month = supportDate.getMonth() + 1
       this.currentTransaction.day = supportDate.getDate()
+    },
+    canDeleteQuota(username) {
+      return username !== this.currentTransaction.author || username !== this.$store.state.username
+    },
+    onDeleteUserQuotaClick(username) {
+      delete this.currentTransaction.quotas[username]
     },
     submit() {
       // TODO: parse transaction object and clean it if it contains spurious items
