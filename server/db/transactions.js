@@ -8,14 +8,18 @@ const projection = {
 const findOne = async function (query) {
   return await db.query(
     (c) => c.findOne(query, { projection: projection }),
-    trans
+    trans,
   );
+};
+
+const findOneRaw = async function (query) {
+  return await db.query((c) => c.findOne(query), trans);
 };
 
 const find = async function (query) {
   const findCursor = await db.query(
     (c) => c.find(query).project(projection),
-    trans
+    trans,
   );
   return await findCursor.toArray();
 };
@@ -30,9 +34,9 @@ const lastTransaction = async function (year, month) {
       c.findOne(
         { year: year, month: month },
         { projection: projection },
-        { sort: { transactionId: -1 } }
+        { sort: { transactionId: -1 } },
       ),
-    trans
+    trans,
   );
 };
 
@@ -41,8 +45,7 @@ const deleteOne = async function (transaction) {
 };
 
 const replaceOne = async function (toReplace, replacement) {
-  const filter = { _id: toReplace._id };
-  return await db.query((c) => c.replaceOne(filter, replacement), trans);
+  return await db.query( (c) => c.replaceOne({ _id: toReplace._id }, replacement), trans,);
 };
 
 const findOfUser = async function (username, year, month, day) {
@@ -87,7 +90,7 @@ const findOfUser = async function (username, year, month, day) {
           },
         })
         .project(projection),
-    trans
+    trans,
   );
   return await findCursor.toArray();
 };
@@ -125,7 +128,7 @@ const searchOfUserByDescription = async function (username, query) {
           },
         })
         .project(projection),
-    trans
+    trans,
   );
   return await findCursor.toArray();
 };
@@ -136,6 +139,7 @@ const removeAll = async function () {
 
 module.exports = {
   findOne,
+  findOneRaw,
   find,
   insertOne,
   lastTransaction,

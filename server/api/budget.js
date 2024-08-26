@@ -225,7 +225,7 @@ router.put("/:year/:month/:id", async (req, res) => {
 
   let existingTransaction;
   try {
-    existingTransaction = await transactions.findOne({
+    existingTransaction = await transactions.findOneRaw({
       year: reqYear,
       month: reqMonth,
       transactionId: reqId,
@@ -347,7 +347,7 @@ router.delete("/:year/:month/:id", async (req, res) => {
   }
 
   try {
-    const toDelete = await transactions.findOne({
+    const toDelete = await transactions.findOneRaw({
       year: reqYear,
       month: reqMonth,
       transactionId: reqId,

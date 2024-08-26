@@ -22,6 +22,8 @@ const validDate = function (year, month, day) {
 };
 
 const validId = function (id) {
+  if (id === 0)
+    return true
   return id && typeof id === "number" && id >= 0;
 };
 
