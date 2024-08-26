@@ -10,9 +10,7 @@
     <input type="text" v-model="currentTransaction.category" value="currentTransaction.category" />
     <h1>Date</h1>
     <div class="date-editor-wrapper">
-      <input type="text" v-model="currentTransaction.year" value="currentTransaction.year" />
-      <input type="text" v-model="currentTransaction.month" value="currentTransaction.month" />
-      <input type="text" v-model="currentTransaction.day" value="currentTransaction.day" />
+      <input type="date" v-model="date" @input="onSubmitDate" value="currentDate" />
     </div>
     <h1>User Quotas</h1>
     <div class="add-user-quota-wrapper" v-if="remainingUsers.length > 0">
@@ -50,6 +48,7 @@ export default {
       currentTransaction: {},
       selectedUsername: '',
       cachedUsers: [],
+      pickedDate: undefined,
       dataReady: false
     }
   },
@@ -80,11 +79,37 @@ export default {
     roundAmount(num) {
       return Math.round((num + Number.EPSILON) * 100) / 100
     },
+    initDate() {
+      if (
+        !this.currentTransaction.year ||
+        !this.currentTransaction.month ||
+        !this.currentTransaction.day
+      )
+        this.pickedDate = new Date()
+      else
+        this.pickedDate = new Date(
+          this.currentTransaction.year,
+          this.currentTransaction.month,
+          this.currentTransaction.day
+        )
+    },
+    onSubmitDate() {
+      let supportDate = new Date(this.date)
+      this.currentTransaction.year = supportDate.getFullYear()
+      this.currentTransaction.month = supportDate.getMonth() + 1
+      this.currentTransaction.day = supportDate.getDate()
+    },
     submit() {
       // TODO: parse transaction object and clean it if it contains spurious items
     }
   },
   computed: {
+    currentDate() {
+      if (!this.pickedDate) {
+        return new Date()
+      }
+      return this.pickedDate.toISOString().substring(0, 10)
+    },
     totalCost() {
       if (!this.currentTransaction.quotas) return 0
 
@@ -119,6 +144,7 @@ export default {
   },
   async mounted() {
     this.cachedUsers = (await fetcher.usersSearch('')).slice()
+    this.initDate()
     this.dataReady = true
   }
 }
@@ -138,5 +164,11 @@ export default {
 }
 input {
   font-size: 1.1em;
+}
+input:invalid {
+  background-color: ivory;
+  border: none;
+  outline: 2px solid red;
+  border-radius: 5px;
 }
 </style>
