@@ -75,7 +75,6 @@ export default {
       }
 
       if (!this.currentTransaction.quotas[this.selectedUsername]) {
-        //this.currentTransaction.quotas[this.selectedUsername] = 0.0
         let newQuotas = {}
         Object.assign(newQuotas, this.currentTransaction.quotas)
         newQuotas[this.selectedUsername] = 0.0
