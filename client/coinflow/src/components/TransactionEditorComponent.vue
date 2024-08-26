@@ -40,6 +40,7 @@
         {{ key }}:
         <input
           type="text"
+          pattern="^-?[1-9]+\.?[0-9]+?$"
           v-model="currentTransaction.quotas[key]"
           value="currentTransaction.quotas[key]"
         />
@@ -144,19 +145,58 @@ export default {
     onDeleteUserQuotaClick(username) {
       delete this.currentTransaction.quotas[username]
     },
-    validTransaction(transaction) {
-      // TODO: parse transaction object
-      return true
+    checkTransaction(transaction) {
+      if (!transaction.description || transaction.description === '') {
+        return {
+          valid: false,
+          cause: 'Empty description'
+        }
+      }
+
+      if (
+        !/^[A-Za-z]+$/.test(transaction.category) ||
+        !transaction.category ||
+        transaction.category === ''
+      ) {
+        return {
+          valid: false,
+          cause: 'Wrong or empty category'
+        }
+      }
+
+      if (Number.isNaN(new Date(transaction.year, transaction.month, transaction.day).valueOf())) {
+        return {
+          valid: false,
+          cause: 'Wrong date'
+        }
+      }
+
+      if (Number(transaction.quotas[this.$store.state.username]) === 0.0) {
+        return { valid: false, cause: 'Author has no quota' }
+      }
+
+      for (let quota in transaction.quotas) {
+        if (isNaN(transaction.quotas[quota])) {
+          return { valid: false, cause: `Invalid quota for ${quota}` }
+        }
+      }
+
+      return { valid: true }
     },
-    cleanTransaction(transaction) {
-      // TODO: clean spurious fields
+    formatTransaction(transaction) {
+      transaction.description = transaction.description.trim()
+      transaction.category = transaction.category.trim()
+      for (let quota in transaction.quotas) {
+        transaction.quotas[quota] = this.roundAmount(Number(transaction.quotas[quota]))
+      }
     },
     async onSubmitTransaction() {
-      if (!this.validTransaction(this.currentTransaction)) {
-        // TODO: add error alert depending on identified error
-        console.log('Invalid transaction')
+      let transactionCheck = this.checkTransaction(this.currentTransaction)
+      if (!transactionCheck.valid) {
+        console.log(`Invalid transaction: ${transactionCheck.cause}`)
+        alert(`Invalid transaction: ${transactionCheck.cause}`)
       } else {
-        this.cleanTransaction(this.currentTransaction)
+        this.formatTransaction(this.currentTransaction)
         if (this.isNew) {
           await fetcher.submitNewTransaction(this.currentTransaction)
         } else {
