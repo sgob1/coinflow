@@ -77,7 +77,7 @@ export default {
 
       this.selectedUsername = ''
     },
-    round(num) {
+    roundAmount(num) {
       return Math.round((num + Number.EPSILON) * 100) / 100
     },
     submit() {
@@ -92,7 +92,7 @@ export default {
       for (let quota in this.currentTransaction.quotas) {
         totalCost = totalCost + Number(this.currentTransaction.quotas[quota])
       }
-      return this.round(totalCost)
+      return this.roundAmount(totalCost)
     },
     remainingUsers() {
       let remainingUsers = this.cachedUsers.slice()
