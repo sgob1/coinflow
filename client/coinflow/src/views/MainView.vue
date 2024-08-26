@@ -173,7 +173,11 @@ export default {
       }
       let filteredTransactions = []
       for (let transaction of this.transactions) {
-        if (transaction.quotas[username]) filteredTransactions.push(transaction)
+        if (
+          transaction.quotas[username] &&
+          (transaction.author === this.$store.state.username || transaction.author === username)
+        )
+          filteredTransactions.push(transaction)
       }
 
       return filteredTransactions
