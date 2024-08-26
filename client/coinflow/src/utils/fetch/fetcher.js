@@ -42,8 +42,44 @@ const usersSearch = async function (username) {
   }
 }
 
+const submitNewTransaction = async function (transaction) {
+  let fetchString = `/api/budget/${transaction.year}/${transaction.month}`
+
+  console.log(`Creating transaction ${transaction}`)
+  const results = await fetch(fetchString, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(transaction)
+  })
+  return results.json()
+}
+
+const submitEditedTransaction = async function (
+  originalYear,
+  originalMonth,
+  originalId,
+  transaction
+) {
+  let fetchString = `/api/budget/${originalYear}/${originalMonth}/${originalId}`
+
+  console.log(`Submitting transaction ${transaction}`)
+  console.log(fetchString)
+  const results = await fetch(fetchString, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(transaction)
+  })
+  return await results.json()
+}
+
 export default {
   budget,
   balance,
-  usersSearch
+  usersSearch,
+  submitNewTransaction,
+  submitEditedTransaction
 }

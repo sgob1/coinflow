@@ -1,18 +1,28 @@
 <template>
   <div class="editor-wrapper">
-    <h1>Description</h1>
+    <div class="editor-title">
+      <h1 v-if="isNew">Create Transaction</h1>
+      <h1 v-if="!isNew">Edit Transaction</h1>
+    </div>
+    <h2>Description</h2>
     <input
       type="text"
       v-model="currentTransaction.description"
       value="currentTransaction.description"
+      required
     />
-    <h1>Category</h1>
-    <input type="text" v-model="currentTransaction.category" value="currentTransaction.category" />
-    <h1>Date</h1>
+    <h2>Category</h2>
+    <input
+      type="text"
+      v-model="currentTransaction.category"
+      value="currentTransaction.category"
+      required
+    />
+    <h2>Date</h2>
     <div class="date-editor-wrapper">
-      <input type="date" v-model="date" @input="onSubmitDate" value="currentDate" />
+      <input type="date" v-model="date" @input="onSubmitDate" value="currentDate" required />
     </div>
-    <h1>User Quotas</h1>
+    <h2>User Quotas</h2>
     <div class="add-user-quota-wrapper" v-if="remainingUsers.length > 0">
       <select v-model="selectedUsername">
         <option v-for="user in remainingUsers" :key="user.username">
@@ -44,6 +54,9 @@
     </div>
     <!-- TODO: remove this debug print -->
     {{ currentTransaction }}
+    <button type="button" name="submit-transaction-button" @click="onSubmitTransaction">
+      Submit
+    </button>
   </div>
 </template>
 
@@ -57,15 +70,16 @@ export default {
       selectedUsername: '',
       cachedUsers: [],
       pickedDate: undefined,
-      dataReady: false
+      dataReady: false,
+      isNew: this.isNewTransaction()
     }
   },
   props: {
     transaction: Object
   },
   methods: {
-    reset() {
-      this.currentTransaction = {}
+    isNewTransaction() {
+      return !this.currentTransaction || !this.currentTransaction.transactionId
     },
     onAddUserQuotaClick() {
       if (this.selectedUsername === '') return
@@ -86,21 +100,34 @@ export default {
     roundAmount(num) {
       return Math.round((num + Number.EPSILON) * 100) / 100
     },
+    initTransaction() {
+      this.currentTransaction = {}
+      this.initDate()
+      this.currentTransaction.author = this.$store.state.username
+      this.currentTransaction.quotas = {}
+      this.currentTransaction.quotas[this.$store.state.username] = 0.0
+      let today = new Date()
+      this.currentTransaction.year = today.getFullYear()
+      this.currentTransaction.month = today.getMonth() + 1
+      this.currentTransaction.day = today.getDate()
+    },
     initDate() {
       if (
-        !this.currentTransaction.year ||
-        !this.currentTransaction.month ||
-        !this.currentTransaction.day
+        !this.transaction ||
+        !this.transaction.year ||
+        !this.transaction.month ||
+        !this.transaction.day
       ) {
         this.pickedDate = new Date()
+        this.date = this.currentDate
       } else {
         this.pickedDate = new Date(
-          this.currentTransaction.year,
-          this.currentTransaction.month - 1,
-          this.currentTransaction.day + 1
+          this.transaction.year,
+          this.transaction.month - 1,
+          this.transaction.day + 1
         )
+        this.date = this.pickedDate.toISOString().substring(0, 10)
       }
-      this.date = this.pickedDate.toISOString().substring(0, 10)
     },
     onSubmitDate() {
       let supportDate = new Date(this.date)
@@ -114,14 +141,38 @@ export default {
     onDeleteUserQuotaClick(username) {
       delete this.currentTransaction.quotas[username]
     },
-    submit() {
-      // TODO: parse transaction object and clean it if it contains spurious items
+    validTransaction(transaction) {
+      // TODO: parse transaction object
+      return true
+    },
+    cleanTransaction(transaction) {
+      // TODO: clean spurious fields
+    },
+    async onSubmitTransaction() {
+      if (!this.validTransaction(this.currentTransaction)) {
+        // TODO: add error alert depending on identified error
+        console.log('Invalid transaction')
+      } else {
+        this.cleanTransaction(this.currentTransaction)
+        if (this.isNew) {
+          await fetcher.submitNewTransaction(this.currentTransaction)
+        } else {
+          await fetcher.submitEditedTransaction(
+            this.transaction.year,
+            this.transaction.month,
+            this.transaction.transactionId,
+            this.currentTransaction
+          )
+        }
+        await this.$emit('transactionSubmitted')
+      }
     }
   },
   computed: {
     currentDate() {
       if (!this.pickedDate) {
-        return new Date().toISOString().substring(0, 10)
+        let today = new Date()
+        return `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
       }
       return this.pickedDate.toISOString().substring(0, 10)
     },
@@ -156,11 +207,16 @@ export default {
     transaction: function (newVal) {
       Object.assign(this.currentTransaction, newVal)
       this.initDate()
+      if (this.isNewTransaction()) {
+        this.initTransaction()
+        this.isNew = true
+      } else {
+        this.isNew = false
+      }
     }
   },
   async mounted() {
     this.cachedUsers = (await fetcher.usersSearch('')).slice()
-    this.initDate()
     this.dataReady = true
   }
 }

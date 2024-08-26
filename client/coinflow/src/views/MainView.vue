@@ -35,7 +35,11 @@
         :transition-duration="0.4"
         :overlay-color="'#00000048'"
       >
-        <TransactionEditorComponent :transaction="targetTransaction" ref="transactionEditor" />
+        <TransactionEditorComponent
+          :transaction="targetTransaction"
+          ref="transactionEditor"
+          @transaction-submitted="onTransactionSubmitted"
+        />
       </vue-bottom-sheet>
     </div>
   </div>
@@ -98,18 +102,24 @@ export default {
     },
     onTransactionClick(transaction) {
       this.targetTransaction = this.cloneTransaction(transaction)
-      this.open()
+      this.openEditor()
     },
     onFloatingActionButtonClick() {
       this.targetTransaction = {}
-      this.$refs.transactionEditor.reset()
-      this.open()
+      this.$refs.transactionEditor.initTransaction()
+      this.openEditor()
     },
-    open() {
+    openEditor() {
       this.$refs.bottomSheet.open()
     },
-    close() {
+    closeEditor() {
       this.$refs.bottomSheet.close()
+    },
+    async onTransactionSubmitted() {
+      this.closeEditor()
+      this.dataReady = false
+      this.getBudget()
+      this.dataReady = true
     },
     onOptionsChange() {
       this.dataReady = false
