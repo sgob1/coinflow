@@ -99,7 +99,7 @@ export default {
     },
     currentMonth() {
       return new Date().getMonth()
-    },
+    }
   },
   methods: {
     cloneTransaction(transaction) {
@@ -248,7 +248,7 @@ export default {
 }
 
 .bottom-sheet-component {
-  min-height: 300px;
+  min-height: 500px;
   display: flex;
   flex-direction: column;
 }
