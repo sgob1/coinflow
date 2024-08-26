@@ -77,6 +77,9 @@ export default {
 
       this.selectedUsername = ''
     },
+    round(num) {
+      return Math.round((num + Number.EPSILON) * 100) / 100
+    },
     submit() {
       // TODO: parse transaction object and clean it if it contains spurious items
     }
@@ -89,7 +92,7 @@ export default {
       for (let quota in this.currentTransaction.quotas) {
         totalCost = totalCost + Number(this.currentTransaction.quotas[quota])
       }
-      return totalCost
+      return this.round(totalCost)
     },
     remainingUsers() {
       let remainingUsers = this.cachedUsers.slice()
