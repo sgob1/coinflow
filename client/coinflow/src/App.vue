@@ -1,6 +1,5 @@
 <script>
 import HeaderBarComponent from './components/HeaderBarComponent.vue'
-import fetcher from '@/utils/fetch/fetcher.js'
 
 export default {
   name: 'App',
@@ -40,9 +39,6 @@ export default {
       this.isAuthenticated = this.$store.state.isAuthenticated
       this.username = this.$store.state.username
     }
-    // async onUndoDelete(transaction) {
-    //   await fetcher.submitNewTransaction(transaction)
-    // }
   }
 }
 </script>
@@ -84,5 +80,6 @@ body {
   justify-content: center;
   width: 100%;
   margin: auto;
+  padding-top: 60px;
 }
 </style>

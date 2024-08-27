@@ -111,7 +111,7 @@ const searchOfUserByDescription = async function (username, query) {
 
   let baseQuery = {
     $or: [
-      { author: username, description: { $regex: query, $options: smartCase } },
+      { author: username, $or:[{description: { $regex: query, $options: smartCase }}, {category: { $regex: query, $options: smartCase }}] },
       {
         ["quotas" + "." + username]: { $exists: true },
         description: { $regex: query, $options: smartCase },

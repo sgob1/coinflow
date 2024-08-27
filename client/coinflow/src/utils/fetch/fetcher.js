@@ -42,6 +42,17 @@ const usersSearch = async function (username) {
   }
 }
 
+const transactionsSearch = async function (query) {
+  let fetchString = `/api/budget/search?q=${query}`
+
+  const results = await fetch(fetchString)
+  if (results.ok) {
+    return await results.json()
+  } else {
+    console.log(`Cannot GET users due to ${results}`)
+  }
+}
+
 const submitNewTransaction = async function (transaction) {
   let fetchString = `/api/budget/${transaction.year}/${transaction.month}`
 
@@ -90,6 +101,7 @@ export default {
   budget,
   balance,
   usersSearch,
+  transactionsSearch,
   submitNewTransaction,
   submitEditedTransaction,
   deleteTransaction
