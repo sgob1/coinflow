@@ -56,19 +56,9 @@
     </div>
     <!-- TODO: remove this debug print -->
     {{ currentTransaction }}
-    <div class="final-editor-row">
-      <button type="button" name="submit-transaction-button" @click="onSubmitTransaction">
-        Submit
-      </button>
-      <button
-        type="button"
-        name="submit-transaction-button"
-        @click="onDeleteTransaction"
-        v-if="!isNew"
-      >
-        Delete
-      </button>
-    </div>
+    <button type="button" name="submit-transaction-button" @click="onSubmitTransaction">
+      Submit
+    </button>
   </div>
 </template>
 
@@ -224,12 +214,6 @@ export default {
         }
         await this.$emit('transactionSubmitted')
       }
-    },
-    async onDeleteTransaction() {
-      if (confirm(`Really delete transaction '${this.transaction.description}'?`)) {
-        await fetcher.deleteTransaction(this.transaction)
-        await this.$emit('transactionDeleted')
-      }
     }
   },
   computed: {
@@ -306,9 +290,5 @@ input:invalid {
   border: none;
   outline: 2px solid red;
   border-radius: 5px;
-}
-.final-editor-row {
-  display: grid;
-  grid-template-columns: 3fr 1fr;
 }
 </style>

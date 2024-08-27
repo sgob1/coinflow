@@ -35,9 +35,12 @@
         <li
           v-for="transaction in filteredTransactions(this.selectedUsername)"
           :key="transaction.transactionId"
-          @click="this.onTransactionClick(transaction)"
         >
-          <TransactionItem :transaction="transaction" />
+          <TransactionItem
+            :transaction="transaction"
+            @edit-transaction="onEditTransaction"
+            @delete-transaction="onDeleteTransaction"
+          />
         </li>
       </div>
       <FloatingActionButtonComponent
@@ -56,7 +59,6 @@
           :transaction="targetTransaction"
           ref="transactionEditor"
           @transaction-submitted="onTransactionsModified"
-          @transaction-deleted="onTransactionsModified"
         />
       </vue-bottom-sheet>
     </div>
@@ -118,7 +120,13 @@ export default {
       }
       return clone
     },
-    onTransactionClick(transaction) {
+    openEditor() {
+      this.$refs.bottomSheet.open()
+    },
+    closeEditor() {
+      this.$refs.bottomSheet.close()
+    },
+    onEditTransaction(transaction) {
       this.targetTransaction = this.cloneTransaction(transaction)
       this.openEditor()
     },
@@ -126,11 +134,11 @@ export default {
       this.targetTransaction = this.cloneTransaction({})
       this.openEditor()
     },
-    openEditor() {
-      this.$refs.bottomSheet.open()
-    },
-    closeEditor() {
-      this.$refs.bottomSheet.close()
+    async onDeleteTransaction(transaction) {
+      if (confirm(`Really delete transaction '${transaction.description}'?`)) {
+        await fetcher.deleteTransaction(transaction)
+        this.onTransactionsModified()
+      }
     },
     async onTransactionsModified() {
       this.closeEditor()
