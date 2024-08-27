@@ -1,52 +1,69 @@
 <template>
   <div id="main-view">
     <div v-if="dataReady">
-      <SummaryComponent
-        :total-amount="balance[this.selectedUsername]"
-        :user="this.selectedUsername"
-      />
-      <div id="table-menu" class="transactions-table-menu">
-        <input
-          type="number"
-          min="1900"
-          max="2100"
-          placeholder="Year"
-          value="currentYear"
-          v-model="year"
-          @input="onOptionsChange"
+      <div v-if="!searchModeOn">
+        <SummaryComponent
+          :total-amount="balance[this.selectedUsername]"
+          :user="this.selectedUsername"
         />
-        <input
-          type="number"
-          min="1"
-          max="12"
-          placeholder="Month"
-          value="currentMonth"
-          v-model="month"
-          @input="onOptionsChange"
-        />
-        <select v-model="selectedUsername">
-          <option value="_total">Total balance</option>
-          <option v-for="user in cachedUsers" :key="user.username">
-            {{ user.username }}
-          </option>
-        </select>
-      </div>
-      <div id="main-table" class="transactions-table">
-        <li
-          v-for="transaction in filteredTransactions(this.selectedUsername)"
-          :key="transaction.transactionId"
-        >
-          <TransactionItem
-            :transaction="transaction"
-            @edit-transaction="onEditTransaction"
-            @delete-transaction="onDeleteTransaction"
+        <div id="table-menu" class="transactions-table-menu">
+          <input
+            type="number"
+            min="1900"
+            max="2100"
+            placeholder="Year"
+            value="currentYear"
+            v-model="year"
+            @input="onOptionsChange"
           />
-        </li>
+          <input
+            type="number"
+            min="1"
+            max="12"
+            placeholder="Month"
+            value="currentMonth"
+            v-model="month"
+            @input="onOptionsChange"
+          />
+          <select v-model="selectedUsername">
+            <option value="_total">Total balance</option>
+            <option v-for="user in cachedUsers" :key="user.username">
+              {{ user.username }}
+            </option>
+          </select>
+        </div>
+        <div id="main-table" class="transactions-table">
+          <li
+            v-for="transaction in filteredTransactions(this.selectedUsername)"
+            :key="transaction.transactionId"
+          >
+            <TransactionItem
+              :transaction="transaction"
+              @edit-transaction="onEditTransaction"
+              @delete-transaction="onDeleteTransaction"
+            />
+          </li>
+        </div>
+        <FloatingActionButtonComponent
+          id="floating-action-button"
+          @click="onFloatingActionButtonClick"
+        />
       </div>
-      <FloatingActionButtonComponent
-        id="floating-action-button"
-        @click="onFloatingActionButtonClick"
-      />
+      <div v-if="searchModeOn">
+        <div id="search-table">
+          <li v-for="transaction in transactionsSearchResults" :key="transaction.transactionId">
+            <TransactionItem
+              :transaction="transaction"
+              @edit-transaction="onEditTransaction"
+              @delete-transaction="onDeleteTransaction"
+            />
+          </li>
+          <li v-for="user in usersSearchResults" :key="user.userId">
+            <!-- TODO: create proper user item component -->
+            {{ user }}
+          </li>
+        </div>
+      </div>
       <vue-bottom-sheet
         ref="bottomSheet"
         :max-width="1024"
@@ -76,6 +93,7 @@ import '@webzlodimir/vue-bottom-sheet/dist/style.css'
 import TransactionEditorComponent from '@/components/TransactionEditorComponent.vue'
 import FloatingActionButtonComponent from '@/components/FloatingActionButtonComponent.vue'
 
+import { mapState } from 'vuex'
 import { h } from 'vue'
 
 const undoButton = h(
@@ -107,10 +125,14 @@ export default {
       balance: {},
       cachedUsers: {},
       dataReady: false,
-      targetTransaction: undefined
+      targetTransaction: undefined,
+      searchModeOn: false,
+      transactionsSearchResults: [],
+      usersSearchResults: []
     }
   },
   computed: {
+    ...mapState(['searchQuery']),
     currentYear() {
       return new Date().getFullYear()
     },
@@ -173,6 +195,7 @@ export default {
       this.dataReady = false
       this.getBudget()
       this.getBalance()
+      this.refreshSearch()
       this.dataReady = true
     },
     onOptionsChange() {
@@ -268,12 +291,31 @@ export default {
       }
 
       return filteredTransactions
+    },
+    async searchTransactions(query) {
+      this.transactionsSearchResults = []
+      this.transactionsSearchResults = await fetcher.transactionsSearch(query)
+    },
+    async searchUsers(query) {
+      this.usersSearchResults = []
+      this.usersSearchResults = await fetcher.usersSearch(query)
+    },
+    async refreshSearch() {
+      await this.searchTransactions(this.searchQuery)
+      await this.searchUsers(this.searchQuery)
     }
   },
   async mounted() {
     await this.getBalance()
     await this.cacheUsersInBalance()
     this.onOptionsChange()
+  },
+  watch: {
+    searchQuery: async function (newVal, oldVal) {
+      this.searchModeOn = newVal.trim().length > 0 ? true : false
+      await this.searchTransactions(newVal)
+      await this.searchUsers(newVal)
+    }
   }
 }
 </script>

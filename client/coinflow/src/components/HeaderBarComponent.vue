@@ -26,13 +26,13 @@ export default {
   },
   methods: {
     onSearchIconClick() {
-      this.$router.replace({ name: 'search' })
       this.searchOpen = true
+      this.$emit('openSearch')
     },
     onGoBackClick() {
       this.searchQuery = ''
-      this.$router.replace({ name: 'main' })
       this.searchOpen = false
+      this.$emit('closeSearch')
     }
   },
   watch: {
