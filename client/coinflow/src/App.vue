@@ -53,7 +53,7 @@ export default {
     <div id="nav-host" v-if="dataReady">
       <RouterView @authenticated="onAuthentication" />
     </div>
-    <vue3-snackbar top center group :duration="4000">
+    <vue3-snackbar top center groups dense :duration="4000">
       <template #message-action="{ message, isDismissible, dismiss }"> </template>
     </vue3-snackbar>
   </div>

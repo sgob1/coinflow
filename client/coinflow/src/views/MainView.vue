@@ -156,17 +156,15 @@ export default {
       this.$snackbar.add({
         type: 'success',
         text: `Deleted transaction '${transaction.description}'`,
-        action: h(
-          'button', // type
-          {
-            class: 'undo-button',
-            type: 'button',
-            onClick: () => {
-              this.onUndoClick(transaction)
-            },
-            innerHTML: 'Undo'
-          } // props
-        )
+        // Render function for undo button
+        action: h('button', {
+          class: 'undo-button',
+          type: 'button',
+          onClick: () => {
+            this.onUndoClick(transaction)
+          },
+          innerHTML: 'Undo'
+        })
       })
     },
     async onTransactionsModified() {

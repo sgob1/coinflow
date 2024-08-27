@@ -199,7 +199,11 @@ export default {
       let transactionCheck = this.checkTransaction(this.currentTransaction)
       if (!transactionCheck.valid) {
         console.log(`Invalid transaction: ${transactionCheck.cause}`)
-        alert(`Invalid transaction: ${transactionCheck.cause}`)
+        this.$snackbar.add({
+          type: 'error',
+          title: 'Invalid transaction',
+          text: transactionCheck.cause
+        })
       } else {
         this.formatTransaction(this.currentTransaction)
         if (this.isNew) {
