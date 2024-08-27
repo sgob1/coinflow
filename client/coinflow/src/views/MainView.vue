@@ -152,20 +152,21 @@ export default {
       if (confirm(`Really delete transaction '${transaction.description}'?`)) {
         await fetcher.deleteTransaction(transaction)
         this.onTransactionsModified()
-      }
-      this.$snackbar.add({
-        type: 'success',
-        text: `Deleted transaction '${transaction.description}'`,
-        // Render function for undo button
-        action: h('button', {
-          class: 'undo-button',
-          type: 'button',
-          onClick: () => {
-            this.onUndoClick(transaction)
-          },
-          innerHTML: 'Undo'
+
+        this.$snackbar.add({
+          type: 'success',
+          text: `Deleted transaction '${transaction.description}'`,
+          // Render function for undo button
+          action: h('button', {
+            class: 'undo-button',
+            type: 'button',
+            onClick: () => {
+              this.onUndoClick(transaction)
+            },
+            innerHTML: 'Undo'
+          })
         })
-      })
+      }
     },
     async onTransactionsModified() {
       this.closeEditor()
