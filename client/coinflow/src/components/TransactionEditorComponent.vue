@@ -212,6 +212,13 @@ export default {
             this.currentTransaction
           )
         }
+        let snackbarMessage = this.isNew
+          ? `Added transaction '${this.currentTransaction.description}'`
+          : `Edited with ${this.currentTransaction.description}`
+        this.$snackbar.add({
+          type: 'success',
+          text: snackbarMessage
+        })
         await this.$emit('transactionSubmitted')
       }
     }

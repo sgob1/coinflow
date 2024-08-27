@@ -1,5 +1,6 @@
 <script>
 import HeaderBarComponent from './components/HeaderBarComponent.vue'
+import fetcher from '@/utils/fetch/fetcher.js'
 
 export default {
   name: 'App',
@@ -39,6 +40,9 @@ export default {
       this.isAuthenticated = this.$store.state.isAuthenticated
       this.username = this.$store.state.username
     }
+    // async onUndoDelete(transaction) {
+    //   await fetcher.submitNewTransaction(transaction)
+    // }
   }
 }
 </script>
@@ -49,6 +53,9 @@ export default {
     <div id="nav-host" v-if="dataReady">
       <RouterView @authenticated="onAuthentication" />
     </div>
+    <vue3-snackbar top center group :duration="4000">
+      <template #message-action="{ message, isDismissible, dismiss }"> </template>
+    </vue3-snackbar>
   </div>
 </template>
 

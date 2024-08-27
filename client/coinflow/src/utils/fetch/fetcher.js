@@ -45,7 +45,6 @@ const usersSearch = async function (username) {
 const submitNewTransaction = async function (transaction) {
   let fetchString = `/api/budget/${transaction.year}/${transaction.month}`
 
-  console.log(`Creating transaction ${transaction}`)
   const results = await fetch(fetchString, {
     method: 'POST',
     headers: {

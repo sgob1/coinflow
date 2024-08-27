@@ -76,6 +76,20 @@ import '@webzlodimir/vue-bottom-sheet/dist/style.css'
 import TransactionEditorComponent from '@/components/TransactionEditorComponent.vue'
 import FloatingActionButtonComponent from '@/components/FloatingActionButtonComponent.vue'
 
+import { h } from 'vue'
+
+const undoButton = h(
+  'button', // type
+  {
+    class: 'undo-button',
+    type: 'button',
+    onClick: () => {
+      console.log('undo')
+    },
+    innerHTML: 'UNDO'
+  } // props
+)
+
 export default {
   components: {
     SummaryComponent,
@@ -139,6 +153,21 @@ export default {
         await fetcher.deleteTransaction(transaction)
         this.onTransactionsModified()
       }
+      this.$snackbar.add({
+        type: 'success',
+        text: `Deleted transaction '${transaction.description}'`,
+        action: h(
+          'button', // type
+          {
+            class: 'undo-button',
+            type: 'button',
+            onClick: () => {
+              this.onUndoClick(transaction)
+            },
+            innerHTML: 'Undo'
+          } // props
+        )
+      })
     },
     async onTransactionsModified() {
       this.closeEditor()
@@ -151,6 +180,10 @@ export default {
       this.dataReady = false
       this.getBudget()
       this.dataReady = true
+    },
+    async onUndoClick(transaction) {
+      await fetcher.submitNewTransaction(transaction)
+      this.onTransactionsModified()
     },
     validYear(year) {
       if (isNaN(year) || year === '' || year < 1900) return false
