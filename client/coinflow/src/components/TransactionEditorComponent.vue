@@ -188,10 +188,10 @@ export default {
       transaction.category = transaction.category.trim()
       for (let quota in transaction.quotas) {
         let quotaAmount = this.roundAmount(Number(transaction.quotas[quota]))
-        if (quotaAmount === 0.0) {
+        if (Number(quotaAmount) === 0.0) {
           delete transaction.quotas[quota]
         } else {
-          transaction.quotas[quota] = this.roundAmount(Number(transaction.quotas[quota]))
+          transaction.quotas[quota] = quotaAmount
         }
       }
     },
