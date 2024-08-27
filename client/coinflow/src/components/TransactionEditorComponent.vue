@@ -30,7 +30,12 @@
           {{ user.username }}
         </option>
       </select>
-      <button type="button" name="add-user-quota-button" @click="onAddUserQuotaClick">
+      <button
+        type="button"
+        name="add-user-quota-button"
+        v-if="selectedUsername !== ''"
+        @click="onAddUserQuotaClick"
+      >
         Add user
       </button>
     </div>
@@ -218,7 +223,7 @@ export default {
         }
         let snackbarMessage = this.isNew
           ? `Added transaction '${this.currentTransaction.description}'`
-          : `Edited with ${this.currentTransaction.description}`
+          : `Edited with '${this.currentTransaction.description}'`
         this.$snackbar.add({
           type: 'success',
           text: snackbarMessage
