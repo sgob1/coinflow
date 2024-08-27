@@ -226,8 +226,10 @@ export default {
       }
     },
     async onDeleteTransaction() {
-      await fetcher.deleteTransaction(this.transaction)
-      await this.$emit('transactionDeleted')
+      if (confirm(`Really delete transaction '${this.transaction.description}'?`)) {
+        await fetcher.deleteTransaction(this.transaction)
+        await this.$emit('transactionDeleted')
+      }
     }
   },
   computed: {
