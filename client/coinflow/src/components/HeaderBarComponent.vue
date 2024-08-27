@@ -30,8 +30,8 @@ export default {
       this.searchOpen = true
     },
     onGoBackClick() {
+      this.searchQuery = ''
       this.$router.replace({ name: 'main' })
-      this.$store.commit('setSearchQuery', '')
       this.searchOpen = false
     }
   },
