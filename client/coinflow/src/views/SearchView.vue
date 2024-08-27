@@ -2,14 +2,25 @@
   <div id="search-view">
     {{ transactionsList }}
     {{ usersList }}
+    <div v-for="(transaction, key) in transactionsList">
+      <TransactionItem
+        :transaction="transaction"
+        @edit-transaction="onEditTransaction"
+        @delete-transaction="onDeleteTransaction"
+      />
+    </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import fetcher from '@/utils/fetch/fetcher.js'
+import TransactionItem from '@/components/TransactionItem.vue'
 
 export default {
+  components: {
+    TransactionItem
+  },
   data() {
     return {
       transactionsList: [],
