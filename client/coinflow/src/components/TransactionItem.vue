@@ -54,11 +54,11 @@ export default {
 }
 
 .transaction-item-first-row {
-  font-size: 1.2em;
+  font-size: 1.12em;
   font-weight: bold;
 }
 .transaction-item-second-row {
-  font-size: 1em;
+  font-size: 0.96em;
   font-style: italic;
   color: rgba(0, 0, 0, 0.4);
 }
