@@ -23,7 +23,7 @@
         {{ transaction.category }}
       </div>
       <div class="quotas-section" v-if="Object.keys(transaction.quotas).length > 1">
-        <h2>Other quotas</h2>
+        <h2>Shared with</h2>
         <div v-for="(quota, key) in transaction.quotas" :key="key">
           <div v-if="key !== this.$store.state.username">
             {{ key }}: {{ transaction.quotas[key] }}€

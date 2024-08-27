@@ -8,7 +8,7 @@
       v-if="!searchOpen"
     />
     <img
-      src="@/assets/go-back.png"
+      src="@/assets/close.png"
       alt="Back"
       class="icon"
       @click="onGoBackClick"
