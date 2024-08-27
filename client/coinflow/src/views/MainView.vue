@@ -183,6 +183,10 @@ export default {
     async onUndoClick(transaction) {
       await fetcher.submitNewTransaction(transaction)
       this.onTransactionsModified()
+      this.$snackbar.add({
+        type: 'success',
+        text: `Undo delete transaction '${transaction.description}'`
+      })
     },
     validYear(year) {
       if (isNaN(year) || year === '' || year < 1900) return false
