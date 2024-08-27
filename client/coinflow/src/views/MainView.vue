@@ -55,7 +55,8 @@
           class="bottom-sheet-component"
           :transaction="targetTransaction"
           ref="transactionEditor"
-          @transaction-submitted="onTransactionSubmitted"
+          @transaction-submitted="onTransactionsModified"
+          @transaction-deleted="onTransactionsModified"
         />
       </vue-bottom-sheet>
     </div>
@@ -131,7 +132,7 @@ export default {
     closeEditor() {
       this.$refs.bottomSheet.close()
     },
-    async onTransactionSubmitted() {
+    async onTransactionsModified() {
       this.closeEditor()
       this.dataReady = false
       this.getBudget()

@@ -64,10 +64,21 @@ const submitEditedTransaction = async function (
 ) {
   let fetchString = `/api/budget/${originalYear}/${originalMonth}/${originalId}`
 
-  console.log(`Submitting transaction ${transaction}`)
-  console.log(fetchString)
   const results = await fetch(fetchString, {
     method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(transaction)
+  })
+  return await results.json()
+}
+
+const deleteTransaction = async function (transaction) {
+  let fetchString = `/api/budget/${transaction.year}/${transaction.month}/${transaction.transactionId}`
+
+  const results = await fetch(fetchString, {
+    method: 'DELETE',
     headers: {
       'Content-Type': 'application/json'
     },
@@ -81,5 +92,6 @@ export default {
   balance,
   usersSearch,
   submitNewTransaction,
-  submitEditedTransaction
+  submitEditedTransaction,
+  deleteTransaction
 }
