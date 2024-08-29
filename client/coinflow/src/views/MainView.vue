@@ -6,32 +6,10 @@
           :total-amount="balance[this.selectedUsername]"
           :user="this.selectedUsername"
         />
-        <div id="table-menu" class="transactions-table-menu">
-          <input
-            type="number"
-            min="1900"
-            max="2100"
-            placeholder="Year"
-            value="currentYear"
-            v-model="year"
-            @input="onOptionsChange"
-          />
-          <input
-            type="number"
-            min="1"
-            max="12"
-            placeholder="Month"
-            value="currentMonth"
-            v-model="month"
-            @input="onOptionsChange"
-          />
-          <select v-model="selectedUsername">
-            <option value="_total">Total balance</option>
-            <option v-for="user in cachedUsers" :key="user.username">
-              {{ user.username }}
-            </option>
-          </select>
-        </div>
+        <TransactionsTableFilterComponent
+          :users="cachedUsers"
+          @filters-changed="onFiltersChanged"
+        />
         <div id="main-table" class="transactions-table">
           <li v-for="transaction in filteredTransactions" :key="transaction.transactionId">
             <TransactionItem
@@ -89,6 +67,7 @@ import '@webzlodimir/vue-bottom-sheet/dist/style.css'
 
 import TransactionEditorComponent from '@/components/TransactionEditorComponent.vue'
 import FloatingActionButtonComponent from '@/components/FloatingActionButtonComponent.vue'
+import TransactionsTableFilterComponent from '@/components/TransactionsTableFilterComponent.vue'
 
 import { mapState } from 'vuex'
 import { h } from 'vue'
@@ -100,7 +79,8 @@ export default {
     VueBottomSheet,
     TransactionEditorComponent,
     FloatingActionButtonComponent,
-    UserItem
+    UserItem,
+    TransactionsTableFilterComponent
   },
   data() {
     return {
@@ -200,8 +180,13 @@ export default {
       this.refreshSearch()
       this.dataReady = true
     },
-    onOptionsChange() {
+    onFiltersChanged(filters) {
       this.dataReady = false
+      if (filters) {
+        this.year = filters.year
+        this.month = filters.month
+        this.selectedUsername = filters.username
+      }
       this.getBudget()
       this.dataReady = true
     },
@@ -298,7 +283,7 @@ export default {
   async mounted() {
     await this.getBalance()
     await this.cacheUsersInBalance()
-    this.onOptionsChange()
+    this.onFiltersChanged()
   },
   watch: {
     searchQuery: async function (newVal, oldVal) {
@@ -317,11 +302,6 @@ export default {
   padding: 8px;
   margin: 0px;
   max-width: 100%;
-}
-
-.table-menu {
-  display: flex;
-  flex-direction: row;
 }
 
 .bottom-sheet-component {
