@@ -21,7 +21,12 @@
         />
       </div>
       <div v-if="searchModeOn">
-        <SearchTableComponent :query="searchQuery" />
+        <SearchTableComponent
+          ref="searchComponent"
+          :query="searchQuery"
+          @edit-transaction="onEditTransaction"
+          @delete-transaction="onDeleteTransaction"
+        />
       </div>
       <vue-bottom-sheet
         ref="bottomSheet"
@@ -162,6 +167,7 @@ export default {
       this.getBudget()
       this.getBalance()
       this.dataReady = true
+      await this.$refs.searchComponent.refresh()
     },
     onFiltersChanged(filters) {
       this.dataReady = false
@@ -175,7 +181,7 @@ export default {
     },
     async onUndoClick(transaction) {
       await fetcher.submitNewTransaction(transaction)
-      this.onTransactionsModified()
+      await this.onTransactionsModified()
       this.$snackbar.add({
         type: 'success',
         text: `Undo delete transaction '${transaction.description}'`

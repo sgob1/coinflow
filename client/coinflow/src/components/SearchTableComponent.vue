@@ -22,6 +22,7 @@ import UserItem from '@/components/UserItem.vue'
 import fetcher from '@/utils/fetch/fetcher.js'
 
 export default {
+  emits: ['editTransaction', 'deleteTransaction'],
   components: {
     TransactionItem,
     UserItem
@@ -44,9 +45,15 @@ export default {
       this.usersSearchResults = []
       this.usersSearchResults = await fetcher.usersSearch(query)
     },
-    async refreshSearch() {
-      await this.searchTransactions(this.searchQuery)
-      await this.searchUsers(this.searchQuery)
+    async refresh() {
+      await this.searchTransactions(this.query)
+      await this.searchUsers(this.query)
+    },
+    onEditTransaction(transaction) {
+      this.$emit('editTransaction', transaction)
+    },
+    onDeleteTransaction(transaction) {
+      this.$emit('deleteTransaction', transaction)
     }
   },
   watch: {
@@ -54,6 +61,9 @@ export default {
       await this.searchTransactions(newVal)
       await this.searchUsers(newVal)
     }
+  },
+  async mounted() {
+    await this.refresh()
   }
 }
 </script>
