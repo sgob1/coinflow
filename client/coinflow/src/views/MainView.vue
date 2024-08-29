@@ -33,10 +33,7 @@
           </select>
         </div>
         <div id="main-table" class="transactions-table">
-          <li
-            v-for="transaction in filteredTransactions(this.selectedUsername)"
-            :key="transaction.transactionId"
-          >
+          <li v-for="transaction in filteredTransactions" :key="transaction.transactionId">
             <TransactionItem
               :transaction="transaction"
               @edit-transaction="onEditTransaction"
@@ -127,6 +124,22 @@ export default {
     },
     currentMonth() {
       return new Date().getMonth()
+    },
+    filteredTransactions() {
+      if (this.selectedUsername === '_total') {
+        return this.transactions
+      }
+      let filteredTransactions = []
+      for (let transaction of this.transactions) {
+        if (
+          transaction.quotas[this.selectedUsername] &&
+          (transaction.author === this.$store.state.username ||
+            transaction.author === this.selectedUsername)
+        )
+          filteredTransactions.push(transaction)
+      }
+
+      return filteredTransactions
     }
   },
   methods: {
@@ -209,6 +222,7 @@ export default {
       return true
     },
     async monthlyBudget() {
+      this.transactions = []
       const response = await fetch(`/api/budget/${this.year}/${this.month}`)
       if (response.ok) {
         this.transactions = await response.json()
@@ -218,6 +232,7 @@ export default {
       return response
     },
     async yearlyBudget() {
+      this.transactions = []
       const response = await fetch(`/api/budget/${this.year}`)
       if (response.ok) {
         this.transactions = await response.json()
@@ -227,6 +242,7 @@ export default {
       return response
     },
     async alltimeBudget() {
+      this.transactions = []
       const response = await fetch(`/api/budget/`)
       if (response.ok) {
         this.transactions = await response.json()
@@ -265,21 +281,6 @@ export default {
     },
     async getBalance() {
       this.balance = await fetcher.balance()
-    },
-    filteredTransactions(username) {
-      if (username === '_total') {
-        return this.transactions
-      }
-      let filteredTransactions = []
-      for (let transaction of this.transactions) {
-        if (
-          transaction.quotas[username] &&
-          (transaction.author === this.$store.state.username || transaction.author === username)
-        )
-          filteredTransactions.push(transaction)
-      }
-
-      return filteredTransactions
     },
     async searchTransactions(query) {
       this.transactionsSearchResults = []
