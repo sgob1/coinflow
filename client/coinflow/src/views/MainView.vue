@@ -49,6 +49,7 @@
 <script>
 import SummaryComponent from '@/components/SummaryComponent.vue'
 import fetcher from '@/utils/fetch/fetcher.js'
+import transactions from '@/utils/transactions.js'
 
 import VueBottomSheet from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
@@ -95,20 +96,26 @@ export default {
       return new Date().getMonth()
     },
     filteredTransactions() {
-      if (this.selectedUsername === '_total') {
-        return this.transactions
-      }
-      let filteredTransactions = []
-      for (let transaction of this.transactions) {
-        if (
-          transaction.quotas[this.selectedUsername] &&
-          (transaction.author === this.$store.state.username ||
-            transaction.author === this.selectedUsername)
-        )
-          filteredTransactions.push(transaction)
-      }
-
-      return filteredTransactions
+      return transactions.mutualTransactions(
+        this.transactions,
+        this.$store.state.username,
+        this.selectedUsername
+      )
+      //
+      // if (this.selectedUsername === '_total') {
+      //   return this.transactions
+      // }
+      // let filteredTransactions = []
+      // for (let transaction of this.transactions) {
+      //   if (
+      //     transaction.quotas[this.selectedUsername] &&
+      //     (transaction.author === this.$store.state.username ||
+      //       transaction.author === this.selectedUsername)
+      //   )
+      //     filteredTransactions.push(transaction)
+      // }
+      //
+      // return filteredTransactions
     }
   },
   methods: {

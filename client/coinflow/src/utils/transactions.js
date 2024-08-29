@@ -12,7 +12,29 @@ const computeTotalCost = function (transaction) {
   return this.roundAmount(totalCost)
 }
 
+const mutualTransactions = function (transactionsList, myUsername, theirUsername) {
+  if (theirUsername === '') {
+    return []
+  }
+
+  if (theirUsername === '_total') {
+    return transactionsList
+  }
+
+  let filteredTransactions = []
+  for (let transaction of transactionsList) {
+    if (
+      transaction.quotas[theirUsername] &&
+      (transaction.author === myUsername || transaction.author === theirUsername)
+    )
+      filteredTransactions.push(transaction)
+  }
+
+  return filteredTransactions
+}
+
 export default {
   roundAmount,
-  computeTotalCost
+  computeTotalCost,
+  mutualTransactions
 }

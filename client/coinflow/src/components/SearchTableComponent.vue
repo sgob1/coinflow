@@ -20,6 +20,7 @@ import TransactionItem from '@/components/TransactionItem.vue'
 import UserItem from '@/components/UserItem.vue'
 
 import fetcher from '@/utils/fetch/fetcher.js'
+import transactions from '@/utils/transactions.js'
 
 export default {
   emits: ['editTransaction', 'deleteTransaction'],
@@ -37,6 +38,22 @@ export default {
     }
   },
   methods: {
+    async processQuery(query) {
+      let trimmed = query.trim()
+      if (trimmed.startsWith('user:')) {
+        let username = trimmed.substring(5)
+        this.transactionsSearchResults = []
+        let allTransactions = await fetcher.budget()
+        this.transactionsSearchResults = transactions.mutualTransactions(
+          allTransactions,
+          this.$store.state.username,
+          username
+        )
+      } else {
+        await this.searchTransactions(trimmed)
+        await this.searchUsers(trimmed)
+      }
+    },
     async searchTransactions(query) {
       this.transactionsSearchResults = []
       this.transactionsSearchResults = await fetcher.transactionsSearch(query)
@@ -46,8 +63,9 @@ export default {
       this.usersSearchResults = await fetcher.usersSearch(query)
     },
     async refresh() {
-      await this.searchTransactions(this.query)
-      await this.searchUsers(this.query)
+      await this.processQuery(this.query)
+      // await this.searchTransactions(this.query)
+      // await this.searchUsers(this.query)
     },
     onEditTransaction(transaction) {
       this.$emit('editTransaction', transaction)
@@ -58,8 +76,9 @@ export default {
   },
   watch: {
     query: async function (newVal, oldVal) {
-      await this.searchTransactions(newVal)
-      await this.searchUsers(newVal)
+      await this.refresh()
+      // await this.searchTransactions(newVal)
+      // await this.searchUsers(newVal)
     }
   },
   async mounted() {
