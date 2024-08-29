@@ -59,8 +59,7 @@
             />
           </li>
           <li v-for="user in usersSearchResults" :key="user.userId">
-            <!-- TODO: create proper user item component -->
-            {{ user }}
+            <UserItem :user="user" />
           </li>
         </div>
       </div>
@@ -85,6 +84,7 @@
 <script>
 import SummaryComponent from '@/components/SummaryComponent.vue'
 import TransactionItem from '@/components/TransactionItem.vue'
+import UserItem from '@/components/UserItem.vue'
 import fetcher from '@/utils/fetch/fetcher.js'
 
 import VueBottomSheet from '@webzlodimir/vue-bottom-sheet'
@@ -96,25 +96,14 @@ import FloatingActionButtonComponent from '@/components/FloatingActionButtonComp
 import { mapState } from 'vuex'
 import { h } from 'vue'
 
-const undoButton = h(
-  'button', // type
-  {
-    class: 'undo-button',
-    type: 'button',
-    onClick: () => {
-      console.log('undo')
-    },
-    innerHTML: 'UNDO'
-  } // props
-)
-
 export default {
   components: {
     SummaryComponent,
     TransactionItem,
     VueBottomSheet,
     TransactionEditorComponent,
-    FloatingActionButtonComponent
+    FloatingActionButtonComponent,
+    UserItem
   },
   data() {
     return {

@@ -17,7 +17,7 @@ const budget = async function (year, month) {
 
 const balance = async function (id) {
   let fetchString = '/api/balance'
-  if (id) fetchString = fetchString.concat('/', id)
+  if (id !== undefined) fetchString = fetchString.concat('/', id)
 
   const result = await fetch(fetchString)
   if (result.ok) {
