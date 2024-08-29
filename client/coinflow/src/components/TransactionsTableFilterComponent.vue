@@ -47,7 +47,6 @@ export default {
         month: this.month,
         username: this.selectedUsername
       }
-      console.log(filters)
       this.$emit('filtersChanged', filters)
     }
   },
