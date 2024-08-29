@@ -21,18 +21,7 @@
         />
       </div>
       <div v-if="searchModeOn">
-        <div id="search-table">
-          <li v-for="transaction in transactionsSearchResults" :key="transaction.transactionId">
-            <TransactionItem
-              :transaction="transaction"
-              @edit-transaction="onEditTransaction"
-              @delete-transaction="onDeleteTransaction"
-            />
-          </li>
-          <li v-for="user in usersSearchResults" :key="user.userId">
-            <UserItem :user="user" />
-          </li>
-        </div>
+        <SearchTableComponent :query="searchQuery" />
       </div>
       <vue-bottom-sheet
         ref="bottomSheet"
@@ -54,14 +43,13 @@
 
 <script>
 import SummaryComponent from '@/components/SummaryComponent.vue'
-import TransactionItem from '@/components/TransactionItem.vue'
-import UserItem from '@/components/UserItem.vue'
 import fetcher from '@/utils/fetch/fetcher.js'
 
 import VueBottomSheet from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
 
 import TransactionsTableComponent from '@/components/TransactionsTableComponent.vue'
+import SearchTableComponent from '@/components/SearchTableComponent.vue'
 import TransactionEditorComponent from '@/components/TransactionEditorComponent.vue'
 import FloatingActionButtonComponent from '@/components/FloatingActionButtonComponent.vue'
 import TransactionsTableFilterComponent from '@/components/TransactionsTableFilterComponent.vue'
@@ -72,13 +60,12 @@ import { h } from 'vue'
 export default {
   components: {
     SummaryComponent,
-    TransactionItem,
     VueBottomSheet,
     TransactionEditorComponent,
     FloatingActionButtonComponent,
-    UserItem,
     TransactionsTableFilterComponent,
-    TransactionsTableComponent
+    TransactionsTableComponent,
+    SearchTableComponent
   },
   data() {
     return {
@@ -91,7 +78,6 @@ export default {
       dataReady: false,
       targetTransaction: undefined,
       searchModeOn: false,
-      transactionsSearchResults: [],
       usersSearchResults: []
     }
   },
@@ -175,7 +161,6 @@ export default {
       this.dataReady = false
       this.getBudget()
       this.getBalance()
-      this.refreshSearch()
       this.dataReady = true
     },
     onFiltersChanged(filters) {
@@ -247,7 +232,7 @@ export default {
     },
     async findUserByUsername(username) {
       if (this.cachedUsers[username]) return this.cachedUsers[username]
-      const user = await fetcher.usersSearch(username)
+      const user = await fetcher.singleUserSearch(username)
       this.cachedUsers[username] = user
       return user
     },
@@ -264,18 +249,6 @@ export default {
     },
     async getBalance() {
       this.balance = await fetcher.balance()
-    },
-    async searchTransactions(query) {
-      this.transactionsSearchResults = []
-      this.transactionsSearchResults = await fetcher.transactionsSearch(query)
-    },
-    async searchUsers(query) {
-      this.usersSearchResults = []
-      this.usersSearchResults = await fetcher.usersSearch(query)
-    },
-    async refreshSearch() {
-      await this.searchTransactions(this.searchQuery)
-      await this.searchUsers(this.searchQuery)
     }
   },
   async mounted() {
@@ -286,8 +259,6 @@ export default {
   watch: {
     searchQuery: async function (newVal, oldVal) {
       this.searchModeOn = newVal.trim().length > 0 ? true : false
-      await this.searchTransactions(newVal)
-      await this.searchUsers(newVal)
     }
   }
 }

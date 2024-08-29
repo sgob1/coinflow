@@ -27,16 +27,27 @@ const balance = async function (id) {
   }
 }
 
-const usersSearch = async function (username) {
+const singleUserSearch = async function (username) {
   let fetchString = `/api/users/search?q=${username}`
 
   const results = await fetch(fetchString)
   if (results.ok) {
     const users = await results.json()
-    for (let item in users) {
-      if (users[item].username === username) return users[item]
+    for (let user in users) {
+      if (users[user].username === username) return users[user]
     }
-    return users
+    return {}
+  } else {
+    console.log(`Cannot GET users due to ${results}`)
+  }
+}
+
+const usersSearch = async function (username) {
+  let fetchString = `/api/users/search?q=${username}`
+
+  const results = await fetch(fetchString)
+  if (results.ok) {
+    return await results.json()
   } else {
     console.log(`Cannot GET users due to ${results}`)
   }
@@ -100,6 +111,7 @@ const deleteTransaction = async function (transaction) {
 export default {
   budget,
   balance,
+  singleUserSearch,
   usersSearch,
   transactionsSearch,
   submitNewTransaction,

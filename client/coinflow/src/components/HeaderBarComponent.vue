@@ -38,7 +38,6 @@ export default {
   watch: {
     searchQuery: function (newVal, oldVal) {
       this.$store.commit('setSearchQuery', newVal)
-      console.log(this.$store.state.searchQuery)
     }
   }
 }

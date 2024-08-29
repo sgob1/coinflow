@@ -61,7 +61,7 @@ export default {
     },
     async findUserByUsername(username) {
       if (this.cachedUsers[username]) return this.cachedUsers[username]
-      const user = fetcher.usersSearch(username)
+      const user = fetcher.singleUserSearch(username)
       this.cachedUsers[username] = user
       return user
     },
