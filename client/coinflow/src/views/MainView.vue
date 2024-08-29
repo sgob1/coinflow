@@ -10,15 +10,11 @@
           :users="cachedUsers"
           @filters-changed="onFiltersChanged"
         />
-        <div id="main-table" class="transactions-table">
-          <li v-for="transaction in filteredTransactions" :key="transaction.transactionId">
-            <TransactionItem
-              :transaction="transaction"
-              @edit-transaction="onEditTransaction"
-              @delete-transaction="onDeleteTransaction"
-            />
-          </li>
-        </div>
+        <TransactionsTableComponent
+          :transactions="filteredTransactions"
+          @edit-transaction="onEditTransaction"
+          @delete-transaction="onDeleteTransaction"
+        />
         <FloatingActionButtonComponent
           id="floating-action-button"
           @click="onFloatingActionButtonClick"
@@ -65,6 +61,7 @@ import fetcher from '@/utils/fetch/fetcher.js'
 import VueBottomSheet from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
 
+import TransactionsTableComponent from '@/components/TransactionsTableComponent.vue'
 import TransactionEditorComponent from '@/components/TransactionEditorComponent.vue'
 import FloatingActionButtonComponent from '@/components/FloatingActionButtonComponent.vue'
 import TransactionsTableFilterComponent from '@/components/TransactionsTableFilterComponent.vue'
@@ -80,7 +77,8 @@ export default {
     TransactionEditorComponent,
     FloatingActionButtonComponent,
     UserItem,
-    TransactionsTableFilterComponent
+    TransactionsTableFilterComponent,
+    TransactionsTableComponent
   },
   data() {
     return {
