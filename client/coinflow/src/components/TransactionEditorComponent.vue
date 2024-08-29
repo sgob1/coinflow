@@ -69,6 +69,7 @@
 
 <script>
 import fetcher from '@/utils/fetch/fetcher.js'
+import transactions from '@/utils/transactions.js'
 
 export default {
   data() {
@@ -106,9 +107,6 @@ export default {
       }
 
       this.selectedUsername = ''
-    },
-    roundAmount(num) {
-      return (Math.round((num + Number.EPSILON) * 100) / 100).toFixed(2)
     },
     resetTransaction() {
       this.currentTransaction = {}
@@ -192,7 +190,7 @@ export default {
       transaction.description = transaction.description.trim()
       transaction.category = transaction.category.trim()
       for (let quota in transaction.quotas) {
-        let quotaAmount = this.roundAmount(Number(transaction.quotas[quota]))
+        let quotaAmount = transactions.roundAmount(Number(transaction.quotas[quota]))
         if (Number(quotaAmount) === 0.0) {
           delete transaction.quotas[quota]
         } else {
@@ -241,13 +239,7 @@ export default {
       return this.pickedDate.toISOString().substring(0, 10)
     },
     totalCost() {
-      if (!this.currentTransaction.quotas) return 0
-
-      let totalCost = 0
-      for (let quota in this.currentTransaction.quotas) {
-        totalCost = totalCost + Number(this.currentTransaction.quotas[quota])
-      }
-      return this.roundAmount(totalCost)
+      return transactions.computeTotalCost(this.currentTransaction)
     },
     remainingUsers() {
       let remainingUsers = this.cachedUsers.slice()

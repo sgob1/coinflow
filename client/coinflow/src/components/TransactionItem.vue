@@ -23,6 +23,8 @@
         {{ transaction.category }}
       </div>
       <div class="quotas-section" v-if="Object.keys(transaction.quotas).length > 1">
+        <h2>Total cost</h2>
+        {{ totalCost }}€
         <h2>Shared with</h2>
         <div v-for="(quota, key) in transaction.quotas" :key="key">
           <div v-if="key !== this.$store.state.username">
@@ -47,6 +49,8 @@
 </template>
 
 <script>
+import transactions from '@/utils/transactions.js'
+
 export default {
   data() {
     return { isOpen: false }
@@ -87,6 +91,9 @@ export default {
     },
     canEdit() {
       return this.$store.state.username === this.transaction.author
+    },
+    totalCost() {
+      return transactions.computeTotalCost(this.transaction)
     }
   }
 }
