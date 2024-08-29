@@ -9,7 +9,12 @@
         />
       </li>
       <li v-for="user in usersSearchResults" :key="user.userId">
-        <UserItem :user="user" />
+        <UserItem
+          :user="user"
+          @see-user-transactions-click="
+            (username) => this.$emit('seeUserTransactionsClick', username)
+          "
+        />
       </li>
     </div>
   </div>
@@ -40,9 +45,11 @@ export default {
   methods: {
     async processQuery(query) {
       let trimmed = query.trim()
+
       if (trimmed.startsWith('user:')) {
         let username = trimmed.substring(5)
         this.transactionsSearchResults = []
+        this.usersSearchResults = []
         let allTransactions = await fetcher.budget()
         this.transactionsSearchResults = transactions.mutualTransactions(
           allTransactions,

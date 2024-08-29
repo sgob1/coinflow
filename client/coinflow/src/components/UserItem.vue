@@ -2,7 +2,12 @@
   <div class="user-item-container card" @click="onItemClick">
     {{ user }}
     <div v-if="isOpen">
-      {{ userSentence }}
+      <div>
+        {{ userSentence }}
+      </div>
+      <div>
+        <button type="button" @click="onUserButtonClick">See transactions</button>
+      </div>
     </div>
   </div>
 </template>
@@ -32,6 +37,9 @@ export default {
         this.userBalance = await fetcher.balance(this.user.id)
       }
       this.isOpen = !this.isOpen
+    },
+    onUserButtonClick() {
+      this.$emit('seeUserTransactionsClick', this.user.username)
     }
   }
 }

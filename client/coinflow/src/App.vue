@@ -45,9 +45,14 @@ export default {
 
 <template>
   <div id="app">
-    <HeaderBarComponent />
+    <HeaderBarComponent ref="headerBar" />
     <div id="nav-host" v-if="dataReady">
-      <RouterView @authenticated="onAuthentication" />
+      <RouterView
+        @authenticated="onAuthentication"
+        @see-user-transactions-click="
+          (username) => this.$refs.headerBar.setQuery(`user:${username}`)
+        "
+      />
     </div>
     <vue3-snackbar top center groups dense :duration="4000">
       <template #message-action="{ message, isDismissible, dismiss }"> </template>

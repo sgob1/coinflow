@@ -33,6 +33,9 @@ export default {
       this.searchQuery = ''
       this.searchOpen = false
       this.$emit('closeSearch')
+    },
+    setQuery(value) {
+      this.searchQuery = value
     }
   },
   watch: {

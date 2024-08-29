@@ -26,6 +26,9 @@
           :query="searchQuery"
           @edit-transaction="onEditTransaction"
           @delete-transaction="onDeleteTransaction"
+          @see-user-transactions-click="
+            (username) => this.$emit('seeUserTransactionsClick', username)
+          "
         />
       </div>
       <vue-bottom-sheet
