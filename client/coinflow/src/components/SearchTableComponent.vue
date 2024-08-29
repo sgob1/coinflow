@@ -44,22 +44,38 @@ export default {
   },
   methods: {
     async processQuery(query) {
+      let specifiedUsername = '_total'
       let trimmed = query.trim()
+      let allTokens = trimmed.split(' ')
+      let tokens = allTokens.filter((token) => token.length > 0)
+      let filteredTokens = []
 
-      if (trimmed.startsWith('user:')) {
-        let username = trimmed.substring(5)
-        this.transactionsSearchResults = []
-        this.usersSearchResults = []
-        let allTransactions = await fetcher.budget()
-        this.transactionsSearchResults = transactions.mutualTransactions(
-          allTransactions,
-          this.$store.state.username,
-          username
-        )
-      } else {
-        await this.searchTransactions(trimmed)
-        await this.searchUsers(trimmed)
+      let specialPrefix = 'user:'
+      for (let token of tokens) {
+        if (token.startsWith(specialPrefix)) {
+          specifiedUsername = token.substring(specialPrefix.length)
+        } else {
+          filteredTokens.push(token)
+        }
       }
+
+      let filteredQuery = filteredTokens.join(' ').trim()
+      console.log(filteredQuery)
+
+      this.transactionsSearchResults = []
+      this.usersSearchResults = []
+
+      let queriedTransactions =
+        filteredQuery === ''
+          ? await fetcher.budget()
+          : await fetcher.transactionsSearch(filteredQuery)
+
+      this.transactionsSearchResults = transactions.mutualTransactions(
+        queriedTransactions,
+        this.$store.state.username,
+        specifiedUsername
+      )
+      await this.searchUsers(trimmed)
     },
     async searchTransactions(query) {
       this.transactionsSearchResults = []
