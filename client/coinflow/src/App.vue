@@ -68,6 +68,13 @@ export default {
 </template>
 
 <style>
+#app {
+  display: flex;
+  flex-direction: column;
+  align-content: flex-start;
+  justify-content: flex-start;
+}
+
 body {
   background-color: #f0f0f0;
   font-size: 1.2em;
@@ -92,6 +99,5 @@ body {
   justify-content: center;
   width: 100%;
   margin: auto;
-  padding-top: 60px;
 }
 </style>

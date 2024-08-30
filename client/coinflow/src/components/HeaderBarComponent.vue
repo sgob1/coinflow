@@ -1,20 +1,16 @@
 <template>
   <div id="headerbar">
-    <img
-      src="@/assets/magnifying-glass.png"
-      alt="Search"
-      class="icon"
-      @click="onSearchIconClick"
-      v-if="!searchOpen"
-    />
-    <img
-      src="@/assets/close.png"
-      alt="Back"
-      class="icon"
-      @click="onGoBackClick"
-      v-if="searchOpen"
-    />
-    <input type="text" v-model="searchQuery" placeholder="Search" v-if="searchOpen" />
+    <img src="@/assets/app-icon.png" alt="Coinflow logo" class="icon" />
+    <div class="search-bar">
+      <input type="text" v-model="searchQuery" placeholder="Search..." />
+      <img
+        src="@/assets/close.png"
+        alt="Back"
+        class="icon-small"
+        @click="onClearClick"
+        v-if="searchQuery.length > 0"
+      />
+    </div>
     <img src="@/assets/user.png" alt="Account" class="icon" />
   </div>
 </template>
@@ -22,17 +18,11 @@
 <script>
 export default {
   data() {
-    return { searchQuery: '', searchOpen: false }
+    return { searchQuery: '' }
   },
   methods: {
-    onSearchIconClick() {
-      this.searchOpen = true
-      this.$emit('openSearch')
-    },
-    onGoBackClick() {
+    onClearClick() {
       this.searchQuery = ''
-      this.searchOpen = false
-      this.$emit('closeSearch')
     },
     setQuery(value) {
       if (!this.searchOpen && value !== '' && value !== undefined) {
@@ -58,11 +48,29 @@ export default {
   width: 50px;
 }
 
+.icon-small {
+  height: 25px;
+  width: 25px;
+  margin: auto 8px;
+  padding: 2px;
+}
+
 #headerbar {
-  position: fixed;
-  width: 100%;
   background-color: #ffffff;
   border: 1px solid #cccccc;
+  padding: 8px;
+  margin: 0px;
+  display: flex;
+  justify-content: space-between;
+}
+
+input {
+  min-height: 40px;
+  border-radius: 10px;
+  padding: 8px;
+}
+
+.search-bar {
   padding: 8px;
   margin: 0px;
   display: flex;

@@ -10,18 +10,12 @@
         :users="cachedUsers"
         @filters-changed="(filters) => this.$emit('filtersChanged', filters)"
       />
-      <TransactionsTableComponent
-        :transactions="filteredTransactions"
-        @edit-transaction="onEditTransaction"
-        @delete-transaction="onDeleteTransaction"
-        v-if="!searchModeOn"
-      />
       <FloatingActionButtonComponent
         id="floating-action-button"
         @click="onFloatingActionButtonClick"
         v-if="!searchModeOn"
       />
-      <SearchTableComponent
+      <TransactionsListComponent
         ref="searchComponent"
         :query="searchQuery"
         @edit-transaction="onEditTransaction"
@@ -29,7 +23,6 @@
         @see-user-transactions-click="
           (username) => this.$emit('seeUserTransactionsClick', username)
         "
-        v-if="searchModeOn"
       />
       <vue-bottom-sheet
         ref="bottomSheet"
@@ -57,8 +50,7 @@ import searchUtils from '@/utils/search/searchUtils.js'
 import VueBottomSheet from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
 
-import TransactionsTableComponent from '@/components/TransactionsTableComponent.vue'
-import SearchTableComponent from '@/components/SearchTableComponent.vue'
+import TransactionsListComponent from '@/components/TransactionsListComponent.vue'
 import TransactionEditorComponent from '@/components/TransactionEditorComponent.vue'
 import FloatingActionButtonComponent from '@/components/FloatingActionButtonComponent.vue'
 import TransactionsFilterComponent from '@/components/TransactionsFilterComponent.vue'
@@ -73,8 +65,7 @@ export default {
     TransactionEditorComponent,
     FloatingActionButtonComponent,
     TransactionsFilterComponent,
-    TransactionsTableComponent,
-    SearchTableComponent
+    TransactionsListComponent
   },
   data() {
     return {
