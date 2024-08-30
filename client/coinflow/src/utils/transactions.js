@@ -13,12 +13,12 @@ const computeTotalCost = function (transaction) {
 }
 
 const mutualTransactions = function (transactionsList, myUsername, theirUsername) {
-  if (theirUsername === '') {
-    return []
+  if (theirUsername === '_total' || theirUsername === undefined) {
+    return transactionsList
   }
 
-  if (theirUsername === '_total') {
-    return transactionsList
+  if (theirUsername === undefined) {
+    return []
   }
 
   let filteredTransactions = []

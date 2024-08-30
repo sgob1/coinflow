@@ -27,6 +27,44 @@ import UserItem from '@/components/UserItem.vue'
 import fetcher from '@/utils/fetch/fetcher.js'
 import transactions from '@/utils/transactions.js'
 
+let searchFilters = {
+  user: (ts, value, self, other) =>
+    ts.filter((tr) => {
+      if (other === '_total' || other === undefined) {
+        return true
+      }
+
+      if (other === undefined) {
+        return false
+      }
+
+      if (tr.quotas[other] && (tr.author === self || tr.author === other)) return true
+      return false
+    }),
+  year: (ts, value) => ts.filter((t) => Number(t.year) === Number(value)),
+  month: (ts, value) => ts.filter((t) => Number(t.month) === Number(value))
+}
+
+const parseQuery = function (query) {
+  let tokens = query
+    .trim()
+    .split(' ')
+    .filter((s) => s.length > 0)
+
+  let structuredQuery = {}
+  let queryArray = []
+  for (let token of tokens) {
+    if (token.indexOf(':') > -1) {
+      let keyVal = token.split(':')
+      structuredQuery[keyVal[0]] = keyVal[1]
+    } else {
+      queryArray.push(token)
+    }
+  }
+  structuredQuery.query = queryArray.join(' ')
+  return structuredQuery
+}
+
 export default {
   emits: ['editTransaction', 'deleteTransaction'],
   components: {
@@ -44,38 +82,31 @@ export default {
   },
   methods: {
     async processQuery(query) {
-      let specifiedUsername = '_total'
-      let trimmed = query.trim()
-      let allTokens = trimmed.split(' ')
-      let tokens = allTokens.filter((token) => token.length > 0)
-      let filteredTokens = []
-
-      let specialPrefix = 'user:'
-      for (let token of tokens) {
-        if (token.startsWith(specialPrefix)) {
-          specifiedUsername = token.substring(specialPrefix.length)
-        } else {
-          filteredTokens.push(token)
-        }
-      }
-
-      let filteredQuery = filteredTokens.join(' ').trim()
-      console.log(filteredQuery)
+      let structuredQuery = parseQuery(query)
 
       this.transactionsSearchResults = []
       this.usersSearchResults = []
 
-      let queriedTransactions =
-        filteredQuery === ''
-          ? await fetcher.budget()
-          : await fetcher.transactionsSearch(filteredQuery)
+      let currentTransactions =
+        structuredQuery.query === ''
+          ? await fetcher.budget(structuredQuery['year'], structuredQuery['month'])
+          : await fetcher.transactionsSearch(structuredQuery.query)
 
-      this.transactionsSearchResults = transactions.mutualTransactions(
-        queriedTransactions,
-        this.$store.state.username,
-        specifiedUsername
-      )
-      await this.searchUsers(trimmed)
+      for (let filter in searchFilters) {
+        if (structuredQuery[filter] !== undefined) {
+          currentTransactions = searchFilters[filter](
+            currentTransactions,
+            structuredQuery[filter],
+            this.$store.state.username,
+            structuredQuery['user']
+          )
+        }
+      }
+
+      this.transactionsSearchResults = currentTransactions
+
+      if (!structuredQuery['user'] && structuredQuery.query !== '')
+        await this.searchUsers(structuredQuery.query)
     },
     async searchTransactions(query) {
       this.transactionsSearchResults = []
