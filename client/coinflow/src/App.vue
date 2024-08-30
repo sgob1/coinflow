@@ -1,5 +1,6 @@
 <script>
 import HeaderBarComponent from './components/HeaderBarComponent.vue'
+import searchUtils from '@/utils/search/searchUtils.js'
 
 export default {
   name: 'App',
@@ -38,6 +39,11 @@ export default {
       this.$store.commit('logout')
       this.isAuthenticated = this.$store.state.isAuthenticated
       this.username = this.$store.state.username
+    },
+    onFiltersChanged(filters) {
+      let originalQuery = this.$refs.headerBar.searchQuery
+      let newQuery = searchUtils.setFiltersInSearchQuery(originalQuery, filters)
+      this.$refs.headerBar.setQuery(newQuery)
     }
   }
 }
@@ -52,6 +58,7 @@ export default {
         @see-user-transactions-click="
           (username) => this.$refs.headerBar.setQuery(`user:${username}`)
         "
+        @filters-changed="(filters) => onFiltersChanged(filters)"
       />
     </div>
     <vue3-snackbar top center groups dense :duration="4000">

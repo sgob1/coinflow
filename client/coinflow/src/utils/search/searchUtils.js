@@ -67,10 +67,31 @@ const applyFilters = function (transactions, searchFilters, structuredQuery) {
   return transactions
 }
 
-const generateSearchQuery = function (structuredQuery) {}
+const generateSearchQuery = function (structuredQuery) {
+  console.log('calling generateSearchQuery')
+  let filtersArray = []
+  for (let item in structuredQuery) {
+    if (item !== 'query') {
+      filtersArray.push(`${item}:${structuredQuery[item]}`)
+    }
+  }
+  return structuredQuery.query + ' ' + filtersArray.join(' ')
+}
+
+const setFiltersInSearchQuery = function (query, filters) {
+  let structuredQuery = parseQuery(query)
+  if (filters !== undefined) {
+    for (let filter in filters) {
+      if (filter !== 'query') structuredQuery[filter] = filters[filter]
+    }
+  }
+  return generateSearchQuery(structuredQuery)
+}
 
 export default {
   searchFilters,
   parseQuery,
-  applyFilters
+  applyFilters,
+  generateSearchQuery,
+  setFiltersInSearchQuery
 }

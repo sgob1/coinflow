@@ -1,36 +1,36 @@
 <template>
   <div id="main-view">
     <div v-if="dataReady">
-      <div v-if="!searchModeOn">
-        <SummaryComponent
-          :total-amount="balance[this.selectedUsername]"
-          :user="this.selectedUsername"
-        />
-        <TransactionsTableFilterComponent
-          :users="cachedUsers"
-          @filters-changed="onFiltersChanged"
-        />
-        <TransactionsTableComponent
-          :transactions="filteredTransactions"
-          @edit-transaction="onEditTransaction"
-          @delete-transaction="onDeleteTransaction"
-        />
-        <FloatingActionButtonComponent
-          id="floating-action-button"
-          @click="onFloatingActionButtonClick"
-        />
-      </div>
-      <div v-if="searchModeOn">
-        <SearchTableComponent
-          ref="searchComponent"
-          :query="searchQuery"
-          @edit-transaction="onEditTransaction"
-          @delete-transaction="onDeleteTransaction"
-          @see-user-transactions-click="
-            (username) => this.$emit('seeUserTransactionsClick', username)
-          "
-        />
-      </div>
+      <SummaryComponent
+        :total-amount="balance[this.selectedUsername]"
+        :user="this.selectedUsername"
+        v-if="!searchModeOn"
+      />
+      <TransactionsFilterComponent
+        :users="cachedUsers"
+        @filters-changed="(filters) => this.$emit('filtersChanged', filters)"
+      />
+      <TransactionsTableComponent
+        :transactions="filteredTransactions"
+        @edit-transaction="onEditTransaction"
+        @delete-transaction="onDeleteTransaction"
+        v-if="!searchModeOn"
+      />
+      <FloatingActionButtonComponent
+        id="floating-action-button"
+        @click="onFloatingActionButtonClick"
+        v-if="!searchModeOn"
+      />
+      <SearchTableComponent
+        ref="searchComponent"
+        :query="searchQuery"
+        @edit-transaction="onEditTransaction"
+        @delete-transaction="onDeleteTransaction"
+        @see-user-transactions-click="
+          (username) => this.$emit('seeUserTransactionsClick', username)
+        "
+        v-if="searchModeOn"
+      />
       <vue-bottom-sheet
         ref="bottomSheet"
         :max-width="1024"
@@ -61,7 +61,7 @@ import TransactionsTableComponent from '@/components/TransactionsTableComponent.
 import SearchTableComponent from '@/components/SearchTableComponent.vue'
 import TransactionEditorComponent from '@/components/TransactionEditorComponent.vue'
 import FloatingActionButtonComponent from '@/components/FloatingActionButtonComponent.vue'
-import TransactionsTableFilterComponent from '@/components/TransactionsTableFilterComponent.vue'
+import TransactionsFilterComponent from '@/components/TransactionsFilterComponent.vue'
 
 import { mapState } from 'vuex'
 import { h } from 'vue'
@@ -72,7 +72,7 @@ export default {
     VueBottomSheet,
     TransactionEditorComponent,
     FloatingActionButtonComponent,
-    TransactionsTableFilterComponent,
+    TransactionsFilterComponent,
     TransactionsTableComponent,
     SearchTableComponent
   },
@@ -160,16 +160,6 @@ export default {
       this.dataReady = true
       await this.$refs.searchComponent.refresh()
     },
-    onFiltersChanged(filters) {
-      this.dataReady = false
-      if (filters) {
-        this.year = filters.year
-        this.month = filters.month
-        this.selectedUsername = filters.username
-      }
-      this.getBudget()
-      this.dataReady = true
-    },
     async onUndoClick(transaction) {
       await fetcher.submitNewTransaction(transaction)
       await this.onTransactionsModified()
@@ -251,7 +241,9 @@ export default {
   async mounted() {
     await this.getBalance()
     await this.cacheUsersInBalance()
-    this.onFiltersChanged()
+    this.dataReady = false
+    this.getBudget()
+    this.dataReady = true
   },
   watch: {
     searchQuery: async function (newVal, oldVal) {

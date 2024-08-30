@@ -7,7 +7,6 @@
       placeholder="Year"
       value="currentYear"
       v-model="year"
-      @input="onFiltersChange"
     />
     <input
       type="number"
@@ -16,14 +15,14 @@
       placeholder="Month"
       value="currentMonth"
       v-model="month"
-      @input="onFiltersChange"
     />
-    <select v-model="selectedUsername" @change="onFiltersChange">
+    <select v-model="selectedUsername">
       <option value="_total">Total balance</option>
       <option v-for="user in users" :key="user.username">
         {{ user.username }}
       </option>
     </select>
+    <button type="button" @click="onFiltersChange">Filter</button>
   </div>
 </template>
 
@@ -42,11 +41,20 @@ export default {
   },
   methods: {
     onFiltersChange() {
-      let filters = {
-        year: this.year,
-        month: this.month,
-        username: this.selectedUsername
-      }
+      let filters = {}
+      if (this.year !== '') filters.year = this.year
+      if (this.month !== '') filters.month = this.month
+      if (
+        this.selectedUsername !== '_total' &&
+        this.selectedUsername !== '' &&
+        this.selectedUsername !== undefined
+      )
+        filters.user = this.selectedUsername
+
+      this.selectedUsername = '_total'
+      this.year = ''
+      this.month = ''
+
       this.$emit('filtersChanged', filters)
     }
   },

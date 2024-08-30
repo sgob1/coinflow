@@ -35,7 +35,13 @@ export default {
       this.$emit('closeSearch')
     },
     setQuery(value) {
+      if (!this.searchOpen && value !== '' && value !== undefined) {
+        this.onSearchIconClick()
+      }
       this.searchQuery = value
+    },
+    getQuery() {
+      return this.searchQuery
     }
   },
   watch: {
