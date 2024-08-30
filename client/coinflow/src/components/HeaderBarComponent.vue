@@ -1,6 +1,11 @@
 <template>
   <div id="headerbar">
-    <img src="@/assets/app-icon.png" alt="Coinflow logo" class="icon" />
+    <img
+      src="@/assets/app-icon.png"
+      alt="Coinflow logo"
+      class="icon"
+      @click="onCoinflowLogoClick"
+    />
     <div class="search-bar">
       <input type="text" v-model="searchQuery" placeholder="Search..." />
       <img
@@ -24,10 +29,10 @@ export default {
     onClearClick() {
       this.searchQuery = ''
     },
+    onCoinflowLogoClick() {
+      window.location.reload()
+    },
     setQuery(value) {
-      if (!this.searchOpen && value !== '' && value !== undefined) {
-        this.onSearchIconClick()
-      }
       this.searchQuery = value
     },
     getQuery() {
