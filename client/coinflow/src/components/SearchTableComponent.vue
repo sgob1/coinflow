@@ -25,7 +25,6 @@ import TransactionItem from '@/components/TransactionItem.vue'
 import UserItem from '@/components/UserItem.vue'
 
 import fetcher from '@/utils/fetch/fetcher.js'
-import transactions from '@/utils/transactions.js'
 
 let searchFilters = {
   user: (ts, value, self, other) =>
@@ -118,8 +117,6 @@ export default {
     },
     async refresh() {
       await this.processQuery(this.query)
-      // await this.searchTransactions(this.query)
-      // await this.searchUsers(this.query)
     },
     onEditTransaction(transaction) {
       this.$emit('editTransaction', transaction)
@@ -131,8 +128,6 @@ export default {
   watch: {
     query: async function (newVal, oldVal) {
       await this.refresh()
-      // await this.searchTransactions(newVal)
-      // await this.searchUsers(newVal)
     }
   },
   async mounted() {

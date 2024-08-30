@@ -104,21 +104,6 @@ export default {
         this.$store.state.username,
         this.selectedUsername
       )
-      //
-      // if (this.selectedUsername === '_total') {
-      //   return this.transactions
-      // }
-      // let filteredTransactions = []
-      // for (let transaction of this.transactions) {
-      //   if (
-      //     transaction.quotas[this.selectedUsername] &&
-      //     (transaction.author === this.$store.state.username ||
-      //       transaction.author === this.selectedUsername)
-      //   )
-      //     filteredTransactions.push(transaction)
-      // }
-      //
-      // return filteredTransactions
     }
   },
   methods: {
