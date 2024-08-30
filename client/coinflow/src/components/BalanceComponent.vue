@@ -52,8 +52,6 @@ export default {
       year: undefined,
       month: undefined,
       selectedPeriod: 'alltime',
-      expensesChartData: {},
-      incomesChartData: {},
       dataReady: false
     }
   },
@@ -91,13 +89,8 @@ export default {
         }
       }
       return remainingUsers
-    }
-  },
-  methods: {
-    roundAmount(amount) {
-      return transactions.roundAmount(amount)
     },
-    composeExpensesChart() {
+    expensesChartData() {
       let labels = []
       let data = []
       let numOfEntries = 0
@@ -119,12 +112,12 @@ export default {
         }
       ]
 
-      this.expensesChartData = {
+      return {
         labels: labels,
         datasets: datasets
       }
     },
-    composeIncomesChart() {
+    incomesChartData() {
       let labels = []
       let data = []
       let numOfEntries = 0
@@ -146,10 +139,15 @@ export default {
         }
       ]
 
-      this.incomesChartData = {
+      return {
         labels: labels,
         datasets: datasets
       }
+    }
+  },
+  methods: {
+    roundAmount(amount) {
+      return transactions.roundAmount(amount)
     },
     userAmountPretty(userAmount, username) {
       return prettifier.userSentence(userAmount, '€', username)
@@ -166,16 +164,12 @@ export default {
       } else {
         this.budget = {}
       }
-      this.composeExpensesChart()
-      this.composeIncomesChart()
       this.dataReady = true
     }
   },
   async mounted() {
     this.balance = await fetcher.balance()
     this.budget = await fetcher.budget()
-    this.composeExpensesChart()
-    this.composeIncomesChart()
     this.dataReady = true
   }
 }
