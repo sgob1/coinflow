@@ -28,7 +28,8 @@
         <h2>Shared with</h2>
         <div v-for="(quota, key) in transaction.quotas" :key="key">
           <div v-if="key !== this.$store.state.username">
-            {{ key }}: {{ transaction.quotas[key] }}€
+            <button type="button" @click="$emit('seeUserTransactionsClick', key)">{{ key }}</button>
+            {{ transaction.quotas[key] }}€
           </div>
         </div>
       </div>

@@ -14,6 +14,9 @@
           :transaction="transaction"
           @edit-transaction="onEditTransaction"
           @delete-transaction="onDeleteTransaction"
+          @see-user-transactions-click="
+            (username) => this.$emit('seeUserTransactionsClick', username)
+          "
         />
       </li>
     </div>
