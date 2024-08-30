@@ -44,6 +44,12 @@ export default {
       let originalQuery = this.$refs.headerBar.searchQuery
       let newQuery = searchUtils.setFiltersInSearchQuery(originalQuery, filters)
       this.$refs.headerBar.setQuery(newQuery)
+    },
+    onUserTransactionsClick(username) {
+      let originalQuery = this.$refs.headerBar.searchQuery
+      let clearedQuery = searchUtils.clearQuery(originalQuery)
+      let newQuery = searchUtils.setFiltersInSearchQuery(clearedQuery, { user: username })
+      this.$refs.headerBar.setQuery(newQuery)
     }
   }
 }
@@ -55,9 +61,7 @@ export default {
     <div id="nav-host" v-if="dataReady">
       <RouterView
         @authenticated="onAuthentication"
-        @see-user-transactions-click="
-          (username) => this.$refs.headerBar.setQuery(`user:${username}`)
-        "
+        @see-user-transactions-click="(username) => onUserTransactionsClick(username)"
         @filters-changed="(filters) => onFiltersChanged(filters)"
       />
     </div>

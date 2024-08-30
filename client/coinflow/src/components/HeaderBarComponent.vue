@@ -67,18 +67,22 @@ export default {
   margin: 0px;
   display: flex;
   justify-content: space-between;
+  max-width: 100%;
 }
 
 input {
   min-height: 40px;
   border-radius: 10px;
   padding: 8px;
+  max-width: 70%;
 }
 
 .search-bar {
   padding: 8px;
   margin: 0px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
+  max-width: 70%;
 }
 </style>

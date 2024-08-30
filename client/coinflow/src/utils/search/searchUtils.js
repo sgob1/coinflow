@@ -89,10 +89,17 @@ const setFiltersInSearchQuery = function (query, filters) {
   return generateSearchQuery(structuredQuery)
 }
 
+const clearQuery = function (query) {
+  let structuredQuery = parseQuery(query)
+  structuredQuery.query = ''
+  return generateSearchQuery(structuredQuery)
+}
+
 export default {
   searchFilters,
   parseQuery,
   applyFilters,
   generateSearchQuery,
-  setFiltersInSearchQuery
+  setFiltersInSearchQuery,
+  clearQuery
 }
