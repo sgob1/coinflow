@@ -1,6 +1,12 @@
 <template>
   <div class="user-item-container card" @click="onItemClick">
-    {{ user }}
+    <div class="user-item-first-row">
+      <div>{{ user.name }} {{ user.surname }}</div>
+      <div>User</div>
+    </div>
+    <div class="user-item-second-row" v-if="!isOpen">
+      <div>{{ user.username }}</div>
+    </div>
     <div v-if="isOpen">
       <div>
         {{ userSentence }}
