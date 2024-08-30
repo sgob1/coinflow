@@ -246,7 +246,6 @@ export default {
 
 <style>
 #main-view {
-  background-color: #ffffff;
   border: 1px solid #cccccc;
   padding: 8px;
   margin: 0px;

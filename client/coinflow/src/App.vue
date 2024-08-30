@@ -28,17 +28,18 @@ export default {
     this.$router.replace({ name: firstDestination })
     this.dataReady = true
   },
-  mounted() {},
   methods: {
     onAuthentication() {
       this.isAuthenticated = this.$store.state.isAuthenticated
       this.username = this.$store.state.username
       this.$router.replace({ name: 'main' })
     },
+    // FIXME: remove this if not necessary
     logout() {
       this.$store.commit('logout')
       this.isAuthenticated = this.$store.state.isAuthenticated
       this.username = this.$store.state.username
+      this.$router.replace({ name: 'login' })
     },
     onFiltersChanged(filters) {
       let originalQuery = this.$refs.headerBar.searchQuery
@@ -72,6 +73,9 @@ export default {
 </template>
 
 <style>
+* {
+  background-color: var(--color-background);
+}
 #app {
   display: flex;
   flex-direction: column;
@@ -80,7 +84,7 @@ export default {
 }
 
 body {
-  background-color: #f0f0f0;
+  background-color: #808080;
   font-size: 1.2em;
 }
 
@@ -88,7 +92,7 @@ body {
   margin: 20px;
   padding: 10px;
   border-radius: 20px;
-  background-color: #f0f0f0;
+  background-color: #808080;
 }
 
 .button-green {

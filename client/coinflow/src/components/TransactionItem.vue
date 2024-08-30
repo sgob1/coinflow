@@ -119,7 +119,7 @@ export default {
 .transaction-item-second-row {
   font-size: 1em;
   font-style: italic;
-  color: rgba(0, 0, 0, 0.4);
+  color: var(--color-text-soft);
 }
 .buttons-section {
   display: flex;

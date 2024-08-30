@@ -24,20 +24,18 @@
       </div>
     </div>
     <div v-if="dataReady">
-      <div class="card">
+      <div class="card" v-if="Object.keys(expensesChartData.labels).length > 0">
         <DoughnutChart
           :chartData="expensesChartData"
           :chartID="'expensesChart'"
           :title="'Expenses chart'"
-          v-if="Object.keys(expensesChartData.labels).length > 0"
         />
       </div>
-      <div class="card">
+      <div class="card" v-if="Object.keys(incomesChartData.labels).length > 0">
         <DoughnutChart
           :chartData="incomesChartData"
           :chartID="'incomesChart'"
           :title="'Incomes chart'"
-          v-if="Object.keys(incomesChartData.labels).length > 0"
         />
       </div>
     </div>
