@@ -1,19 +1,19 @@
 <template>
   <div>
     <div id="search-table">
-      <li v-for="transaction in transactionsSearchResults" :key="transaction.transactionId">
-        <TransactionItem
-          :transaction="transaction"
-          @edit-transaction="onEditTransaction"
-          @delete-transaction="onDeleteTransaction"
-        />
-      </li>
       <li v-for="user in usersSearchResults" :key="user.userId">
         <UserItem
           :user="user"
           @see-user-transactions-click="
             (username) => this.$emit('seeUserTransactionsClick', username)
           "
+        />
+      </li>
+      <li v-for="transaction in transactionsSearchResults" :key="transaction.transactionId">
+        <TransactionItem
+          :transaction="transaction"
+          @edit-transaction="onEditTransaction"
+          @delete-transaction="onDeleteTransaction"
         />
       </li>
     </div>
