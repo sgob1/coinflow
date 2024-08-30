@@ -16,6 +16,9 @@
         <div>{{ transaction.description }}</div>
         <div>{{ transaction.quotas[this.$store.state.username] }}€</div>
       </div>
+      <div class="transaction-item-second-row">
+        <div>{{ computeDate }}</div>
+      </div>
       <h2>Author</h2>
       {{ transaction.author }}
       <div v-if="transaction.category">
