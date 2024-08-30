@@ -54,22 +54,10 @@ export default {
           ? await fetcher.budget(structuredQuery['year'], structuredQuery['month'])
           : await fetcher.transactionsSearch(structuredQuery.query)
 
-      // for (let filter in searchUtils.searchFilters) {
-      //   if (structuredQuery[filter] !== undefined) {
-      //     currentTransactions = searchUtils.searchFilters[filter](
-      //       currentTransactions,
-      //       structuredQuery[filter],
-      //       this.$store.state.username,
-      //       structuredQuery['user']
-      //     )
-      //   }
-      // }
-
       this.transactionsSearchResults = searchUtils.applyFilters(
         currentTransactions,
         searchUtils.searchFilters,
-        structuredQuery,
-        this.$store.state.username
+        structuredQuery
       )
 
       if (!structuredQuery['user'] && structuredQuery.query !== '')

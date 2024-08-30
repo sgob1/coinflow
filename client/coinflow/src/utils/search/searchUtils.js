@@ -1,26 +1,41 @@
 const sameDateISO8601 = function (string, year, month, day) {
   let split = string.split('-')
-  return year === split[0] && month === split[1] && day === split[2]
+  return (
+    Number(year) === Number(split[0]) &&
+    Number(month) === Number(split[1]) &&
+    Number(day) === Number(split[2])
+  )
 }
 
 const searchFilters = {
-  user: (ts, value, self, other) =>
-    ts.filter((tr) => {
-      if (other === '_total' || other === undefined) {
-        return true
-      }
+  user: {
+    apply: (ts, value) =>
+      ts.filter((tr) => {
+        if (value === '_total' || value === undefined) {
+          return true
+        }
 
-      if (other === undefined) {
+        if (value === undefined) {
+          return false
+        }
+
+        if (tr.quotas[value]) return true
         return false
-      }
-
-      if (tr.quotas[other]) return true
-      return false
-    }),
-  year: (ts, value) => ts.filter((t) => Number(t.year) === Number(value)),
-  month: (ts, value) => ts.filter((t) => Number(t.month) === Number(value)),
-  date: (ts, value) =>
-    ts.filter((t) => sameDateISO8601(value, Number(t.year), Number(t.month), Number(t.day)))
+      }),
+    description: 'Finds transactions shared with specified user'
+  },
+  year: {
+    apply: (ts, value) => ts.filter((t) => Number(t.year) === Number(value)),
+    description: 'Filters with specified year'
+  },
+  month: {
+    apply: (ts, value) => ts.filter((t) => Number(t.month) === Number(value)),
+    description: 'Filters with specified month'
+  },
+  date: {
+    apply: (ts, value) => ts.filter((t) => sameDateISO8601(value, t.year, t.month, t.day)),
+    description: 'Filters with specified date having format YYYY-MM-DD'
+  }
 }
 
 const parseQuery = function (query) {
@@ -43,19 +58,16 @@ const parseQuery = function (query) {
   return structuredQuery
 }
 
-const applyFilters = function (transactions, searchFilters, structuredQuery, selfUsername) {
+const applyFilters = function (transactions, searchFilters, structuredQuery) {
   for (let filter in searchFilters) {
     if (structuredQuery[filter] !== undefined) {
-      transactions = searchFilters[filter](
-        transactions,
-        structuredQuery[filter],
-        selfUsername,
-        structuredQuery['user']
-      )
+      transactions = searchFilters[filter].apply(transactions, structuredQuery[filter])
     }
   }
   return transactions
 }
+
+const generateSearchQuery = function (structuredQuery) {}
 
 export default {
   searchFilters,

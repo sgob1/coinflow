@@ -28,7 +28,14 @@ export default {
   },
   computed: {
     userSentence() {
-      return prettifier.userSentence(this.userBalance[this.user.username], '€', this.user.username)
+      if (this.user.username === this.$store.state.username)
+        return prettifier.myTotal(Number(this.userBalance[this.user.username]), '€')
+      else
+        return prettifier.userSentence(
+          this.userBalance[this.user.username],
+          '€',
+          this.user.username
+        )
     }
   },
   methods: {

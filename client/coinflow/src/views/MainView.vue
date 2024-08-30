@@ -52,7 +52,7 @@
 <script>
 import SummaryComponent from '@/components/SummaryComponent.vue'
 import fetcher from '@/utils/fetch/fetcher.js'
-import transactions from '@/utils/transactions.js'
+import searchUtils from '@/utils/search/searchUtils.js'
 
 import VueBottomSheet from '@webzlodimir/vue-bottom-sheet'
 import '@webzlodimir/vue-bottom-sheet/dist/style.css'
@@ -99,11 +99,7 @@ export default {
       return new Date().getMonth()
     },
     filteredTransactions() {
-      return transactions.mutualTransactions(
-        this.transactions,
-        this.$store.state.username,
-        this.selectedUsername
-      )
+      return searchUtils.searchFilters['user'].apply(this.transactions, this.selectedUsername)
     }
   },
   methods: {
