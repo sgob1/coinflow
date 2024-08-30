@@ -25,44 +25,7 @@ import TransactionItem from '@/components/TransactionItem.vue'
 import UserItem from '@/components/UserItem.vue'
 
 import fetcher from '@/utils/fetch/fetcher.js'
-
-let searchFilters = {
-  user: (ts, value, self, other) =>
-    ts.filter((tr) => {
-      if (other === '_total' || other === undefined) {
-        return true
-      }
-
-      if (other === undefined) {
-        return false
-      }
-
-      if (tr.quotas[other] && (tr.author === self || tr.author === other)) return true
-      return false
-    }),
-  year: (ts, value) => ts.filter((t) => Number(t.year) === Number(value)),
-  month: (ts, value) => ts.filter((t) => Number(t.month) === Number(value))
-}
-
-const parseQuery = function (query) {
-  let tokens = query
-    .trim()
-    .split(' ')
-    .filter((s) => s.length > 0)
-
-  let structuredQuery = {}
-  let queryArray = []
-  for (let token of tokens) {
-    if (token.indexOf(':') > -1) {
-      let keyVal = token.split(':')
-      structuredQuery[keyVal[0]] = keyVal[1]
-    } else {
-      queryArray.push(token)
-    }
-  }
-  structuredQuery.query = queryArray.join(' ')
-  return structuredQuery
-}
+import searchUtils from '@/utils/search/searchUtils.js'
 
 export default {
   emits: ['editTransaction', 'deleteTransaction'],
@@ -81,7 +44,7 @@ export default {
   },
   methods: {
     async processQuery(query) {
-      let structuredQuery = parseQuery(query)
+      let structuredQuery = searchUtils.parseQuery(query)
 
       this.transactionsSearchResults = []
       this.usersSearchResults = []
@@ -91,18 +54,23 @@ export default {
           ? await fetcher.budget(structuredQuery['year'], structuredQuery['month'])
           : await fetcher.transactionsSearch(structuredQuery.query)
 
-      for (let filter in searchFilters) {
-        if (structuredQuery[filter] !== undefined) {
-          currentTransactions = searchFilters[filter](
-            currentTransactions,
-            structuredQuery[filter],
-            this.$store.state.username,
-            structuredQuery['user']
-          )
-        }
-      }
+      // for (let filter in searchUtils.searchFilters) {
+      //   if (structuredQuery[filter] !== undefined) {
+      //     currentTransactions = searchUtils.searchFilters[filter](
+      //       currentTransactions,
+      //       structuredQuery[filter],
+      //       this.$store.state.username,
+      //       structuredQuery['user']
+      //     )
+      //   }
+      // }
 
-      this.transactionsSearchResults = currentTransactions
+      this.transactionsSearchResults = searchUtils.applyFilters(
+        currentTransactions,
+        searchUtils.searchFilters,
+        structuredQuery,
+        this.$store.state.username
+      )
 
       if (!structuredQuery['user'] && structuredQuery.query !== '')
         await this.searchUsers(structuredQuery.query)
