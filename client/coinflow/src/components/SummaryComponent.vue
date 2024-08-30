@@ -1,6 +1,7 @@
 <template>
-  <div class="summary" id="summary">
+  <div class="summary">
     <p>{{ totalAmountPretty }}</p>
+    <button type="button" @click="onViewBalanceClick">Details</button>
   </div>
 </template>
 
@@ -23,6 +24,11 @@ export default {
         return prettifier.userSentence(this.totalAmount, '€', this.user)
       }
     }
+  },
+  methods: {
+    onViewBalanceClick() {
+      this.$router.replace({ name: 'balance' })
+    }
   }
 }
 </script>
@@ -31,6 +37,7 @@ export default {
 .summary {
   margin: 20% 10%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   font-size: 2em;
   font-weight: bold;

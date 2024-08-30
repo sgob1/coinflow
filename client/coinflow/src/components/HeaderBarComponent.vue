@@ -6,7 +6,7 @@
       class="icon"
       @click="onCoinflowLogoClick"
     />
-    <div class="search-bar">
+    <div class="search-bar" v-if="showSearchBar">
       <input type="text" v-model="searchQuery" placeholder="Search..." />
       <img
         src="@/assets/close.png"
@@ -37,6 +37,11 @@ export default {
     },
     getQuery() {
       return this.searchQuery
+    }
+  },
+  computed: {
+    showSearchBar() {
+      return this.$route.name === 'main'
     }
   },
   watch: {
