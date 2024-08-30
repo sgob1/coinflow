@@ -11,6 +11,11 @@ export default {
   },
   data() {
     return {}
+  },
+  methods: {
+    onBackClick() {
+      this.$router.replace({ name: 'main' })
+    }
   }
 }
 </script>

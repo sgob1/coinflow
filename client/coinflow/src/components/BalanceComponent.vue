@@ -1,35 +1,45 @@
 <template>
-  <h2>Balance</h2>
-  <div>{{ totalAmountPretty }}</div>
-  <div>{{ myExpensesPretty }}</div>
-  <div v-for="(userAmount, username) in remainingUsers" :key="username">
-    {{ userAmountPretty(userAmount, username) }}
+  <div class="card">
+    <h2>Balance</h2>
+    <div>{{ totalAmountPretty }}</div>
+    <div>{{ myExpensesPretty }}</div>
+    <div v-for="(userAmount, username) in remainingUsers" :key="username">
+      {{ userAmountPretty(userAmount, username) }}
+    </div>
   </div>
   <div class="balance-details">
-    <div class="details-row">
-      <p>Your</p>
-      <select v-model="selectedPeriod" @change="onSelectedPeriodChange">
-        <option value="alltime">all-time</option>
-        <option value="yearly">yearly</option>
-        <option value="monthly">monthly</option>
-      </select>
-      <p>details</p>
-    </div>
-    <h2>Categories</h2>
-    <div v-for="(amount, category) in categories" :key="category">
-      {{ category }}: {{ roundAmount(amount) }}€
+    <div class="card">
+      <div class="details-row">
+        <p>Your</p>
+        <select v-model="selectedPeriod" @change="onSelectedPeriodChange">
+          <option value="alltime">all-time</option>
+          <option value="yearly">yearly</option>
+          <option value="monthly">monthly</option>
+        </select>
+        <p>details</p>
+      </div>
+      <h2>Categories</h2>
+      <div v-for="(amount, category) in categories" :key="category">
+        {{ category }}: {{ roundAmount(amount) }}€
+      </div>
     </div>
     <div v-if="dataReady">
-      <DoughnutChart
-        :chartData="expensesChartData"
-        :chartID="'expensesChart'"
-        :title="'Expenses chart'"
-      />
-      <DoughnutChart
-        :chartData="incomesChartData"
-        :chartID="'incomesChart'"
-        :title="'Incomes chart'"
-      />
+      <div class="card">
+        <DoughnutChart
+          :chartData="expensesChartData"
+          :chartID="'expensesChart'"
+          :title="'Expenses chart'"
+          v-if="Object.keys(expensesChartData.labels).length > 0"
+        />
+      </div>
+      <div class="card">
+        <DoughnutChart
+          :chartData="incomesChartData"
+          :chartID="'incomesChart'"
+          :title="'Incomes chart'"
+          v-if="Object.keys(incomesChartData.labels).length > 0"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -129,7 +139,7 @@ export default {
         }
       }
 
-      const spectrum = Spectrum.generateVivid(numOfEntries).withAlpha(0.6)
+      const spectrum = Spectrum.generateVivid(numOfEntries).withAlpha(0.4)
 
       const datasets = [
         {
