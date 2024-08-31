@@ -1,6 +1,8 @@
 <template>
-  <button type="button" @click="onBackClick">Back</button>
-  <BalanceComponent />
+  <div id="balance-view" class="column-container">
+    <button type="button" @click="onBackClick">Back</button>
+    <BalanceComponent />
+  </div>
 </template>
 
 <script>

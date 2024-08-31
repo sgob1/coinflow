@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="search-table">
+    <div id="transactions-table">
       <li v-for="user in usersSearchResults" :key="user.userId">
         <UserItem
           :user="user"

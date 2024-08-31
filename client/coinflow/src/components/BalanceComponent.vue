@@ -1,16 +1,16 @@
 <template>
-  <div class="card">
-    <h2>Balance</h2>
-    <div>{{ totalAmountPretty }}</div>
-    <div>{{ myExpensesPretty }}</div>
-    <div>{{ myIncomeThisMonth }}</div>
-    <div>{{ myExpensesThisMonth }}</div>
-    <div>{{ myBalanceThisMonth }}</div>
-    <div v-for="(userAmount, username) in remainingUsers" :key="username">
-      {{ userAmountPretty(userAmount, username) }}
+  <div id="balance-container">
+    <div class="card">
+      <h2>Balance</h2>
+      <div>{{ totalAmountPretty }}</div>
+      <div>{{ myExpensesPretty }}</div>
+      <div>{{ myIncomeThisMonth }}</div>
+      <div>{{ myExpensesThisMonth }}</div>
+      <div>{{ myBalanceThisMonth }}</div>
+      <div v-for="(userAmount, username) in remainingUsers" :key="username">
+        {{ userAmountPretty(userAmount, username) }}
+      </div>
     </div>
-  </div>
-  <div class="balance-details">
     <div class="card">
       <div class="details-row">
         <p>Your</p>
@@ -26,21 +26,19 @@
         {{ category }}: {{ roundAmount(amount) }}€
       </div>
     </div>
-    <div v-if="dataReady">
-      <div class="card" v-if="Object.keys(expensesChartData.labels).length > 0">
-        <DoughnutChart
-          :chartData="expensesChartData"
-          :chartID="'expensesChart'"
-          :title="'Expenses chart'"
-        />
-      </div>
-      <div class="card" v-if="Object.keys(incomesChartData.labels).length > 0">
-        <DoughnutChart
-          :chartData="incomesChartData"
-          :chartID="'incomesChart'"
-          :title="'Incomes chart'"
-        />
-      </div>
+    <div class="card" v-if="dataReady && Object.keys(expensesChartData.labels).length > 0">
+      <DoughnutChart
+        :chartData="expensesChartData"
+        :chartID="'expensesChart'"
+        :title="'Expenses chart'"
+      />
+    </div>
+    <div class="card" v-if="dataReady && Object.keys(incomesChartData.labels).length > 0">
+      <DoughnutChart
+        :chartData="incomesChartData"
+        :chartID="'incomesChart'"
+        :title="'Incomes chart'"
+      />
     </div>
   </div>
 </template>
@@ -116,10 +114,10 @@ export default {
       return new Date().getMonth() + 1
     },
     totalAmountPretty() {
-      return prettifier.myTotal(Number(this.balance['_total']), '€')
+      return prettifier.myTotal(this.balance['_total'], '€')
     },
     myExpensesPretty() {
-      return prettifier.myExpenses(Number(this.balance[this.$store.state.username]), '€')
+      return prettifier.myExpenses(this.balance[this.$store.state.username], '€')
     },
     myExpensesThisMonth() {
       return prettifier.myExpensesThisMonth(Number(this.monthlyExpenses), '€')

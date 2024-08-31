@@ -6,7 +6,7 @@
       class="icon"
       @click="onCoinflowLogoClick"
     />
-    <div class="search-bar" v-if="showSearchBar">
+    <div id="search-bar" class="search-bar" v-if="showSearchBar">
       <input type="text" v-model="searchQuery" placeholder="Search..." />
       <img
         src="@/assets/close.png"
@@ -75,19 +75,19 @@ export default {
   max-width: 100%;
 }
 
-input {
-  min-height: 40px;
-  border-radius: 10px;
-  padding: 8px;
-  max-width: 70%;
-}
-
 .search-bar {
   padding: 8px;
   margin: 0px;
   display: flex;
   justify-content: center;
   align-items: center;
-  max-width: 70%;
+  max-width: 75%;
+}
+.search-bar input {
+  min-height: 40px;
+  border-radius: 10px;
+  padding: 8px;
+  max-width: 75%;
+  width: 1024px;
 }
 </style>
