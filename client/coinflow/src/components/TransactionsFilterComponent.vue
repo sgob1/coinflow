@@ -6,18 +6,9 @@
       min="1900"
       max="2100"
       placeholder="Year"
-      value="currentYear"
       v-model="year"
     />
-    <input
-      class="filter-item"
-      type="number"
-      min="1"
-      max="12"
-      placeholder="Month"
-      value="currentMonth"
-      v-model="month"
-    />
+    <input class="filter-item" type="number" min="1" max="12" placeholder="Month" v-model="month" />
     <select v-model="selectedUsername" class="filter-item">
       <option value="_total">Total balance</option>
       <option v-for="user in users" :key="user.username">
