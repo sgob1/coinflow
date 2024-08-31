@@ -72,6 +72,7 @@ export default {
   margin: 0px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   max-width: 100%;
 }
 
@@ -80,7 +81,6 @@ export default {
   margin: 0px;
   display: flex;
   justify-content: center;
-  align-items: center;
   max-width: 75%;
 }
 
