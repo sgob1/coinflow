@@ -16,13 +16,12 @@
         v-if="searchQuery.length > 0"
       />
     </div>
-    <img
-      src="@/assets/user.png"
-      alt="Account"
-      class="icon"
-      v-if="showAccountIcon"
-      @click="onShowAccountIconClick"
-    />
+    <div class="user-account" @click="onShowAccountIconClick">
+      <img src="@/assets/user.png" alt="Account" class="user-icon" v-if="showAccountIcon" />
+      <p>
+        {{ thisUsername }}
+      </p>
+    </div>
   </div>
 </template>
 
@@ -49,6 +48,9 @@ export default {
     }
   },
   computed: {
+    thisUsername() {
+      return this.$store.state.username
+    },
     showSearchBar() {
       return this.$route.name === 'main'
     },
@@ -68,6 +70,11 @@ export default {
 .icon {
   height: 50px;
   width: 50px;
+}
+
+.user-icon {
+  height: 34px;
+  width: 34px;
 }
 
 .icon-small {
@@ -108,5 +115,17 @@ export default {
   max-width: 75%;
   width: 1024px;
   color: var(--color-text);
+}
+
+.user-account {
+  display: flex;
+  flex-direction: column;
+  justify-content: right;
+  align-items: center;
+}
+
+.user-account p {
+  font-size: 0.8em;
+  margin: 1px;
 }
 </style>
