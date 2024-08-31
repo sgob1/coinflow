@@ -32,7 +32,6 @@ import TransactionsListComponent from '@/components/TransactionsListComponent.vu
 import TransactionsFilterComponent from '@/components/TransactionsFilterComponent.vue'
 
 import { mapState } from 'vuex'
-import { h } from 'vue'
 
 export default {
   components: {
@@ -65,18 +64,9 @@ export default {
         await fetcher.deleteTransaction(transaction)
         this.onTransactionsModified()
 
-        this.$snackbar.add({
+        this.$store.commit('setSnackbarMessage', {
           type: 'success',
-          text: `Deleted transaction '${transaction.description}'`,
-          // Render function for undo button
-          action: h('button', {
-            class: 'undo-button',
-            type: 'button',
-            onClick: () => {
-              this.onUndoClick(transaction)
-            },
-            innerHTML: 'Undo'
-          })
+          text: `Deleted transaction '${transaction.description}'`
         })
       }
     },
@@ -86,14 +76,6 @@ export default {
       this.getBalance()
       this.dataReady = true
       await this.$refs.searchComponent.refresh()
-    },
-    async onUndoClick(transaction) {
-      await fetcher.submitNewTransaction(transaction)
-      await this.onTransactionsModified()
-      this.$snackbar.add({
-        type: 'success',
-        text: `Undo delete transaction '${transaction.description}'`
-      })
     },
     validYear(year) {
       if (isNaN(year) || year === '' || year < 1900) return false

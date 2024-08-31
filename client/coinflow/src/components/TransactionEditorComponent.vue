@@ -217,8 +217,8 @@ export default {
           )
         }
         let snackbarMessage = this.isNewTransaction()
-          ? `Added transaction '${this.currentTransaction.description}'`
-          : `Edited with '${this.currentTransaction.description}'`
+          ? `Added transaction '${this.currentTransaction.description} (${this.prettyQuota(this.totalCost)})'`
+          : `Edited with '${this.currentTransaction.description} (${this.prettyQuota(this.totalCost)})'`
         this.$store.commit('setSnackbarMessage', {
           type: 'success',
           text: snackbarMessage
