@@ -83,6 +83,7 @@ export default {
   align-items: center;
   max-width: 75%;
 }
+
 .search-bar input {
   min-height: 40px;
   border-radius: 10px;

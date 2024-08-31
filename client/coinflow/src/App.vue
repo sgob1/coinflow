@@ -34,13 +34,6 @@ export default {
       this.username = this.$store.state.username
       this.$router.replace({ name: 'main' })
     },
-    // FIXME: remove this if not necessary
-    logout() {
-      this.$store.commit('logout')
-      this.isAuthenticated = this.$store.state.isAuthenticated
-      this.username = this.$store.state.username
-      this.$router.replace({ name: 'login' })
-    },
     onFiltersChanged(filters) {
       let originalQuery = this.$refs.headerBar.searchQuery
       let newQuery = searchUtils.setFiltersInSearchQuery(originalQuery, filters)
