@@ -40,7 +40,7 @@
       </button>
     </div>
     <div class="user-quotas-editor-wrapper">
-      <div>Total cost: {{ totalCost }}</div>
+      <div>Total cost: {{ prettyQuota(totalCost) }}</div>
       <div v-for="(quota, key) in currentTransaction.quotas" :key="key">
         {{ key }}:
         <input
@@ -68,6 +68,7 @@
 <script>
 import fetcher from '@/utils/fetch/fetcher.js'
 import transactions from '@/utils/transactions.js'
+import prettifier from '@/utils/prettifier.js'
 
 export default {
   data() {
@@ -226,6 +227,9 @@ export default {
         })
         await this.$emit('transactionSubmitted')
       }
+    },
+    prettyQuota(quota) {
+      return prettifier.prettyAmount(quota) + '€'
     }
   },
   computed: {

@@ -83,21 +83,31 @@ export default {
     monthlyExpenses() {
       let expenses = 0.0
       for (let item in this.budget) {
-        let transactionAmount = Number(this.budget[item].quotas[this.$store.state.username])
-        if (transactionAmount > 0.0) expenses = expenses + transactionAmount
+        if (
+          this.budget[item].year === this.currentYear &&
+          this.budget[item].month === this.currentMonth
+        ) {
+          let transactionAmount = Number(this.budget[item].quotas[this.$store.state.username])
+          if (transactionAmount > 0.0) expenses = expenses + transactionAmount
+        }
       }
       return transactions.roundAmount(expenses)
     },
     monthlyIncome() {
       let income = 0.0
       for (let item in this.budget) {
-        let transactionAmount = Number(this.budget[item].quotas[this.$store.state.username])
-        if (transactionAmount < 0.0) income = income + -transactionAmount
+        if (
+          this.budget[item].year === this.currentYear &&
+          this.budget[item].month === this.currentMonth
+        ) {
+          let transactionAmount = Number(this.budget[item].quotas[this.$store.state.username])
+          if (transactionAmount < 0.0) income = income + -transactionAmount
+        }
       }
       return transactions.roundAmount(income)
     },
     monthlyBalance() {
-      return transactions.roundAmount(Number(this.monthlyIncome) + Number(this.monthlyExpenses))
+      return transactions.roundAmount(Number(this.monthlyIncome) - Number(this.monthlyExpenses))
     },
     currentYear() {
       return new Date().getFullYear()

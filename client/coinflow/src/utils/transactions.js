@@ -7,6 +7,12 @@ const computeTotalCost = function (transaction) {
 
   let totalCost = 0
   for (let quota in transaction.quotas) {
+    if (
+      typeof transaction.quotas[quota] === 'string' &&
+      transaction.quotas[quota].indexOf(',') > -1
+    ) {
+      transaction.quotas[quota] = transaction.quotas[quota].replace(',', '.')
+    }
     totalCost = totalCost + Number(transaction.quotas[quota])
   }
   return this.roundAmount(totalCost)
