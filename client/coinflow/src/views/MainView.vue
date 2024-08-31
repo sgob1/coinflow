@@ -27,7 +27,7 @@
       <vue-bottom-sheet
         ref="bottomSheet"
         :max-width="1024"
-        :max-height="1000"
+        :max-height="800"
         :transition-duration="0.4"
         :overlay-color="'#00000048'"
       >

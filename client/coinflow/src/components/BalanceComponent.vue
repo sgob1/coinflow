@@ -3,6 +3,9 @@
     <h2>Balance</h2>
     <div>{{ totalAmountPretty }}</div>
     <div>{{ myExpensesPretty }}</div>
+    <div>{{ myIncomeThisMonth }}</div>
+    <div>{{ myExpensesThisMonth }}</div>
+    <div>{{ myBalanceThisMonth }}</div>
     <div v-for="(userAmount, username) in remainingUsers" :key="username">
       {{ userAmountPretty(userAmount, username) }}
     </div>
@@ -77,6 +80,25 @@ export default {
       }
       return categories
     },
+    monthlyExpenses() {
+      let expenses = 0.0
+      for (let item in this.budget) {
+        let transactionAmount = Number(this.budget[item].quotas[this.$store.state.username])
+        if (transactionAmount > 0.0) expenses = expenses + transactionAmount
+      }
+      return transactions.roundAmount(expenses)
+    },
+    monthlyIncome() {
+      let income = 0.0
+      for (let item in this.budget) {
+        let transactionAmount = Number(this.budget[item].quotas[this.$store.state.username])
+        if (transactionAmount < 0.0) income = income + -transactionAmount
+      }
+      return transactions.roundAmount(income)
+    },
+    monthlyBalance() {
+      return transactions.roundAmount(Number(this.monthlyIncome) + Number(this.monthlyExpenses))
+    },
     currentYear() {
       return new Date().getFullYear()
     },
@@ -88,6 +110,15 @@ export default {
     },
     myExpensesPretty() {
       return prettifier.myExpenses(Number(this.balance[this.$store.state.username]), '€')
+    },
+    myExpensesThisMonth() {
+      return prettifier.myExpensesThisMonth(Number(this.monthlyExpenses), '€')
+    },
+    myIncomeThisMonth() {
+      return prettifier.myIncomeThisMonth(Number(this.monthlyIncome), '€')
+    },
+    myBalanceThisMonth() {
+      return prettifier.myBalanceThisMonth(Number(this.monthlyBalance), '€')
     },
     remainingUsers() {
       let remainingUsers = {}

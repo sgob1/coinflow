@@ -3,7 +3,7 @@
     <div class="transaction-item-closed" v-if="!isOpen">
       <div class="transaction-item-first-row">
         <div>{{ transaction.description }}</div>
-        <div>{{ transaction.quotas[this.$store.state.username] }}€</div>
+        <div>{{ prettyQuota(transaction.quotas[this.$store.state.username]) }}</div>
       </div>
       <div class="transaction-item-second-row">
         <div>{{ computeDate }}</div>
@@ -14,7 +14,7 @@
     <div class="transaction-item-open" v-if="isOpen">
       <div class="transaction-item-first-row">
         <div>{{ transaction.description }}</div>
-        <div>{{ transaction.quotas[this.$store.state.username] }}€</div>
+        <div>{{ prettyQuota(transaction.quotas[this.$store.state.username]) }}</div>
       </div>
       <div class="transaction-item-second-row">
         <div>{{ computeDate }}</div>
@@ -27,12 +27,12 @@
       </div>
       <div class="quotas-section" v-if="Object.keys(transaction.quotas).length > 1">
         <h2>Total cost</h2>
-        {{ totalCost }}€
+        {{ prettyQuota(totalCost) }}
         <h2>Shared with</h2>
         <div v-for="(quota, key) in transaction.quotas" :key="key">
           <div v-if="key !== this.$store.state.username">
             <button type="button" @click="$emit('seeUserTransactionsClick', key)">{{ key }}</button>
-            {{ transaction.quotas[key] }}€
+            {{ prettyQuota(transaction.quotas[key]) }}
           </div>
         </div>
       </div>
@@ -54,6 +54,7 @@
 
 <script>
 import transactions from '@/utils/transactions.js'
+import prettifier from '@/utils/prettifier.js'
 
 export default {
   data() {
@@ -72,6 +73,9 @@ export default {
     },
     async onDeleteTransactionClick() {
       await this.$emit('deleteTransaction', this.transaction)
+    },
+    prettyQuota(quota) {
+      return prettifier.prettyAmount(quota) + '€'
     }
   },
   computed: {

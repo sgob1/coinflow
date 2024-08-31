@@ -5,10 +5,23 @@ const myTotal = function (amount, currency) {
 
 const myExpenses = function (amount, currency) {
   if (amount < 0) {
-    return `You managed to receive ${-amount}${currency}`
+    return `You managed to receive in total ${-prettyAmount(amount)}${currency}`
   } else {
-    return `Your expenses were ${amount}${currency}`
+    return `Your total expenses were ${prettyAmount(amount)}${currency}`
   }
+}
+
+const myExpensesThisMonth = function (amount, currency) {
+  return `This month your expenses amount to ${prettyAmount(amount)}${currency}`
+}
+
+const myIncomeThisMonth = function (amount, currency) {
+  return `This month your income is ${prettyAmount(amount)}${currency}`
+}
+
+const myBalanceThisMonth = function (amount, currency) {
+  if (amount > 0) return `This month your balance is +${prettyAmount(amount)}${currency}`
+  else return `This month your balance is ${prettyAmount(amount)}${currency}`
 }
 
 const prettySentence = function (amount, currency, username, name, surname) {
@@ -42,6 +55,10 @@ const prettyAmount = function (amount) {
 export default {
   myTotal,
   myExpenses,
+  myExpensesThisMonth,
+  myIncomeThisMonth,
+  myBalanceThisMonth,
   prettySentence,
+  prettyAmount,
   userSentence
 }
