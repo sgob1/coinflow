@@ -25,6 +25,7 @@
       <div v-for="(amount, category) in categories" :key="category">
         {{ category }}: {{ roundAmount(amount) }}€
       </div>
+      <div>Transactions in selected period: {{ numOfTransactions }}</div>
     </div>
     <div class="card" v-if="dataReady && Object.keys(expensesChartData.labels).length > 0">
       <DoughnutChart
@@ -122,6 +123,13 @@ export default {
       } else {
         return prettifier.myExpenses(0.0, '€')
       }
+    },
+    numOfTransactions() {
+      let numOfTransactions = 0
+      for (let item in this.budget) {
+        numOfTransactions++
+      }
+      return numOfTransactions
     },
     myExpensesThisMonth() {
       return prettifier.myExpensesThisMonth(Number(this.monthlyExpenses), '€')

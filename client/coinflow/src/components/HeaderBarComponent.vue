@@ -16,7 +16,13 @@
         v-if="searchQuery.length > 0"
       />
     </div>
-    <img src="@/assets/user.png" alt="Account" class="icon" v-if="showAccountIcon" />
+    <img
+      src="@/assets/user.png"
+      alt="Account"
+      class="icon"
+      v-if="showAccountIcon"
+      @click="onShowAccountIconClick"
+    />
   </div>
 </template>
 
@@ -31,6 +37,9 @@ export default {
     },
     onCoinflowLogoClick() {
       window.location.reload()
+    },
+    onShowAccountIconClick() {
+      this.$router.replace({ name: 'account' })
     },
     setQuery(value) {
       this.searchQuery = value

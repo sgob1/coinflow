@@ -17,6 +17,11 @@ const router = createRouter({
       path: '/',
       name: 'balance',
       component: () => import('../views/BalanceView.vue')
+    },
+    {
+      path: '/',
+      name: 'account',
+      component: () => import('../views/AccountView.vue')
     }
   ]
 })

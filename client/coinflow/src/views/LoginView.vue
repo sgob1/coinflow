@@ -114,37 +114,84 @@ export default {
           username: this.input.username
         })
         this.$emit('authenticated', true)
+        return await response.json()
+      } else {
+        const data = await response.json()
+        this.$store.commit('setSnackbarMessage', {
+          type: 'error',
+          text: `${data.msg}`
+        })
+        return data
       }
-      const data = await response.json()
-      this.$store.commit('setSnackbarMessage', {
-        type: 'error',
-        message: data.msg
-      })
-      return data
+    },
+    checkSignup() {
+      if (!/^[a-z]{3,16}$/.test(this.input.username)) {
+        return {
+          valid: false,
+          reason: 'Invalid username'
+        }
+      }
+
+      if (this.details.repeatPassword !== this.input.password) {
+        return {
+          valid: false,
+          reason: 'Passwords not matching'
+        }
+      }
+
+      if (this.input.password.length < 8) {
+        return {
+          valid: false,
+          reason: 'Password should be at least 8 characters long'
+        }
+      }
+
+      if (this.details.name.length === 0 || this.details.surname.length === 0) {
+        return {
+          valid: false,
+          reason: 'Missing name details'
+        }
+      }
+      return {
+        valid: true
+      }
     },
     async signup() {
-      this.output.message = ''
+      let check = this.checkSignup()
+      if (!check.valid) {
+        this.$store.commit('setSnackbarMessage', {
+          type: 'error',
+          text: check.reason
+        })
+        return
+      }
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          name: this.details.name,
-          surname: this.details.surname,
-          username: this.input.username,
-          password: this.details.repeatPassword
+          name: this.details.name.trim(),
+          surname: this.details.surname.trim(),
+          username: this.input.username.trim(),
+          password: this.input.password
         })
       })
       if (response.ok) {
         this.showSignup = false
+        this.$store.commit('setSnackbarMessage', {
+          type: 'success',
+          text: 'User successfully registered'
+        })
+        return await response.json()
+      } else {
+        const data = await response.json()
+        this.$store.commit('setSnackbarMessage', {
+          type: 'error',
+          text: data.msg
+        })
+        return data
       }
-      const data = await response.json()
-      this.$store.commit('setSnackbarMessage', {
-        type: 'error',
-        message: data.msg
-      })
-      return data
     }
   }
 }
