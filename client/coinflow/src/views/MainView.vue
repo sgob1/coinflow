@@ -27,7 +27,7 @@
       <vue-bottom-sheet
         ref="bottomSheet"
         :max-width="1024"
-        :max-height="800"
+        :max-height="650"
         :transition-duration="0.4"
         :overlay-color="'#00000048'"
       >
@@ -256,5 +256,13 @@ export default {
   min-height: 500px;
   display: flex;
   flex-direction: column;
+}
+
+.bottom-sheet {
+  background-color: rgba(0, 0, 0, 1) !important;
+}
+
+&__content {
+  background-color: rgba(0, 0, 0, 1) !important;
 }
 </style>

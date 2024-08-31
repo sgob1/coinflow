@@ -74,7 +74,6 @@ export default {
 }
 
 body {
-  background-color: #808080;
   font-size: 1.2em;
 }
 
@@ -82,7 +81,6 @@ body {
   margin: 20px;
   padding: 10px;
   border-radius: 20px;
-  background-color: #808080;
 }
 
 .button-green {
@@ -94,6 +92,7 @@ body {
 }
 
 #nav-host {
+  padding-top: 80px;
   justify-content: center;
   width: 100%;
   margin: auto;

@@ -295,10 +295,4 @@ export default {
 input {
   font-size: 1.1em;
 }
-input:invalid {
-  background-color: ivory;
-  border: none;
-  outline: 2px solid red;
-  border-radius: 5px;
-}
 </style>

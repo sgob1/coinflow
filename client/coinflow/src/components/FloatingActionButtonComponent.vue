@@ -1,7 +1,6 @@
 <template>
   <div class="floating-container">
     <div class="floating-button">+</div>
-    <div class="element-container"></div>
   </div>
 </template>
 
@@ -50,7 +49,7 @@ body {
   position: absolute;
   width: 65px;
   height: 65px;
-  background: #2cb3f0;
+  background: var(--color-accent);
   bottom: 0;
   border-radius: 50%;
   left: 0;

@@ -17,9 +17,37 @@ export default {
   },
   data() {
     return {
-      chart: undefined,
-      chartOptions: {
-        responsive: true
+      chart: undefined
+    }
+  },
+  computed: {
+    borderColor() {
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return '#ffffff'
+      } else {
+        return '#000000'
+      }
+    },
+    hoverBorderColor() {
+      return '#65c5ff'
+    },
+    chartOptions() {
+      return {
+        responsive: true,
+        borderColor: this.borderColor,
+        hoverBorderColor: this.hoverBorderColor,
+        borderRadius: 1,
+        borderWidth: 4,
+        plugins: {
+          legend: {
+            labels: {
+              // This more specific font property overrides the global property
+              font: {
+                size: 21
+              }
+            }
+          }
+        }
       }
     }
   },

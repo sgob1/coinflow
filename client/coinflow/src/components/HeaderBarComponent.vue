@@ -66,13 +66,17 @@ export default {
 }
 
 #headerbar {
-  background-color: #ffffff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: var(--color-background-soft);
   border: 1px solid #cccccc;
   padding: 8px;
   margin: 0px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  min-width: 100%;
   max-width: 100%;
 }
 
@@ -86,9 +90,10 @@ export default {
 
 .search-bar input {
   min-height: 40px;
-  border-radius: 10px;
+  border-radius: 40px;
   padding: 8px;
   max-width: 75%;
   width: 1024px;
+  color: var(--color-text);
 }
 </style>
