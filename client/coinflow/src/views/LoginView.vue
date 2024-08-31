@@ -1,5 +1,5 @@
 <template>
-  <div class="login-container">
+  <div class="login-container card">
     <div id="login" class="login-box" v-if="!showSignup">
       <h1>Welcome to Coinflow</h1>
       <input
@@ -24,7 +24,6 @@
       <button type="button" @click="showSignup = true" id="login-button" class="login-element">
         Signup
       </button>
-      <p>{{ output.message }}</p>
     </div>
     <div id="registration" class="login-box" v-if="showSignup">
       <h1>Signup</h1>
@@ -97,9 +96,6 @@ export default {
         username: '',
         password: ''
       },
-      output: {
-        message: ''
-      },
       showSignup: false
     }
   },
@@ -120,10 +116,14 @@ export default {
         this.$emit('authenticated', true)
       }
       const data = await response.json()
-      this.output.message = data.msg
+      this.$store.commit('setSnackbarMessage', {
+        type: 'error',
+        message: data.msg
+      })
       return data
     },
     async signup() {
+      this.output.message = ''
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: {
@@ -140,7 +140,10 @@ export default {
         this.showSignup = false
       }
       const data = await response.json()
-      this.output.message = data.msg
+      this.$store.commit('setSnackbarMessage', {
+        type: 'error',
+        message: data.msg
+      })
       return data
     }
   }
@@ -157,11 +160,10 @@ export default {
   display: flex;
   flex-direction: column;
   width: auto;
-  border: 1px solid #cccccc;
+  border: 1px solid var(--color-border);
   border-radius: 20px;
-  background-color: #ffffff;
-  margin: auto;
-  margin-top: auto;
+  background-color: var(--color-background);
+  margin: 10px;
   padding: 20px;
 }
 
@@ -170,12 +172,12 @@ export default {
   margin: 10px auto;
   padding: 5px;
   font-size: 1.2em;
-  border: 1px solid #777777;
-  border-radius: 15px;
+  border: 1px solid var(--color-border);
+  border-radius: 40px;
 }
 
 #login-button {
-  background-color: #4b69fc;
-  color: #ffffff;
+  background-color: var(--color-accent);
+  color: var(--color-text-inverted);
 }
 </style>

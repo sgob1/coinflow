@@ -16,7 +16,7 @@
         v-if="searchQuery.length > 0"
       />
     </div>
-    <img src="@/assets/user.png" alt="Account" class="icon" />
+    <img src="@/assets/user.png" alt="Account" class="icon" v-if="showAccountIcon" />
   </div>
 </template>
 
@@ -42,6 +42,9 @@ export default {
   computed: {
     showSearchBar() {
       return this.$route.name === 'main'
+    },
+    showAccountIcon() {
+      return this.$route.name !== 'login'
     }
   },
   watch: {
