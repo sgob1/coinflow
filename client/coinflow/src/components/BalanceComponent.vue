@@ -13,13 +13,13 @@
     </div>
     <div class="card">
       <div class="details-row">
-        <p>Your</p>
+        <h3>Your</h3>
         <select v-model="selectedPeriod" @change="onSelectedPeriodChange">
           <option value="alltime">all-time</option>
           <option value="yearly">yearly</option>
           <option value="monthly">monthly</option>
         </select>
-        <p>details</p>
+        <h3>details</h3>
       </div>
       <h2>Categories</h2>
       <div v-for="(amount, category) in categories" :key="category">
@@ -117,7 +117,11 @@ export default {
       return prettifier.myTotal(this.balance['_total'], '€')
     },
     myExpensesPretty() {
-      return prettifier.myExpenses(this.balance[this.$store.state.username], '€')
+      if (this.balance[this.$store.state.username]) {
+        return prettifier.myExpenses(this.balance[this.$store.state.username], '€')
+      } else {
+        return prettifier.myExpenses(0.0, '€')
+      }
     },
     myExpensesThisMonth() {
       return prettifier.myExpensesThisMonth(Number(this.monthlyExpenses), '€')
@@ -227,6 +231,7 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: start;
+  align-items: center;
 }
 
 .details-row * {

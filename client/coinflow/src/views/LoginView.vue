@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
-    <div id="login" class="login-box">
-      <h1>Login</h1>
+    <div id="login" class="login-box" v-if="!showSignup">
+      <h1>Welcome to Coinflow</h1>
       <input
         type="text"
         name="username"
@@ -9,6 +9,7 @@
         placeholder="Username"
         id="login-username"
         class="login-element"
+        required="true"
       />
       <input
         type="password"
@@ -17,9 +18,67 @@
         placeholder="Password"
         id="login-password"
         class="login-element"
+        required="true"
       />
       <button type="button" @click="login()" id="login-button" class="login-element">Login</button>
+      <button type="button" @click="showSignup = true" id="login-button" class="login-element">
+        Signup
+      </button>
       <p>{{ output.message }}</p>
+    </div>
+    <div id="registration" class="login-box" v-if="showSignup">
+      <h1>Signup</h1>
+      <input
+        type="text"
+        name="name"
+        v-model="details.name"
+        placeholder="Name"
+        id="signup-name"
+        class="login-element"
+        required="true"
+      />
+      <input
+        type="text"
+        name="surname"
+        v-model="details.surname"
+        placeholder="Surname"
+        id="signup-surname"
+        class="login-element"
+        required="true"
+      />
+      <input
+        type="text"
+        name="username"
+        v-model="input.username"
+        placeholder="Username"
+        id="signup-username"
+        class="login-element"
+        pattern="[a-z]{3,16}"
+        required="true"
+      />
+      <input
+        type="password"
+        name="password"
+        v-model="input.password"
+        placeholder="Password"
+        id="signup-password"
+        class="login-element"
+        pattern="\w{3,64}"
+        required="true"
+      />
+      <input
+        type="password"
+        name="password"
+        v-model="details.repeatPassword"
+        placeholder="Repeat password"
+        id="signup-password-repeat"
+        class="login-element"
+        pattern="\w{3,64}"
+        required="true"
+      />
+      <button type="button" @click="signup()" id="signup-button" class="login-element">
+        Signup
+      </button>
     </div>
   </div>
 </template>
@@ -29,13 +88,19 @@ export default {
   name: 'LoginView',
   data() {
     return {
+      details: {
+        name: '',
+        surname: '',
+        repeatPassword: ''
+      },
       input: {
         username: '',
         password: ''
       },
       output: {
         message: ''
-      }
+      },
+      showSignup: false
     }
   },
   methods: {
@@ -53,6 +118,26 @@ export default {
           username: this.input.username
         })
         this.$emit('authenticated', true)
+      }
+      const data = await response.json()
+      this.output.message = data.msg
+      return data
+    },
+    async signup() {
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: this.details.name,
+          surname: this.details.surname,
+          username: this.input.username,
+          password: this.details.repeatPassword
+        })
+      })
+      if (response.ok) {
+        this.showSignup = false
       }
       const data = await response.json()
       this.output.message = data.msg
