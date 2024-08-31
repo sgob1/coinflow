@@ -30,11 +30,19 @@
 
   --vt-c-error: rgb(255 101 101);
   --vt-c-error-soft: rgba(255 224 224, 0.7);
+
+  --vt-c-success: rgb(84 199 71);
+  --vt-c-success-soft: rgb(234 255 212);
+  --vt-c-success-dark: rgb(234 255 212);
+  --vt-c-success-soft-dark: rgb(84 199 71);
 }
 
 :root {
   --color-accent: var(--vt-c-accent);
   --color-accent-soft: var(--vt-c-accent-soft);
+
+  --color-success: var(--vt-c-success);
+  --color-success-soft: var(--vt-c-success-soft);
 
   --color-background: var(--vt-c-white);
   --color-background-soft: var(--vt-c-white-soft);
@@ -59,6 +67,9 @@
   :root {
     --color-accent: var(--vt-c-accent-dark);
     --color-accent-soft: var(--vt-c-accent-soft-dark);
+
+    --color-success: var(--vt-c-success-dark);
+    --color-success-soft: var(--vt-c-success-soft-dark);
 
     --color-background: var(--vt-c-black);
     --color-background-soft: var(--vt-c-black-soft);

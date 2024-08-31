@@ -1,5 +1,6 @@
 <template>
   <div>
+    <AddTransactionComponent @transaction-created="$emit('transactionModified')" />
     <div id="transactions-table">
       <li v-for="user in usersSearchResults" :key="user.userId">
         <UserItem
@@ -12,11 +13,11 @@
       <li v-for="transaction in transactionsSearchResults" :key="transaction.transactionId">
         <TransactionItem
           :transaction="transaction"
-          @edit-transaction="onEditTransaction"
           @delete-transaction="onDeleteTransaction"
           @see-user-transactions-click="
             (username) => this.$emit('seeUserTransactionsClick', username)
           "
+          @transaction-modified="$emit('transactionModified')"
         />
       </li>
     </div>
@@ -25,6 +26,7 @@
 
 <script>
 import TransactionItem from '@/components/TransactionItem.vue'
+import AddTransactionComponent from '@/components/AddTransactionComponent.vue'
 import UserItem from '@/components/UserItem.vue'
 
 import fetcher from '@/utils/fetch/fetcher.js'
@@ -34,7 +36,8 @@ export default {
   emits: ['editTransaction', 'deleteTransaction'],
   components: {
     TransactionItem,
-    UserItem
+    UserItem,
+    AddTransactionComponent
   },
   props: {
     query: String
@@ -82,7 +85,8 @@ export default {
     },
     onDeleteTransaction(transaction) {
       this.$emit('deleteTransaction', transaction)
-    }
+    },
+    onCreateNewTransactionClick() {}
   },
   watch: {
     query: async function (newVal, oldVal) {

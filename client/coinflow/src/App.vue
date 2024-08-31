@@ -1,11 +1,13 @@
 <script>
 import HeaderBarComponent from './components/HeaderBarComponent.vue'
+import SnackbarComponent from './components/SnackbarComponent.vue'
 import searchUtils from '@/utils/search/searchUtils.js'
 
 export default {
   name: 'App',
   components: {
-    HeaderBarComponent
+    HeaderBarComponent,
+    SnackbarComponent
   },
   data() {
     return {
@@ -59,9 +61,7 @@ export default {
         @filters-changed="(filters) => onFiltersChanged(filters)"
       />
     </div>
-    <vue3-snackbar top center groups dense :duration="4000">
-      <template #message-action="{ message, isDismissible, dismiss }"> </template>
-    </vue3-snackbar>
+    <SnackbarComponent :duration="4000" />
   </div>
 </template>
 

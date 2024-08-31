@@ -5,7 +5,8 @@ const store = createStore({
     return {
       isAuthenticated: false,
       username: '',
-      searchQuery: ''
+      searchQuery: '',
+      snackbarMessage: undefined
     }
   },
   mutations: {
@@ -19,6 +20,9 @@ const store = createStore({
     },
     setSearchQuery(state, query) {
       state.searchQuery = query
+    },
+    setSnackbarMessage(state, message) {
+      state.snackbarMessage = message
     }
   },
   actions: {

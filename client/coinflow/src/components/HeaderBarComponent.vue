@@ -67,6 +67,7 @@ export default {
 
 #headerbar {
   position: fixed;
+  z-index: 9999999;
   top: 0;
   left: 0;
   background-color: var(--color-background-soft);

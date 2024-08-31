@@ -18,7 +18,24 @@ const computeTotalCost = function (transaction) {
   return this.roundAmount(totalCost)
 }
 
+const clone = function (transaction) {
+  let clone = {}
+  clone.transactionId = transaction.transactionId
+  clone.author = transaction.author
+  clone.year = transaction.year
+  clone.month = transaction.month
+  clone.day = transaction.day
+  clone.category = transaction.category
+  clone.description = transaction.description
+  clone.quotas = {}
+  for (let quota in transaction.quotas) {
+    clone.quotas[quota] = transaction.quotas[quota]
+  }
+  return clone
+}
+
 export default {
   roundAmount,
-  computeTotalCost
+  computeTotalCost,
+  clone
 }

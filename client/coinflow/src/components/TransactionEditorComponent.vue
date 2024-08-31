@@ -1,8 +1,9 @@
 <template>
   <div class="editor-wrapper">
+    <button type="button" @click="$emit('cancel')">Cancel</button>
     <div class="editor-title">
-      <h1 v-if="isNew">Create Transaction</h1>
-      <h1 v-if="!isNew">Edit Transaction</h1>
+      <h1 v-if="isNewTransaction()">Create Transaction</h1>
+      <h1 v-if="!isNewTransaction()">Edit Transaction</h1>
     </div>
     <h2>Description</h2>
     <input
@@ -24,7 +25,7 @@
       <input type="date" v-model="date" @input="onSubmitDate" value="currentDate" required />
     </div>
     <h2>User Quotas</h2>
-    <div class="add-user-quota-wrapper" v-if="remainingUsers.length > 0">
+    <div class="add-user-quota-wrapper" v-if="cachedUsers && remainingUsers.length > 0">
       <select v-model="selectedUsername">
         <option v-for="user in remainingUsers" :key="user.username">
           {{ user.username }}
@@ -75,10 +76,9 @@ export default {
     return {
       currentTransaction: {},
       selectedUsername: '',
-      cachedUsers: [],
+      cachedUsers: undefined,
       pickedDate: undefined,
-      dataReady: false,
-      isNew: this.isNewTransaction()
+      dataReady: false
     }
   },
   props: {
@@ -86,10 +86,7 @@ export default {
   },
   methods: {
     isNewTransaction() {
-      return (
-        !this.currentTransaction ||
-        (!this.currentTransaction.transactionId && !(this.currentTransaction.transactionId === 0))
-      )
+      return this.transaction === undefined || this.transaction.transactionId === undefined
     },
     onAddUserQuotaClick() {
       if (this.selectedUsername === '') return
@@ -107,15 +104,16 @@ export default {
 
       this.selectedUsername = ''
     },
-    resetTransaction() {
-      this.currentTransaction = {}
-      this.currentTransaction.author = this.$store.state.username
-      this.currentTransaction.quotas = {}
-      this.currentTransaction.quotas[this.$store.state.username] = 0.0
+    freshTransaction() {
+      let freshTransaction = {}
+      freshTransaction.author = this.$store.state.username
+      freshTransaction.quotas = {}
+      freshTransaction.quotas[this.$store.state.username] = 0.0
       let today = new Date()
-      this.currentTransaction.year = today.getFullYear()
-      this.currentTransaction.month = today.getMonth() + 1
-      this.currentTransaction.day = today.getDate()
+      freshTransaction.year = today.getFullYear()
+      freshTransaction.month = today.getMonth() + 1
+      freshTransaction.day = today.getDate()
+      return freshTransaction
     },
     initDate() {
       if (
@@ -201,14 +199,14 @@ export default {
       let transactionCheck = this.checkTransaction(this.currentTransaction)
       if (!transactionCheck.valid) {
         console.log(`Invalid transaction: ${transactionCheck.cause}`)
-        this.$snackbar.add({
+        this.$store.commit('setSnackbarMessage', {
           type: 'error',
           title: 'Invalid transaction',
           text: transactionCheck.cause
         })
       } else {
         this.formatTransaction(this.currentTransaction)
-        if (this.isNew) {
+        if (this.isNewTransaction()) {
           await fetcher.submitNewTransaction(this.currentTransaction)
         } else {
           await fetcher.submitEditedTransaction(
@@ -218,10 +216,10 @@ export default {
             this.currentTransaction
           )
         }
-        let snackbarMessage = this.isNew
+        let snackbarMessage = this.isNewTransaction()
           ? `Added transaction '${this.currentTransaction.description}'`
           : `Edited with '${this.currentTransaction.description}'`
-        this.$snackbar.add({
+        this.$store.commit('setSnackbarMessage', {
           type: 'success',
           text: snackbarMessage
         })
@@ -261,20 +259,14 @@ export default {
       return remainingUsers
     }
   },
-  watch: {
-    transaction: function (newVal) {
-      Object.assign(this.currentTransaction, newVal)
-      this.initDate()
-      if (this.isNewTransaction()) {
-        this.resetTransaction()
-        this.isNew = true
-      } else {
-        this.isNew = false
-      }
-    }
-  },
   async mounted() {
     this.cachedUsers = (await fetcher.usersSearch('')).slice()
+    if (this.transaction === undefined) {
+      this.currentTransaction = this.freshTransaction()
+    } else {
+      this.currentTransaction = transactions.clone(this.transaction)
+    }
+    this.initDate()
     this.dataReady = true
   }
 }
