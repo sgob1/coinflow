@@ -41,7 +41,7 @@ li {
   }
 }
 
-@media (min-width: 750px) {
+@media (min-width: 850px) {
   #app {
     width: 100%;
   }
@@ -51,11 +51,11 @@ li {
   }
 
   #nav-host {
-    max-width: 1024px;
+    max-width: 1280px;
   }
 
   #balance-container {
-    max-width: 1024px;
+    max-width: 1280px;
     display: grid;
     gap: 5px;
     grid-template-columns: 1fr 1fr;
@@ -63,6 +63,7 @@ li {
   }
 
   #transactions-table {
+    max-width: 1280px;
     display: grid;
     gap: 5px;
     grid-template-columns: 1fr 1fr;
@@ -70,7 +71,7 @@ li {
 
   .card {
     min-width: 300px;
-    max-width: 500px;
+    max-width: 640px;
   }
 
   /* #nav-host { */
