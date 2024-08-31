@@ -59,8 +59,6 @@
         </button>
       </div>
     </div>
-    <!-- TODO: remove this debug print -->
-    {{ currentTransaction }}
     <button type="button" name="submit-transaction-button" @click="onSubmitTransaction">
       Submit
     </button>
