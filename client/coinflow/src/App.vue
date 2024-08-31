@@ -73,9 +73,6 @@ export default {
 </template>
 
 <style>
-* {
-  background-color: var(--color-background);
-}
 #app {
   display: flex;
   flex-direction: column;
