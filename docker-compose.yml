@@ -1,13 +1,13 @@
 services:
  app:
    restart: unless-stopped
-   container_name: coinflow
+   container_name: coinflow-Sgobino
    network_mode: "host"
    build: .
    ports:
      - '3000:3000'
  mongo:
-   container_name: mongodb
+   container_name: mongodb-Sgobino
    restart: unless-stopped
    image: mongo:latest
    volumes:
