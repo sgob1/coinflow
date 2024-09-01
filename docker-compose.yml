@@ -1,13 +1,13 @@
 services:
  app:
    restart: unless-stopped
-   container_name: coinflow
+   container_name: coinflow-Sgobino
    network_mode: "host"
    build: .
    ports:
      - '3000:3000'
  mongo:
-   container_name: mongo
+   container_name: mongo-Sgobino
    restart: unless-stopped
    image: docker.io/mongodb/mongodb-community-server:latest
    volumes:

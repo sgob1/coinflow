@@ -38,3 +38,37 @@ rimuove tale pacchetto, tutto funziona anche se non si elimina la cartella
 `node_modules`.
 
 Le **password** degli utenti preimpostati sono disponibili nel file `password`.
+
+## Comandi separati
+
+Si può anche lanciare l'applicazione mediante comandi separati. Ci si assicuri
+di aver eseguito `install-all.sh`; dopodiché, nella cartella `server`,
+eseguiremo
+
+```
+npm install
+```
+
+e dunque
+
+```
+docker run --name mongodb -p 27017:27017 --replace docker.io/mongodb/mongodb-community-server:latest
+```
+
+oppure
+
+```
+podman run --name mongodb -p 27017:27017 --replace docker.io/mongodb/mongodb-community-server:latest
+```
+
+e 
+
+```
+npm start
+```
+
+Per eseguire l'inizializzazione del database, si esegua 
+
+```
+npm run resetdb
+```
