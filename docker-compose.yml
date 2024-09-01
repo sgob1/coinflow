@@ -7,13 +7,13 @@ services:
    ports:
      - '3000:3000'
  mongo:
-   container_name: mongodb_Sgobino
+   container_name: mongo
    restart: unless-stopped
    image: docker.io/mongodb/mongodb-community-server:latest
    volumes:
-     - mongodb_sgobino_data:/var/db
+     - mongo_data:/var/www/
    ports:
      - '27017:27017' 
 volumes:
-  mongodb_sgobino_data:
-    external: false
+  mongo_data:
+    external: true
