@@ -1,19 +1,19 @@
 services:
  app:
    restart: unless-stopped
-   container_name: coinflow-Sgobino
+   container_name: coinflow
    network_mode: "host"
    build: .
    ports:
      - '3000:3000'
  mongo:
-   container_name: mongodb-Sgobino
+   container_name: mongodb_Sgobino
    restart: unless-stopped
-   image: mongo:latest
+   image: docker.io/mongodb/mongodb-community-server:latest
    volumes:
-     - mongodb_data:/var/db
+     - mongodb_sgobino_data:/var/db
    ports:
      - '27017:27017' 
 volumes:
-  mongodb_data:
+  mongodb_sgobino_data:
     external: false
