@@ -35,6 +35,10 @@ const searchFilters = {
   date: {
     apply: (ts, value) => ts.filter((t) => sameDateISO8601(value, t.year, t.month, t.day)),
     description: 'Filters with specified date having format YYYY-MM-DD'
+  },
+  category: {
+    apply: (ts, value) => ts.filter((t) => t.category === value),
+    description: 'Filters with specified category'
   }
 }
 

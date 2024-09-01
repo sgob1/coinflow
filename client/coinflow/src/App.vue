@@ -46,6 +46,12 @@ export default {
       let clearedQuery = searchUtils.clearQuery(originalQuery)
       let newQuery = searchUtils.setFiltersInSearchQuery(clearedQuery, { user: username })
       this.$refs.headerBar.setQuery(newQuery)
+    },
+    onCategoryTransactionsClick(category) {
+      let originalQuery = this.$refs.headerBar.searchQuery
+      let clearedQuery = searchUtils.clearQuery(originalQuery)
+      let newQuery = searchUtils.setFiltersInSearchQuery(clearedQuery, { category: category })
+      this.$refs.headerBar.setQuery(newQuery)
     }
   }
 }
@@ -58,6 +64,7 @@ export default {
       <RouterView
         @authenticated="onAuthentication"
         @see-user-transactions-click="(username) => onUserTransactionsClick(username)"
+        @see-category-click="(category) => onCategoryTransactionsClick(category)"
         @filters-changed="(filters) => onFiltersChanged(filters)"
       />
     </div>

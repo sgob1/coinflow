@@ -17,6 +17,7 @@
           @see-user-transactions-click="
             (username) => this.$emit('seeUserTransactionsClick', username)
           "
+          @see-category-click="(category) => this.$emit('seeCategoryClick', category)"
           @transaction-modified="$emit('transactionModified')"
         />
       </li>

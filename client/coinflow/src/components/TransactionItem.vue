@@ -24,7 +24,9 @@
         {{ transaction.author }}
         <div v-if="transaction.category">
           <h2>Category</h2>
-          {{ transaction.category }}
+          <button type="button" @click="$emit('seeCategoryClick', transaction.category)">
+            {{ transaction.category }}
+          </button>
         </div>
         <div class="quotas-section" v-if="Object.keys(transaction.quotas).length > 1">
           <h2>Total cost</h2>
