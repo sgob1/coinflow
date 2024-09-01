@@ -4,7 +4,7 @@
     <div id="transactions-table">
       <li v-for="(item, key) in listOfItems" :key="key">
         <UserItem
-          v-if="item.id !== undefined"
+          v-if="item.id !== undefined && notTheCurrentUser(item.username)"
           :user="item"
           @see-user-transactions-click="
             (username) => this.$emit('seeUserTransactionsClick', username)
@@ -21,35 +21,6 @@
           @transaction-modified="$emit('transactionModified')"
         />
       </li>
-
-      <!-- <li v-for="user in usersSearchResults" :key="user.userId"> -->
-      <!--   <UserItem -->
-      <!--     :user="user" -->
-      <!--     @see-user-transactions-click=" -->
-      <!--       (username) => this.$emit('seeUserTransactionsClick', username) -->
-      <!--     " -->
-      <!--   /> -->
-      <!-- </li> -->
-      <!-- <li v-for="(transaction, key) in currentPageTransactions()" :key="key"> -->
-      <!--     <TransactionItem -->
-      <!--       :transaction="transaction" -->
-      <!--       @delete-transaction="onDeleteTransaction" -->
-      <!--       @see-user-transactions-click=" -->
-      <!--         (username) => this.$emit('seeUserTransactionsClick', username) -->
-      <!--       " -->
-      <!--       @transaction-modified="$emit('transactionModified')" -->
-      <!--     /> -->
-      <!-- </li> -->
-      <!-- <li v-for="(transaction, key) in transactionsSearchResults" :key="key"> -->
-      <!--   <TransactionItem -->
-      <!--     :transaction="transaction" -->
-      <!--     @delete-transaction="onDeleteTransaction" -->
-      <!--     @see-user-transactions-click=" -->
-      <!--       (username) => this.$emit('seeUserTransactionsClick', username) -->
-      <!--     " -->
-      <!--     @transaction-modified="$emit('transactionModified')" -->
-      <!--   /> -->
-      <!-- </li> -->
     </div>
     <div class="page-selector" v-if="!searchModeOn">
       <button type="button" @click="onPreviousClick" v-if="canGoToPreviousPage">Previous</button>
@@ -86,6 +57,9 @@ export default {
     }
   },
   methods: {
+    notTheCurrentUser(username) {
+      return username !== this.$store.state.username
+    },
     async processQuery(query) {
       let structuredQuery = searchUtils.parseQuery(query)
 
