@@ -10,19 +10,36 @@
           "
         />
       </li>
-      <li v-for="transaction in currentPageTransactions()" :key="transaction.transactionId">
-        <TransactionItem
-          :transaction="transaction"
-          @delete-transaction="onDeleteTransaction"
-          @see-user-transactions-click="
-            (username) => this.$emit('seeUserTransactionsClick', username)
-          "
-          @transaction-modified="$emit('transactionModified')"
-        />
-      </li>
+      <div v-if="!searchModeOn">
+        <li v-for="(transaction, key) in currentPageTransactions()" :key="key">
+          <TransactionItem
+            :transaction="transaction"
+            @delete-transaction="onDeleteTransaction"
+            @see-user-transactions-click="
+              (username) => this.$emit('seeUserTransactionsClick', username)
+            "
+            @transaction-modified="$emit('transactionModified')"
+          />
+        </li>
+      </div>
+      <div v-if="searchModeOn">
+        <li v-for="(transaction, key) in transactionsSearchResults" :key="key">
+          <TransactionItem
+            :transaction="transaction"
+            @delete-transaction="onDeleteTransaction"
+            @see-user-transactions-click="
+              (username) => this.$emit('seeUserTransactionsClick', username)
+            "
+            @transaction-modified="$emit('transactionModified')"
+          />
+        </li>
+      </div>
     </div>
-    <button type="button" @click="onPreviousClick" v-if="canGoToPreviousPage">Previous</button>
-    <button type="button" @click="onNextClick" v-if="canGoToNextPage">Next</button>
+    <div class="page-selector" v-if="!searchModeOn">
+      <button type="button" @click="onPreviousClick" v-if="canGoToPreviousPage">Previous</button>
+      <div class="medium bold">{{ currentPage }}</div>
+      <button type="button" @click="onNextClick" v-if="canGoToNextPage">Next</button>
+    </div>
   </div>
 </template>
 
@@ -49,7 +66,7 @@ export default {
       transactionsSearchResults: [],
       usersSearchResults: [],
       currentPage: 0,
-      transactionsPerPage: 3
+      transactionsPerPage: 7
     }
   },
   methods: {
@@ -121,6 +138,9 @@ export default {
       if (this.transactionsSearchResults !== undefined)
         return Math.ceil(this.transactionsSearchResults.length / this.transactionsPerPage)
       else return 1
+    },
+    searchModeOn() {
+      return this.query.length > 0
     }
   },
   watch: {
@@ -136,3 +156,14 @@ export default {
   }
 }
 </script>
+
+<style>
+.page-selector {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  gap: 4px;
+}
+</style>

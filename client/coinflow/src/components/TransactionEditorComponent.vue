@@ -28,7 +28,7 @@
     <div class="add-user-quota-wrapper" v-if="cachedUsers && remainingUsers.length > 0">
       <select v-model="selectedUsername">
         <option v-for="user in remainingUsers" :key="user.username">
-          {{ user.username }}
+          {{ user.username }} ({{ user.name }} {{ user.surname }})
         </option>
       </select>
       <button
@@ -95,10 +95,10 @@ export default {
         this.currentTransaction.quotas = {}
       }
 
-      if (!this.currentTransaction.quotas[this.selectedUsername]) {
+      if (!this.currentTransaction.quotas[this.selectedUsernameOnly]) {
         let newQuotas = {}
         Object.assign(newQuotas, this.currentTransaction.quotas)
-        newQuotas[this.selectedUsername] = 0.0
+        newQuotas[this.selectedUsernameOnly] = 0.0
         this.currentTransaction.quotas = newQuotas
       }
 
@@ -231,6 +231,9 @@ export default {
     }
   },
   computed: {
+    selectedUsernameOnly() {
+      return this.selectedUsername.split(' ')[0]
+    },
     currentDate() {
       if (!this.pickedDate) {
         let today = new Date()
