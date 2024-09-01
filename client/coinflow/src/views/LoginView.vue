@@ -1,83 +1,87 @@
 <template>
-  <div class="login-container card">
-    <div id="login" class="login-box" v-if="!showSignup">
-      <h1>Welcome to Coinflow</h1>
-      <input
-        type="text"
-        name="username"
-        v-model="input.username"
-        placeholder="Username"
-        id="login-username"
-        class="login-element"
-        required="true"
-      />
-      <input
-        type="password"
-        name="password"
-        v-model="input.password"
-        placeholder="Password"
-        id="login-password"
-        class="login-element"
-        required="true"
-      />
-      <button type="button" @click="login()" id="login-button" class="login-element">Login</button>
-      <button type="button" @click="showSignup = true" id="login-button" class="login-element">
-        Signup
-      </button>
-    </div>
-    <div id="registration" class="login-box" v-if="showSignup">
-      <h1>Signup</h1>
-      <input
-        type="text"
-        name="name"
-        v-model="details.name"
-        placeholder="Name"
-        id="signup-name"
-        class="login-element"
-        required="true"
-      />
-      <input
-        type="text"
-        name="surname"
-        v-model="details.surname"
-        placeholder="Surname"
-        id="signup-surname"
-        class="login-element"
-        required="true"
-      />
-      <input
-        type="text"
-        name="username"
-        v-model="input.username"
-        placeholder="Username"
-        id="signup-username"
-        class="login-element"
-        pattern="[a-z]{3,16}"
-        required="true"
-      />
-      <input
-        type="password"
-        name="password"
-        v-model="input.password"
-        placeholder="Password"
-        id="signup-password"
-        class="login-element"
-        pattern="\w{3,64}"
-        required="true"
-      />
-      <input
-        type="password"
-        name="password"
-        v-model="details.repeatPassword"
-        placeholder="Repeat password"
-        id="signup-password-repeat"
-        class="login-element"
-        pattern="\w{3,64}"
-        required="true"
-      />
-      <button type="button" @click="signup()" id="signup-button" class="login-element">
-        Signup
-      </button>
+  <div class="login-view-container">
+    <div class="login-container card">
+      <div id="login" class="login-box" v-if="!showSignup">
+        <h1>Welcome to Coinflow</h1>
+        <input
+          type="text"
+          name="username"
+          v-model="input.username"
+          placeholder="Username"
+          id="login-username"
+          class="login-element"
+          required="true"
+        />
+        <input
+          type="password"
+          name="password"
+          v-model="input.password"
+          placeholder="Password"
+          id="login-password"
+          class="login-element"
+          required="true"
+        />
+        <button type="button" @click="login()" id="login-button" class="login-element">
+          Login
+        </button>
+        <button type="button" @click="showSignup = true" id="login-button" class="login-element">
+          Signup
+        </button>
+      </div>
+      <div id="registration" class="login-box" v-if="showSignup">
+        <h1>Signup</h1>
+        <input
+          type="text"
+          name="name"
+          v-model="details.name"
+          placeholder="Name"
+          id="signup-name"
+          class="login-element"
+          required="true"
+        />
+        <input
+          type="text"
+          name="surname"
+          v-model="details.surname"
+          placeholder="Surname"
+          id="signup-surname"
+          class="login-element"
+          required="true"
+        />
+        <input
+          type="text"
+          name="username"
+          v-model="input.username"
+          placeholder="Username"
+          id="signup-username"
+          class="login-element"
+          pattern="[a-z]{3,16}"
+          required="true"
+        />
+        <input
+          type="password"
+          name="password"
+          v-model="input.password"
+          placeholder="Password"
+          id="signup-password"
+          class="login-element"
+          pattern="\w{3,64}"
+          required="true"
+        />
+        <input
+          type="password"
+          name="password"
+          v-model="details.repeatPassword"
+          placeholder="Repeat password"
+          id="signup-password-repeat"
+          class="login-element"
+          pattern="\w{3,64}"
+          required="true"
+        />
+        <button type="button" @click="signup()" id="signup-button" class="login-element">
+          Signup
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -206,12 +210,24 @@ export default {
 .login-container {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
   width: auto;
   border: 1px solid var(--color-border);
   border-radius: 20px;
   background-color: var(--color-background);
   margin: 10px;
   padding: 20px;
+}
+
+.login-view-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
 }
 
 .login-element {
