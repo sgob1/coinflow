@@ -1,6 +1,6 @@
 <template>
   <div class="card" id="help">
-    <h2>Amounts help</h2>
+    <h2>On amounts computation</h2>
     <p>
       Amounts are computed in the following way: the <strong>balance</strong> is
       <em>positive</em> if the overall income is net positive, and is <em>negative</em> if there are

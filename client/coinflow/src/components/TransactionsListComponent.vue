@@ -2,38 +2,53 @@
   <div>
     <AddTransactionComponent @transaction-created="$emit('transactionModified')" />
     <div id="transactions-table">
-      <li v-for="user in usersSearchResults" :key="user.userId">
+      <li v-for="(item, key) in listOfItems" :key="key">
         <UserItem
-          :user="user"
+          v-if="item.id !== undefined"
+          :user="item"
           @see-user-transactions-click="
             (username) => this.$emit('seeUserTransactionsClick', username)
           "
         />
+        <TransactionItem
+          v-if="item.transactionId !== undefined"
+          :transaction="item"
+          @delete-transaction="onDeleteTransaction"
+          @see-user-transactions-click="
+            (username) => this.$emit('seeUserTransactionsClick', username)
+          "
+          @transaction-modified="$emit('transactionModified')"
+        />
       </li>
-      <div v-if="!searchModeOn">
-        <li v-for="(transaction, key) in currentPageTransactions()" :key="key">
-          <TransactionItem
-            :transaction="transaction"
-            @delete-transaction="onDeleteTransaction"
-            @see-user-transactions-click="
-              (username) => this.$emit('seeUserTransactionsClick', username)
-            "
-            @transaction-modified="$emit('transactionModified')"
-          />
-        </li>
-      </div>
-      <div v-if="searchModeOn">
-        <li v-for="(transaction, key) in transactionsSearchResults" :key="key">
-          <TransactionItem
-            :transaction="transaction"
-            @delete-transaction="onDeleteTransaction"
-            @see-user-transactions-click="
-              (username) => this.$emit('seeUserTransactionsClick', username)
-            "
-            @transaction-modified="$emit('transactionModified')"
-          />
-        </li>
-      </div>
+
+      <!-- <li v-for="user in usersSearchResults" :key="user.userId"> -->
+      <!--   <UserItem -->
+      <!--     :user="user" -->
+      <!--     @see-user-transactions-click=" -->
+      <!--       (username) => this.$emit('seeUserTransactionsClick', username) -->
+      <!--     " -->
+      <!--   /> -->
+      <!-- </li> -->
+      <!-- <li v-for="(transaction, key) in currentPageTransactions()" :key="key"> -->
+      <!--     <TransactionItem -->
+      <!--       :transaction="transaction" -->
+      <!--       @delete-transaction="onDeleteTransaction" -->
+      <!--       @see-user-transactions-click=" -->
+      <!--         (username) => this.$emit('seeUserTransactionsClick', username) -->
+      <!--       " -->
+      <!--       @transaction-modified="$emit('transactionModified')" -->
+      <!--     /> -->
+      <!-- </li> -->
+      <!-- <li v-for="(transaction, key) in transactionsSearchResults" :key="key"> -->
+      <!--   <TransactionItem -->
+      <!--     :transaction="transaction" -->
+      <!--     @delete-transaction="onDeleteTransaction" -->
+      <!--     @see-user-transactions-click=" -->
+      <!--       (username) => this.$emit('seeUserTransactionsClick', username) -->
+      <!--     " -->
+      <!--     @transaction-modified="$emit('transactionModified')" -->
+      <!--   /> -->
+      <!-- </li> -->
     </div>
     <div class="page-selector" v-if="!searchModeOn">
       <button type="button" @click="onPreviousClick" v-if="canGoToPreviousPage">Previous</button>
@@ -66,7 +81,7 @@ export default {
       transactionsSearchResults: [],
       usersSearchResults: [],
       currentPage: 0,
-      transactionsPerPage: 7
+      transactionsPerPage: 10
     }
   },
   methods: {
@@ -128,6 +143,15 @@ export default {
     }
   },
   computed: {
+    listOfItems() {
+      let users = this.usersSearchResults ? this.usersSearchResults : []
+      let transactions = this.transactionsSearchResults ? this.transactionsSearchResults : []
+      if (this.searchModeOn) {
+        return Array.prototype.concat(users, transactions)
+      } else {
+        return Array.prototype.concat(users, this.currentPageTransactions())
+      }
+    },
     canGoToNextPage() {
       return this.currentPage < this.maxPageNumber - 1
     },

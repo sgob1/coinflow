@@ -121,7 +121,7 @@ export default {
   z-index: 9999999;
   top: 0;
   left: 0;
-  background-color: var(--color-background-soft);
+  background-color: var(--color-accent-soft);
   border: 1px solid #cccccc;
   padding: 8px;
   margin: 0px;

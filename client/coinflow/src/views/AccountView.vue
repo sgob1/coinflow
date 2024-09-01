@@ -1,7 +1,7 @@
 <template>
   <div class="account-container">
     <div class="card" id="account-info">
-      <h2>Account Info</h2>
+      <h2>Account Details</h2>
       <p>{{ accountInfo.name }} {{ accountInfo.surname }}</p>
       <p>username: {{ accountInfo.username }}</p>
     </div>
@@ -47,5 +47,6 @@ export default {
 }
 .card {
   margin: 0px 30px;
+  max-width: 90%;
 }
 </style>
