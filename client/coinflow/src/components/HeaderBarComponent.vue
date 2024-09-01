@@ -5,6 +5,14 @@
       alt="Coinflow logo"
       class="icon"
       @click="onCoinflowLogoClick"
+      v-if="!darkSchemeOn"
+    />
+    <img
+      src="@/assets/app-icon-dark.png"
+      alt="Coinflow logo"
+      class="icon"
+      @click="onCoinflowLogoClick"
+      v-if="darkSchemeOn"
     />
     <div id="search-bar" class="search-bar" v-if="showSearchBar">
       <input type="text" v-model="searchQuery" placeholder="Search..." />
@@ -13,11 +21,29 @@
         alt="Back"
         class="icon-small"
         @click="onClearClick"
-        v-if="searchQuery.length > 0"
+        v-if="searchQuery.length > 0 && !darkSchemeOn"
+      />
+      <img
+        src="@/assets/close-dark.png"
+        alt="Back"
+        class="icon-small"
+        @click="onClearClick"
+        v-if="searchQuery.length > 0 && darkSchemeOn"
       />
     </div>
     <div class="user-account" @click="onShowAccountIconClick">
-      <img src="@/assets/user.png" alt="Account" class="user-icon" v-if="showAccountIcon" />
+      <img
+        src="@/assets/user.png"
+        alt="Account"
+        class="user-icon"
+        v-if="showAccountIcon && !darkSchemeOn"
+      />
+      <img
+        src="@/assets/user-dark.png"
+        alt="Account"
+        class="user-icon"
+        v-if="showAccountIcon && darkSchemeOn"
+      />
       <p>
         {{ thisUsername }}
       </p>
@@ -28,7 +54,7 @@
 <script>
 export default {
   data() {
-    return { searchQuery: '' }
+    return { searchQuery: '', darkSchemeOn: false }
   },
   methods: {
     onClearClick() {
@@ -62,6 +88,12 @@ export default {
     searchQuery: function (newVal, oldVal) {
       this.$store.commit('setSearchQuery', newVal)
     }
+  },
+  mounted() {
+    this.darkSchemeOn =
+      window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+    const darkModePreference = window.matchMedia('(prefers-color-scheme: dark)')
+    darkModePreference.addEventListener('change', (e) => (this.darkSchemeOn = !this.darkSchemeOn))
   }
 }
 </script>
