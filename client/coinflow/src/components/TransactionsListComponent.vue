@@ -4,7 +4,7 @@
     <div id="transactions-table">
       <li v-for="(item, key) in listOfItems" :key="key">
         <UserItem
-          v-if="item.id !== undefined && notTheCurrentUser(item.username)"
+          v-if="item.id !== undefined"
           :user="item"
           @see-user-transactions-click="
             (username) => this.$emit('seeUserTransactionsClick', username)
@@ -57,9 +57,6 @@ export default {
     }
   },
   methods: {
-    notTheCurrentUser(username) {
-      return username !== this.$store.state.username
-    },
     async processQuery(query) {
       let structuredQuery = searchUtils.parseQuery(query)
 

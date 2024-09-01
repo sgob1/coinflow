@@ -2,7 +2,8 @@
   <div class="user-item-container card" @click="onItemClick">
     <div class="user-item-first-row">
       <div>{{ user.name }} {{ user.surname }}</div>
-      <div>User</div>
+      <div v-if="!isCurrentUser">User</div>
+      <div v-if="isCurrentUser">You</div>
     </div>
     <div class="user-item-second-row" v-if="!isOpen">
       <div>{{ user.username }}</div>
@@ -33,6 +34,9 @@ export default {
     user: Object
   },
   computed: {
+    isCurrentUser() {
+      return this.user.username === this.$store.state.username
+    },
     userSentence() {
       if (this.user.username === this.$store.state.username)
         return prettifier.myTotal(Number(this.userBalance[this.user.username]), '€')
