@@ -15,9 +15,20 @@ html {
 a,
 .green {
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
   transition: 0.4s;
   padding: 3px;
+}
+
+a {
+  color: var(--color-text-soft);
+}
+
+a:hover {
+  color: var(--color-accent);
+}
+
+.green {
+  color: hsla(160, 100%, 37%, 1);
 }
 
 li {
@@ -92,7 +103,7 @@ select option {
 
 @media (hover: hover) {
   a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+    background-color: var(--color-accent-soft);
   }
 }
 

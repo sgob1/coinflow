@@ -10,7 +10,7 @@
           "
         />
       </li>
-      <li v-for="transaction in transactionsSearchResults" :key="transaction.transactionId">
+      <li v-for="transaction in currentPageTransactions()" :key="transaction.transactionId">
         <TransactionItem
           :transaction="transaction"
           @delete-transaction="onDeleteTransaction"
@@ -21,6 +21,8 @@
         />
       </li>
     </div>
+    <button type="button" @click="onPreviousClick" v-if="canGoToPreviousPage">Previous</button>
+    <button type="button" @click="onNextClick" v-if="canGoToNextPage">Next</button>
   </div>
 </template>
 
@@ -45,7 +47,9 @@ export default {
   data() {
     return {
       transactionsSearchResults: [],
-      usersSearchResults: []
+      usersSearchResults: [],
+      currentPage: 0,
+      transactionsPerPage: 3
     }
   },
   methods: {
@@ -86,11 +90,45 @@ export default {
     onDeleteTransaction(transaction) {
       this.$emit('deleteTransaction', transaction)
     },
-    onCreateNewTransactionClick() {}
+    onPreviousClick() {
+      if (this.canGoToPreviousPage) {
+        this.currentPage = this.currentPage - 1
+      }
+    },
+    onNextClick() {
+      if (this.canGoToNextPage) {
+        this.currentPage = this.currentPage + 1
+      }
+    },
+    currentPageTransactions() {
+      if (this.transactionsSearchResults !== undefined) {
+        let startIndex = this.transactionsPerPage * this.currentPage
+        let endIndex = this.transactionsPerPage * (this.currentPage + 1)
+        return this.transactionsSearchResults.slice(startIndex, endIndex)
+      } else {
+        return []
+      }
+    }
+  },
+  computed: {
+    canGoToNextPage() {
+      return this.currentPage < this.maxPageNumber - 1
+    },
+    canGoToPreviousPage() {
+      return this.currentPage > 0
+    },
+    maxPageNumber() {
+      if (this.transactionsSearchResults !== undefined)
+        return Math.ceil(this.transactionsSearchResults.length / this.transactionsPerPage)
+      else return 1
+    }
   },
   watch: {
     query: async function (newVal, oldVal) {
       await this.refresh()
+    },
+    transactionsSearchResults: async function (newVal, oldVal) {
+      this.currentPage = 0
     }
   },
   async mounted() {
