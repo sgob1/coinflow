@@ -135,6 +135,12 @@ export default {
     totalCost() {
       return transactions.computeTotalCost(this.transaction)
     }
+  },
+  watch: {
+    transaction: async function (newVal, oldVal) {
+      this.editorIsOpen = false
+      this.isOpen = false
+    }
   }
 }
 </script>
